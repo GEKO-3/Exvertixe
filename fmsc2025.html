@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 Application</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- reCAPTCHA v3 -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LcOzo8rAAAAAEizuJcFwiBsdBma016NjaS6faGn"></script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --hover-color: #029ac0;
+            --text-color: #fff;
+            --bg-color: #18191a;
+            --card-bg: #232526;
+            --border-color: #444444;
+            --error-color: #ff4444;
+            --success-color: #44ff44;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+            padding: 48px 32px 32px 32px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: #b0b3b8;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+
+        .form-title {
+            font-family: 'Bebas Neue', cursive;
+            color: var(--text-color);
+            font-size: 2rem;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .main-btn {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 36px;
+            margin-bottom: 32px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .main-btn:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .main-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-size: 1.08rem;
+            color: #b0b3b8;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .required {
+            color: var(--primary-color);
+            margin-left: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 1.08rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+            transition: border 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(3, 189, 237, 0.2);
+        }
+
+        .upload-section {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .upload-title {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .file-upload-btn {
+            background: rgba(3, 189, 237, 0.1);
+            color: var(--primary-color);
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 8px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .file-upload-btn:hover {
+            background: rgba(3, 189, 237, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .message.success {
+            background: rgba(68, 255, 68, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .message.error {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        /* Confirmation Dialog */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(24, 25, 26, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dialog-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .dialog-box {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .dialog-overlay.show .dialog-box {
+            transform: scale(1);
+        }
+
+        .dialog-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .dialog-message {
+            color: var(--text-color);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .dialog-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', Arial, sans-serif;
+            min-width: 100px;
+        }
+
+        .dialog-btn.confirm {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+
+        .dialog-btn.confirm:hover {
+            background: var(--hover-color);
+        }
+
+        .dialog-btn.cancel {
+            background: #444;
+            color: var(--text-color);
+            border: 1px solid #666;
+        }
+
+        .dialog-btn.cancel:hover {
+            background: #555;
+        }
+
+        /* Success Container */
+        .success-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+            padding: 48px 32px 32px 32px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            display: none;
+        }
+
+        .success-container.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .success-message {
+            font-size: 1.1rem;
+            color: #b0b3b8;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(3, 189, 237, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container, .success-container {
+                padding: 32px 20px 24px 20px;
+                margin: 10px;
+            }
+            .title {
+                font-size: 2.8rem;
+            }
+            .form-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="form-container">
+        <div class="title">FMSC 2025</div>
+        <div class="subtitle">Fill the form to enter blah blah blah</div>
+        <button class="main-btn" id="showFormBtn">Application Form</button>
+        
+        <div id="formContainer" style="display:none; margin-top:32px;">
+            <div id="message-container"></div>
+            
+            <form id="fmsc-form">
+                <div class="form-title">Application Form</div>
+                
+                <div class="input-group">
+                    <label class="form-label">Team Name<span class="required">*</span></label>
+                    <input type="text" id="team-name" class="form-input" placeholder="Enter your team name" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="form-label">Address (Island)<span class="required">*</span></label>
+                    <input type="text" id="address" class="form-input" placeholder="Enter your island" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="form-label">Manager's Name<span class="required">*</span></label>
+                    <input type="text" id="manager-name" class="form-input" placeholder="Enter manager's name" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="form-label">Contact Number<span class="required">*</span></label>
+                    <input type="tel" id="contact-number" class="form-input" placeholder="Enter contact number" required>
+                </div>
+                
+                <div class="input-group">
+                    <label class="form-label">Email<span class="required">*</span></label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter email address" required>
+                </div>
+                
+                <div class="upload-section">
+                    <div class="upload-title">Team Logo</div>
+                    <a href="https://www.dropbox.com/request/RgERH9ErJeJSafDraBkJ" target="_blank" class="file-upload-btn">Upload Team Logo</a>
+                </div>
+                
+                <div class="upload-section">
+                    <div class="upload-title">Team Flag</div>
+                    <a href="https://www.dropbox.com/request/GVXIGMmfZ30rycLcrfpb" target="_blank" class="file-upload-btn">Upload Team Flag</a>
+                </div>
+                
+                <button type="submit" class="main-btn">Submit Application</button>
+                
+                <!-- Loading Animation -->
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Submitting your application...</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Container -->
+    <div class="success-container" id="success-container">
+        <div class="success-icon">🎉</div>
+        <h2 class="success-title">Application Submitted Successfully!</h2>
+        <p class="success-message">
+            Thank you for your interest in FMSC 2025! Your application has been received and we'll get back to you soon.
+        </p>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div class="dialog-overlay" id="dialog-overlay">
+        <div class="dialog-box">
+            <h3 class="dialog-title">Confirm Submission</h3>
+            <p class="dialog-message">
+                Are you sure all the information you entered is correct?<br><br>
+                Please review your details carefully before proceeding.
+            </p>
+            <div class="dialog-buttons">
+                <button class="dialog-btn cancel" id="dialog-cancel">Cancel</button>
+                <button class="dialog-btn confirm" id="dialog-confirm">Yes, Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if form was already submitted on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('fmscFormSubmitted') === 'true') {
+                showSuccessPage();
+            }
+        });
+
+        // Form handling variables
+        const showFormBtn = document.getElementById('showFormBtn');
+        const formContainer = document.getElementById('formContainer');
+        const form = document.getElementById('fmsc-form');
+        const submitBtn = document.querySelector('button[type="submit"]');
+        const loading = document.getElementById('loading');
+        const messageContainer = document.getElementById('message-container');
+        const dialogOverlay = document.getElementById('dialog-overlay');
+        const dialogCancel = document.getElementById('dialog-cancel');
+        const dialogConfirm = document.getElementById('dialog-confirm');
+        const formContainerDiv = document.getElementById('form-container');
+        const successContainer = document.getElementById('success-container');
+        
+        let formSubmitted = false;
+
+        // Show form when button clicked
+        showFormBtn.addEventListener('click', function() {
+            showFormBtn.style.display = 'none';
+            formContainer.style.display = 'block';
+        });
+
+        function showMessage(message, type) {
+            messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
+            messageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideMessage() {
+            messageContainer.innerHTML = '';
+        }
+
+        function showDialog() {
+            dialogOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideDialog() {
+            dialogOverlay.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function showSuccessPage() {
+            formContainerDiv.style.display = 'none';
+            successContainer.classList.add('show');
+        }
+
+        // Dialog event listeners
+        dialogCancel.addEventListener('click', function() {
+            hideDialog();
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+            formSubmitted = false;
+        });
+
+        dialogConfirm.addEventListener('click', function() {
+            hideDialog();
+            
+            // Execute reCAPTCHA v3
+            grecaptcha.ready(function() {
+                grecaptcha.execute('6LcOzo8rAAAAAEizuJcFwiBsdBma016NjaS6faGn', {action: 'submit'}).then(function(token) {
+                    // Get form data
+                    const teamName = document.getElementById('team-name').value.trim();
+                    const address = document.getElementById('address').value.trim();
+                    const managerName = document.getElementById('manager-name').value.trim();
+                    const contactNumber = document.getElementById('contact-number').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    
+                    // Submit to Google Form using hidden iframe method
+                    submitToGoogleForm(teamName, address, managerName, contactNumber, email, token);
+                }).catch(function(error) {
+                    handleSubmissionError();
+                });
+            });
+        });
+
+        // Function to submit to Google Form using hidden iframe
+        function submitToGoogleForm(teamName, address, managerName, contactNumber, email, recaptchaToken) {
+            // Create hidden iframe
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'hidden_iframe';
+            document.body.appendChild(iframe);
+
+            // Create form
+            const hiddenForm = document.createElement('form');
+            hiddenForm.action = 'https://docs.google.com/forms/d/e/1FAIpQLSdvYkgdTlwOieHJQa6x0izJ0MB7axMcXdHdHPnf4xg6En15Wg/formResponse';
+            hiddenForm.method = 'POST';
+            hiddenForm.target = 'hidden_iframe';
+            hiddenForm.style.display = 'none';
+
+            // Add form fields with correct entry names
+            const fields = [
+                { name: 'entry.1232710259', value: teamName },
+                { name: 'entry.902774634', value: address },
+                { name: 'entry.727598541', value: managerName },
+                { name: 'entry.754027883', value: contactNumber },
+                { name: 'entry.330043934', value: email },
+                { name: 'g-recaptcha-response', value: recaptchaToken }
+            ];
+
+            fields.forEach(field => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field.name;
+                input.value = field.value;
+                hiddenForm.appendChild(input);
+            });
+
+            document.body.appendChild(hiddenForm);
+
+            // Handle submission completion
+            let submitted = false;
+            
+            const handleSubmission = () => {
+                if (!submitted) {
+                    submitted = true;
+                    handleSubmissionSuccess();
+                    
+                    // Clean up
+                    setTimeout(() => {
+                        if (document.body.contains(hiddenForm)) {
+                            document.body.removeChild(hiddenForm);
+                        }
+                        if (document.body.contains(iframe)) {
+                            document.body.removeChild(iframe);
+                        }
+                    }, 1000);
+                }
+            };
+
+            // Google Forms blocks iframe loading due to CSP, but submission still works
+            iframe.addEventListener('load', handleSubmission);
+            iframe.addEventListener('error', handleSubmission);
+            
+            // Assume success after brief delay since CSP will block iframe
+            setTimeout(() => {
+                if (!submitted) {
+                    handleSubmission();
+                }
+            }, 2000);
+
+            // Submit the form
+            try {
+                hiddenForm.submit();
+            } catch (error) {
+                handleSubmissionError();
+            }
+        }
+        
+        function handleSubmissionSuccess() {
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+            
+            localStorage.setItem('fmscFormSubmitted', 'true');
+            localStorage.setItem('fmscFormSubmissionDate', new Date().toISOString());
+            showSuccessPage();
+            formSubmitted = false;
+        }
+        
+        function handleSubmissionError() {
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+            formSubmitted = false;
+            
+            showMessage('There was an error submitting the form. Please check your internet connection and try again.', 'error');
+        }
+
+        // Close dialog on overlay click
+        dialogOverlay.addEventListener('click', function(e) {
+            if (e.target === dialogOverlay) {
+                hideDialog();
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+                formSubmitted = false;
+            }
+        });
+
+        // Form submission handler
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Check if already submitted
+            if (localStorage.getItem('fmscFormSubmitted') === 'true') {
+                showMessage('You have already submitted this form and cannot submit it again.', 'error');
+                return;
+            }
+            
+            hideMessage();
+            formSubmitted = true;
+            
+            // Show loading state
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            // Validate required fields
+            const teamName = document.getElementById('team-name').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const managerName = document.getElementById('manager-name').value.trim();
+            const contactNumber = document.getElementById('contact-number').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            if (!teamName) {
+                showMessage('Please enter your team name.', 'error');
+                resetSubmitButton();
+                return;
+            }
+            
+            if (!address) {
+                showMessage('Please enter your island address.', 'error');
+                resetSubmitButton();
+                return;
+            }
+            
+            if (!managerName) {
+                showMessage('Please enter the manager\'s name.', 'error');
+                resetSubmitButton();
+                return;
+            }
+            
+            if (!contactNumber) {
+                showMessage('Please enter your contact number.', 'error');
+                resetSubmitButton();
+                return;
+            }
+            
+            if (!email) {
+                showMessage('Please enter your email address.', 'error');
+                resetSubmitButton();
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+            if (!emailRegex.test(email)) {
+                showMessage('Please enter a valid email address.', 'error');
+                resetSubmitButton();
+                return;
+            }
+            
+            // All validations passed, show confirmation dialog
+            showDialog();
+        });
+
+        function resetSubmitButton() {
+            loading.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+            formSubmitted = false;
+        }
+
+        // Hide messages when inputs are focused
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                hideMessage();
+            });
+        });
+    </script>
+</body>
+</html>
