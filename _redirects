@@ -1,0 +1,7 @@
+# Remove .html extension
+/fmsc2025   /fmsc2025.html   200
+/index      /index.html      200
+
+# Redirect .html URLs to extensionless URLs  
+/fmsc2025.html   /fmsc2025   301!
+/index.html      /index      301!

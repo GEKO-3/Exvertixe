@@ -8,8 +8,45 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
     
+    <script>
+        // Obfuscated configuration
+        const _0x4f2a = ['aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZHZZa2dkVGx3T2llSEpRYTZ4MGl6SjBNQjdheE1jWGRIZEhQbmY0eGc2RW4xNVdnL2Zvcm1SZXNwb25zZQ==',
+        'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTY0M0UFhRTDJNYnZMZ1RzWXdodTJfYlRqUlNjSGI2cDllSUJGWV9vdHhHRkd5VEZ3L2Zvcm1SZXNwb25zZQ==',
+        'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZmplcW56WkliQUFBTWY2dHEyLW9CZmkyd1lteTVCMG8xZHJPQmNGby1RYWhxLWxnL2Zvcm1SZXNwb25zZQ==',
+        'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vcmVxdWVzdC9SZ0VSSzlFckplSlNhZkRyYUJrSg==',
+        'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vcmVxdWVzdC9HVlhJR01tZlozMHJ5Y0xyY2ZwYg=='];
+        
+        function _0xd4b8(str) {
+            try {
+                return atob(str);
+            } catch(e) {
+                return '';
+            }
+        }
+        
+        // Form configuration object
+        window._FMSCConfig = {
+            get mainForm() { return _0xd4b8(_0x4f2a[0]); },
+            get teamListForm() { return _0xd4b8(_0x4f2a[1]); },
+            get colorsForm() { return _0xd4b8(_0x4f2a[2]).replace('*', '2'); },
+            get logoUpload() { return _0xd4b8(_0x4f2a[3]); },
+            get flagUpload() { return _0xd4b8(_0x4f2a[4]); },
+            entries: (function() {
+                const _e = ['ZW50cnkuMTIzMjcxMDI1OQ==','ZW50cnkuOTAyNzc0NjM0','ZW50cnkuNzI3NTk4NTQx','ZW50cnkuNzU0MDI3ODgz','ZW50cnkuMzMwMDQzOTM0','ZW50cnkuMTE3NDM5NTg5OQ==','ZW50cnkuNjg5ODA4Mjc4','ZW50cnkuMTk5NTMwNDAwOA==','ZW50cnkuMjA4MTExNTg0NA=='];
+                return {
+                    main: [_0xd4b8(_e[0]), _0xd4b8(_e[1]), _0xd4b8(_e[2]), _0xd4b8(_e[3]), _0xd4b8(_e[4])],
+                    teamList: [_0xd4b8(_e[5]), _0xd4b8(_e[6])],
+                    colors: [_0xd4b8(_e[7]), _0xd4b8(_e[8])]
+                };
+            })()
+        };
+        
+        // Obfuscate reCAPTCHA key
+        const _rcKey = '6LeTVbArAAAA' + 'ALwhBNZOJ2c9nEh0oeaUVS7iqhEp'.split('').reverse().join('').split('').reverse().join('');
+    </script>
+    
     <!-- reCAPTCHA v3 -->
-    <script src="https://www.google.com/recaptcha/api.js?render=6LcOzo8rAAAAAEizuJcFwiBsdBma016NjaS6faGn"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LeTVbArAAAAALwhBNZOJ2c9nEh0oeaUVS7iqhEp"></script>
     
     <style>
         :root {
@@ -59,6 +96,24 @@
             margin-bottom: 12px;
         }
 
+        .logo-container {
+            margin-top: 50px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tournament-logo {
+            max-width: 200px;
+            max-height: 200px;
+            padding-bottom: 10px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
         .subtitle {
             color: #b0b3b8;
             font-size: 1.1rem;
@@ -98,6 +153,42 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: rgba(68, 68, 68, 0.3);
+            color: #b0b3b8;
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(68, 68, 68, 0.5);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .form-buttons .main-btn {
+            flex: 1;
+            margin: 0;
         }
 
         .input-group {
@@ -303,6 +394,18 @@
             font-size: 4rem;
             color: var(--primary-color);
             margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-logo {
+            max-width: 80px;
+            max-height: 80px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
         }
 
         .success-title {
@@ -318,6 +421,189 @@
             color: #b0b3b8;
             line-height: 1.6;
             margin-bottom: 30px;
+        }
+
+        .autosave-notice {
+            background: rgba(3, 189, 237, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .additional-forms {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .additional-btn {
+            background: rgba(3, 189, 237, 0.1);
+            color: var(--primary-color);
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 160px;
+        }
+
+        .additional-btn:hover {
+            background: rgba(3, 189, 237, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Team List Form Styles */
+        .player-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 80px 40px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(68, 68, 68, 0.1);
+            border-radius: 8px;
+        }
+
+        .player-input {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 0.95rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+
+        .player-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .jersey-input {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 0.95rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+            text-align: center;
+        }
+
+        .jersey-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .gk-toggle {
+            background: rgba(68, 68, 68, 0.3);
+            color: #b0b3b8;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .gk-toggle.active {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border-color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .gk-toggle:hover {
+            background: rgba(3, 189, 237, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .gk-toggle.active:hover {
+            background: var(--hover-color);
+            color: var(--bg-color);
+        }
+
+        .add-player-btn {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin: 10px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .add-player-btn:hover {
+            background: var(--hover-color);
+            transform: scale(1.1);
+        }
+
+        .remove-player-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-player-btn:hover {
+            background: #cc3333;
+            transform: scale(1.1);
+        }
+
+        /* Color Picker Form Styles */
+        .color-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .color-picker {
+            width: 60px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .color-input {
+            flex: 1;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 1rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+        }
+
+        .color-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
 
         /* Loading Animation */
@@ -358,11 +644,16 @@
 </head>
 <body>
     <div class="container" id="form-container">
-        <div class="title">FMSC 2025</div>
-        <div class="subtitle">Fill the form to enter blah blah blah</div>
+        <div class="logo-container">
+            <img src="Tounament logo.svg" alt="FMSC 2025 Tournament Logo" class="tournament-logo">
+        </div>
+        <div class="subtitle">Join the Fonadhoo Youth Futsal Challenge 2025 - register your team now!</div>
         <button class="main-btn" id="showFormBtn">Application Form</button>
         
         <div id="formContainer" style="display:none; margin-top:32px;">
+            <div class="autosave-notice">
+                📝 Your form data is automatically saved as you type. You can close this page and return later to continue editing before submitting.
+            </div>
             <div id="message-container"></div>
             
             <form id="fmsc-form">
@@ -395,12 +686,12 @@
                 
                 <div class="upload-section">
                     <div class="upload-title">Team Logo</div>
-                    <a href="https://www.dropbox.com/request/RgERH9ErJeJSafDraBkJ" target="_blank" class="file-upload-btn">Upload Team Logo</a>
+                    <a href="#" id="logo-upload-link" class="file-upload-btn">Upload Team Logo</a>
                 </div>
                 
                 <div class="upload-section">
                     <div class="upload-title">Team Flag</div>
-                    <a href="https://www.dropbox.com/request/GVXIGMmfZ30rycLcrfpb" target="_blank" class="file-upload-btn">Upload Team Flag</a>
+                    <a href="#" id="flag-upload-link" class="file-upload-btn">Upload Team Flag</a>
                 </div>
                 
                 <button type="submit" class="main-btn">Submit Application</button>
@@ -416,11 +707,98 @@
 
     <!-- Success Container -->
     <div class="success-container" id="success-container">
-        <div class="success-icon">🎉</div>
+        <div class="success-icon">
+            <img src="Tounament logo.svg" alt="FMSC 2025 Tournament Logo" class="success-logo">
+        </div>
         <h2 class="success-title">Application Submitted Successfully!</h2>
         <p class="success-message">
             Thank you for your interest in FMSC 2025! Your application has been received and we'll get back to you soon.
         </p>
+        <div class="additional-forms">
+            <button class="additional-btn" id="team-list-btn">Submit Team List</button>
+            <button class="additional-btn" id="jersey-colors-btn">Submit Jersey Colors</button>
+        </div>
+    </div>
+
+    <!-- Team List Form -->
+    <div class="container" id="team-list-container" style="display: none;">
+        <div class="form-title">Submit Team List</div>
+        <div class="autosave-notice">
+            📝 Your team list is automatically saved as you type. You can close this page and return later to continue editing before submitting.
+        </div>
+        <div id="team-list-message-container"></div>
+        
+        <form id="team-list-form">
+            <div class="input-group">
+                <label class="form-label">Team Name</label>
+                <input type="text" id="saved-team-name" class="form-input" readonly>
+            </div>
+            
+            <div class="input-group">
+                <label class="form-label">Team Players<span class="required">*</span></label>
+                <div id="players-container">
+                    <div class="player-row">
+                        <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
+                        <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="gk-toggle" data-gk="false">GK</button>
+                        <div></div>
+                    </div>
+                </div>
+                <button type="button" class="add-player-btn" id="add-player">+</button>
+            </div>
+            
+            <div class="form-buttons">
+                <button type="button" class="back-btn" id="team-list-back-btn">← Back</button>
+                <button type="submit" class="main-btn">Submit Team List</button>
+            </div>
+            
+            <div class="loading" id="team-list-loading">
+                <div class="spinner"></div>
+                <p>Submitting team list...</p>
+            </div>
+        </form>
+    </div>
+
+    <!-- Jersey Colors Form -->
+    <div class="container" id="jersey-colors-container" style="display: none;">
+        <div class="form-title">Submit Jersey Colors</div>
+        <div class="autosave-notice">
+            📝 Your jersey colors are automatically saved as you select them. You can close this page and return later to continue editing before submitting.
+        </div>
+        <div id="jersey-colors-message-container"></div>
+        
+        <form id="jersey-colors-form">
+            <div class="input-group">
+                <label class="form-label">Team Name</label>
+                <input type="text" id="saved-team-name-2" class="form-input" readonly>
+            </div>
+            
+            <div class="input-group">
+                <label class="form-label">Primary Jersey Color<span class="required">*</span></label>
+                <div class="color-row">
+                    <input type="color" id="primary-color-picker" class="color-picker" value="#03bded">
+                    <input type="text" id="primary-color-input" class="color-input" placeholder="Enter hex color (e.g., #03bded)" required>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="form-label">Secondary Jersey Color<span class="required">*</span></label>
+                <div class="color-row">
+                    <input type="color" id="secondary-color-picker" class="color-picker" value="#ffffff">
+                    <input type="text" id="secondary-color-input" class="color-input" placeholder="Enter hex color (e.g., #ffffff)" required>
+                </div>
+            </div>
+            
+            <div class="form-buttons">
+                <button type="button" class="back-btn" id="jersey-colors-back-btn">← Back</button>
+                <button type="submit" class="main-btn">Submit Jersey Colors</button>
+            </div>
+            
+            <div class="loading" id="jersey-colors-loading">
+                <div class="spinner"></div>
+                <p>Submitting jersey colors...</p>
+            </div>
+        </form>
     </div>
 
     <!-- Confirmation Dialog -->
@@ -443,8 +821,153 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (localStorage.getItem('fmscFormSubmitted') === 'true') {
                 showSuccessPage();
+            } else {
+                // Load saved form data
+                loadMainFormData();
+            }
+            
+            // Set obfuscated upload links
+            if (window._FMSCConfig) {
+                const logoLink = document.getElementById('logo-upload-link');
+                const flagLink = document.getElementById('flag-upload-link');
+                
+                if (logoLink) {
+                    logoLink.href = window._FMSCConfig.logoUpload;
+                    logoLink.target = '_blank';
+                }
+                if (flagLink) {
+                    flagLink.href = window._FMSCConfig.flagUpload;
+                    flagLink.target = '_blank';
+                }
             }
         });
+
+        // Auto-save functionality for main form
+        function saveMainFormData() {
+            const formData = {
+                teamName: document.getElementById('team-name').value,
+                address: document.getElementById('address').value,
+                managerName: document.getElementById('manager-name').value,
+                contactNumber: document.getElementById('contact-number').value,
+                email: document.getElementById('email').value
+            };
+            localStorage.setItem('fmscMainFormData', JSON.stringify(formData));
+        }
+
+        function loadMainFormData() {
+            const savedData = localStorage.getItem('fmscMainFormData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                document.getElementById('team-name').value = formData.teamName || '';
+                document.getElementById('address').value = formData.address || '';
+                document.getElementById('manager-name').value = formData.managerName || '';
+                document.getElementById('contact-number').value = formData.contactNumber || '';
+                document.getElementById('email').value = formData.email || '';
+            }
+        }
+
+        // Auto-save for team list
+        function saveTeamListData() {
+            const playerRows = document.querySelectorAll('#players-container .player-row');
+            const players = [];
+            
+            playerRows.forEach(row => {
+                const jersey = row.querySelector('.jersey-input').value;
+                const name = row.querySelector('.player-input').value;
+                const gkButton = row.querySelector('.gk-toggle');
+                const isGK = gkButton.dataset.gk === 'true';
+                
+                players.push({
+                    jersey: jersey,
+                    name: name,
+                    isGK: isGK
+                });
+            });
+            
+            localStorage.setItem('fmscTeamListData', JSON.stringify(players));
+        }
+
+        function loadTeamListData() {
+            const savedData = localStorage.getItem('fmscTeamListData');
+            if (savedData) {
+                const players = JSON.parse(savedData);
+                const playersContainer = document.getElementById('players-container');
+                
+                // Clear existing players except first one
+                playersContainer.innerHTML = '';
+                playerCount = 0;
+                
+                players.forEach((player, index) => {
+                    const playerRow = document.createElement('div');
+                    playerRow.className = 'player-row';
+                    
+                    if (index === 0) {
+                        // First row without remove button
+                        playerRow.innerHTML = `
+                            <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required value="${player.jersey}">
+                            <input type="text" class="player-input" placeholder="Player Name" required value="${player.name}">
+                            <button type="button" class="gk-toggle ${player.isGK ? 'active' : ''}" data-gk="${player.isGK}">GK</button>
+                            <div></div>
+                        `;
+                    } else {
+                        // Additional rows with remove button
+                        playerRow.innerHTML = `
+                            <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required value="${player.jersey}">
+                            <input type="text" class="player-input" placeholder="Player Name" required value="${player.name}">
+                            <button type="button" class="gk-toggle ${player.isGK ? 'active' : ''}" data-gk="${player.isGK}">GK</button>
+                            <button type="button" class="remove-player-btn">×</button>
+                        `;
+                        
+                        // Add remove functionality
+                        const removeBtn = playerRow.querySelector('.remove-player-btn');
+                        removeBtn.addEventListener('click', function() {
+                            playerRow.remove();
+                            playerCount--;
+                            saveTeamListData();
+                        });
+                    }
+                    
+                    playersContainer.appendChild(playerRow);
+                    playerCount++;
+                    
+                    // Add auto-save listeners to inputs
+                    const inputs = playerRow.querySelectorAll('input');
+                    inputs.forEach(input => {
+                        input.addEventListener('input', saveTeamListData);
+                        input.addEventListener('change', saveTeamListData);
+                    });
+                    
+                    // Add GK toggle functionality
+                    const gkToggle = playerRow.querySelector('.gk-toggle');
+                    gkToggle.addEventListener('click', function() {
+                        const isActive = this.dataset.gk === 'true';
+                        this.dataset.gk = isActive ? 'false' : 'true';
+                        this.classList.toggle('active', !isActive);
+                        saveTeamListData();
+                    });
+                });
+            }
+        }
+
+        // Auto-save for jersey colors
+        function saveJerseyColorsData() {
+            const colorsData = {
+                primaryColor: document.getElementById('primary-color-input').value,
+                secondaryColor: document.getElementById('secondary-color-input').value
+            };
+            localStorage.setItem('fmscJerseyColorsData', JSON.stringify(colorsData));
+        }
+
+        function loadJerseyColorsData() {
+            const savedData = localStorage.getItem('fmscJerseyColorsData');
+            if (savedData) {
+                const colorsData = JSON.parse(savedData);
+                document.getElementById('primary-color-input').value = colorsData.primaryColor || '#03bded';
+                document.getElementById('primary-color-picker').value = colorsData.primaryColor || '#03bded';
+                document.getElementById('secondary-color-input').value = colorsData.secondaryColor || '#ffffff';
+                document.getElementById('secondary-color-picker').value = colorsData.secondaryColor || '#ffffff';
+            }
+        }
 
         // Form handling variables
         const showFormBtn = document.getElementById('showFormBtn');
@@ -465,7 +988,16 @@
         showFormBtn.addEventListener('click', function() {
             showFormBtn.style.display = 'none';
             formContainer.style.display = 'block';
+            // Load saved data when form is shown
+            loadMainFormData();
         });
+
+        // Add auto-save listeners to main form inputs
+        document.getElementById('team-name').addEventListener('input', saveMainFormData);
+        document.getElementById('address').addEventListener('input', saveMainFormData);
+        document.getElementById('manager-name').addEventListener('input', saveMainFormData);
+        document.getElementById('contact-number').addEventListener('input', saveMainFormData);
+        document.getElementById('email').addEventListener('input', saveMainFormData);
 
         function showMessage(message, type) {
             messageContainer.innerHTML = `<div class="message ${type}">${message}</div>`;
@@ -505,7 +1037,7 @@
             
             // Execute reCAPTCHA v3
             grecaptcha.ready(function() {
-                grecaptcha.execute('6LcOzo8rAAAAAEizuJcFwiBsdBma016NjaS6faGn', {action: 'submit'}).then(function(token) {
+                grecaptcha.execute(_rcKey, {action: 'submit'}).then(function(token) {
                     // Get form data
                     const teamName = document.getElementById('team-name').value.trim();
                     const address = document.getElementById('address').value.trim();
@@ -531,18 +1063,19 @@
 
             // Create form
             const hiddenForm = document.createElement('form');
-            hiddenForm.action = 'https://docs.google.com/forms/d/e/1FAIpQLSdvYkgdTlwOieHJQa6x0izJ0MB7axMcXdHdHPnf4xg6En15Wg/formResponse';
+            hiddenForm.action = window._FMSCConfig.mainForm;
             hiddenForm.method = 'POST';
             hiddenForm.target = 'hidden_iframe';
             hiddenForm.style.display = 'none';
 
-            // Add form fields with correct entry names
+            // Add form fields with obfuscated entry names
+            const entries = window._FMSCConfig.entries.main;
             const fields = [
-                { name: 'entry.1232710259', value: teamName },
-                { name: 'entry.902774634', value: address },
-                { name: 'entry.727598541', value: managerName },
-                { name: 'entry.754027883', value: contactNumber },
-                { name: 'entry.330043934', value: email },
+                { name: entries[0], value: teamName },
+                { name: entries[1], value: address },
+                { name: entries[2], value: managerName },
+                { name: entries[3], value: contactNumber },
+                { name: entries[4], value: email },
                 { name: 'g-recaptcha-response', value: recaptchaToken }
             ];
 
@@ -599,6 +1132,10 @@
             loading.style.display = 'none';
             submitBtn.disabled = false;
             submitBtn.textContent = 'Submit Application';
+            
+            // Save team name for later forms
+            const teamName = document.getElementById('team-name').value.trim();
+            localStorage.setItem('fmscTeamName', teamName);
             
             localStorage.setItem('fmscFormSubmitted', 'true');
             localStorage.setItem('fmscFormSubmissionDate', new Date().toISOString());
@@ -707,6 +1244,350 @@
                 hideMessage();
             });
         });
+
+        // Additional forms functionality
+        const teamListBtn = document.getElementById('team-list-btn');
+        const jerseyColorsBtn = document.getElementById('jersey-colors-btn');
+        const teamListContainer = document.getElementById('team-list-container');
+        const jerseyColorsContainer = document.getElementById('jersey-colors-container');
+
+        // Team List Form
+        teamListBtn.addEventListener('click', function() {
+            successContainer.style.display = 'none';
+            teamListContainer.style.display = 'block';
+            
+            // Auto-fill team name
+            const savedTeamName = localStorage.getItem('fmscTeamName');
+            if (savedTeamName) {
+                document.getElementById('saved-team-name').value = savedTeamName;
+            }
+            
+            // Load saved team list data
+            loadTeamListData();
+            
+            // Add GK toggle functionality to initial row if not already loaded
+            if (!localStorage.getItem('fmscTeamListData')) {
+                const initialGkToggle = document.querySelector('.gk-toggle');
+                if (initialGkToggle) {
+                    initialGkToggle.addEventListener('click', function() {
+                        const isActive = this.dataset.gk === 'true';
+                        this.dataset.gk = isActive ? 'false' : 'true';
+                        this.classList.toggle('active', !isActive);
+                        saveTeamListData();
+                    });
+                }
+                
+                // Add auto-save to initial inputs
+                const initialInputs = document.querySelectorAll('#players-container .player-row input');
+                initialInputs.forEach(input => {
+                    input.addEventListener('input', saveTeamListData);
+                    input.addEventListener('change', saveTeamListData);
+                });
+            }
+        });
+
+        // Jersey Colors Form
+        jerseyColorsBtn.addEventListener('click', function() {
+            successContainer.style.display = 'none';
+            jerseyColorsContainer.style.display = 'block';
+            
+            // Auto-fill team name
+            const savedTeamName = localStorage.getItem('fmscTeamName');
+            if (savedTeamName) {
+                document.getElementById('saved-team-name-2').value = savedTeamName;
+            }
+            
+            // Load saved jersey colors data
+            loadJerseyColorsData();
+        });
+
+        // Back button functionality
+        const teamListBackBtn = document.getElementById('team-list-back-btn');
+        const jerseyColorsBackBtn = document.getElementById('jersey-colors-back-btn');
+
+        teamListBackBtn.addEventListener('click', function() {
+            teamListContainer.style.display = 'none';
+            successContainer.style.display = 'block';
+        });
+
+        jerseyColorsBackBtn.addEventListener('click', function() {
+            jerseyColorsContainer.style.display = 'none';
+            successContainer.style.display = 'block';
+        });
+
+        // Add Player functionality
+        const addPlayerBtn = document.getElementById('add-player');
+        const playersContainer = document.getElementById('players-container');
+        let playerCount = 1;
+
+        addPlayerBtn.addEventListener('click', function() {
+            if (playerCount < 25) { // Maximum 25 players
+                const playerRow = document.createElement('div');
+                playerRow.className = 'player-row';
+                playerRow.innerHTML = `
+                    <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
+                    <input type="text" class="player-input" placeholder="Player Name" required>
+                    <button type="button" class="gk-toggle" data-gk="false">GK</button>
+                    <button type="button" class="remove-player-btn">×</button>
+                `;
+                playersContainer.appendChild(playerRow);
+                playerCount++;
+
+                // Add remove functionality
+                const removeBtn = playerRow.querySelector('.remove-player-btn');
+                removeBtn.addEventListener('click', function() {
+                    playerRow.remove();
+                    playerCount--;
+                    saveTeamListData();
+                });
+
+                // Add auto-save listeners to new inputs
+                const inputs = playerRow.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', saveTeamListData);
+                    input.addEventListener('change', saveTeamListData);
+                });
+
+                // Add GK toggle functionality
+                const gkToggle = playerRow.querySelector('.gk-toggle');
+                gkToggle.addEventListener('click', function() {
+                    const isActive = this.dataset.gk === 'true';
+                    this.dataset.gk = isActive ? 'false' : 'true';
+                    this.classList.toggle('active', !isActive);
+                    saveTeamListData();
+                });
+            }
+        });
+
+        // Color picker synchronization
+        const primaryColorPicker = document.getElementById('primary-color-picker');
+        const primaryColorInput = document.getElementById('primary-color-input');
+        const secondaryColorPicker = document.getElementById('secondary-color-picker');
+        const secondaryColorInput = document.getElementById('secondary-color-input');
+
+        primaryColorPicker.addEventListener('input', function() {
+            primaryColorInput.value = this.value;
+            saveJerseyColorsData();
+        });
+
+        primaryColorInput.addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                primaryColorPicker.value = this.value;
+            }
+            saveJerseyColorsData();
+        });
+
+        secondaryColorPicker.addEventListener('input', function() {
+            secondaryColorInput.value = this.value;
+            saveJerseyColorsData();
+        });
+
+        secondaryColorInput.addEventListener('input', function() {
+            if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                secondaryColorPicker.value = this.value;
+            }
+            saveJerseyColorsData();
+        });
+
+        // Set initial values
+        primaryColorInput.value = '#03bded';
+        secondaryColorInput.value = '#ffffff';
+
+        // Team List Form submission
+        const teamListForm = document.getElementById('team-list-form');
+        const teamListLoading = document.getElementById('team-list-loading');
+        const teamListMessageContainer = document.getElementById('team-list-message-container');
+
+        teamListForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            teamListLoading.style.display = 'block';
+            
+            // Collect player data
+            const playerRows = document.querySelectorAll('#players-container .player-row');
+            let teamList = '';
+            
+            playerRows.forEach((row, index) => {
+                const jersey = row.querySelector('.jersey-input').value;
+                const name = row.querySelector('.player-input').value.trim();
+                const gkButton = row.querySelector('.gk-toggle');
+                const isGK = gkButton.dataset.gk === 'true';
+                
+                if (jersey && name) {
+                    if (index > 0) teamList += '\n';
+                    teamList += `${jersey},${name}${isGK ? ',GK' : ''}`;
+                }
+            });
+            
+            if (!teamList) {
+                teamListMessageContainer.innerHTML = '<div class="message error">Please add at least one player.</div>';
+                teamListLoading.style.display = 'none';
+                return;
+            }
+            
+            // Submit to Google Form
+            submitTeamListForm(localStorage.getItem('fmscTeamName'), teamList);
+        });
+
+        function submitTeamListForm(teamName, teamList) {
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'team_list_iframe';
+            document.body.appendChild(iframe);
+
+            const form = document.createElement('form');
+            form.action = window._FMSCConfig.teamListForm;
+            form.method = 'POST';
+            form.target = 'team_list_iframe';
+            form.style.display = 'none';
+
+            const entries = window._FMSCConfig.entries.teamList;
+            const fields = [
+                { name: entries[0], value: teamName },
+                { name: entries[1], value: teamList }
+            ];
+
+            fields.forEach(field => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field.name;
+                input.value = field.value;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+
+            // Handle submission completion
+            let submitted = false;
+            
+            const handleSubmission = () => {
+                if (!submitted) {
+                    submitted = true;
+                    teamListLoading.style.display = 'none';
+                    teamListMessageContainer.innerHTML = '<div class="message success">Team list submitted successfully!</div>';
+                    
+                    // Clean up
+                    setTimeout(() => {
+                        if (document.body.contains(form)) {
+                            document.body.removeChild(form);
+                        }
+                        if (document.body.contains(iframe)) {
+                            document.body.removeChild(iframe);
+                        }
+                    }, 1000);
+                }
+            };
+
+            // Google Forms blocks iframe loading due to CSP, but submission still works
+            iframe.addEventListener('load', handleSubmission);
+            iframe.addEventListener('error', handleSubmission);
+            
+            // Assume success after brief delay since CSP will block iframe
+            setTimeout(() => {
+                if (!submitted) {
+                    handleSubmission();
+                }
+            }, 2000);
+
+            // Submit the form
+            try {
+                form.submit();
+            } catch (error) {
+                teamListLoading.style.display = 'none';
+                teamListMessageContainer.innerHTML = '<div class="message error">There was an error submitting the team list. Please try again.</div>';
+            }
+        }
+
+        // Jersey Colors Form submission
+        const jerseyColorsForm = document.getElementById('jersey-colors-form');
+        const jerseyColorsLoading = document.getElementById('jersey-colors-loading');
+        const jerseyColorsMessageContainer = document.getElementById('jersey-colors-message-container');
+
+        jerseyColorsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            jerseyColorsLoading.style.display = 'block';
+            
+            const primaryColor = document.getElementById('primary-color-input').value.trim();
+            const secondaryColor = document.getElementById('secondary-color-input').value.trim();
+            
+            if (!primaryColor.match(/^#[0-9A-F]{6}$/i) || !secondaryColor.match(/^#[0-9A-F]{6}$/i)) {
+                jerseyColorsMessageContainer.innerHTML = '<div class="message error">Please enter valid hex colors (e.g., #03bded).</div>';
+                jerseyColorsLoading.style.display = 'none';
+                return;
+            }
+            
+            submitJerseyColorsForm(localStorage.getItem('fmscTeamName'), `${primaryColor}, ${secondaryColor}`);
+        });
+
+        function submitJerseyColorsForm(teamName, colors) {
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'jersey_colors_iframe';
+            document.body.appendChild(iframe);
+
+            const form = document.createElement('form');
+            form.action = window._FMSCConfig.colorsForm;
+            form.method = 'POST';
+            form.target = 'jersey_colors_iframe';
+            form.style.display = 'none';
+
+            const entries = window._FMSCConfig.entries.colors;
+            const fields = [
+                { name: entries[0], value: teamName },
+                { name: entries[1], value: colors }
+            ];
+
+            fields.forEach(field => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field.name;
+                input.value = field.value;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+
+            // Handle submission completion
+            let submitted = false;
+            
+            const handleSubmission = () => {
+                if (!submitted) {
+                    submitted = true;
+                    jerseyColorsLoading.style.display = 'none';
+                    jerseyColorsMessageContainer.innerHTML = '<div class="message success">Jersey colors submitted successfully!</div>';
+                    
+                    // Clean up
+                    setTimeout(() => {
+                        if (document.body.contains(form)) {
+                            document.body.removeChild(form);
+                        }
+                        if (document.body.contains(iframe)) {
+                            document.body.removeChild(iframe);
+                        }
+                    }, 1000);
+                }
+            };
+
+            // Google Forms blocks iframe loading due to CSP, but submission still works
+            iframe.addEventListener('load', handleSubmission);
+            iframe.addEventListener('error', handleSubmission);
+            
+            // Assume success after brief delay since CSP will block iframe
+            setTimeout(() => {
+                if (!submitted) {
+                    handleSubmission();
+                }
+            }, 2000);
+
+            // Submit the form
+            try {
+                form.submit();
+            } catch (error) {
+                jerseyColorsLoading.style.display = 'none';
+                jerseyColorsMessageContainer.innerHTML = '<div class="message error">There was an error submitting the jersey colors. Please try again.</div>';
+            }
+        }
     </script>
 </body>
 </html>
