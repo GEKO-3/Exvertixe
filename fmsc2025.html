@@ -43,6 +43,64 @@
         
         // Obfuscate reCAPTCHA key
         const _rcKey = '6LeTVbArAAAA' + 'ALwhBNZOJ2c9nEh0oeaUVS7iqhEp'.split('').reverse().join('').split('').reverse().join('');
+        
+        // Developer tools protection
+        (function() {
+            let devtools = {
+                open: false,
+                orientation: null
+            };
+            
+            const threshold = 160;
+            const checkDevTools = () => {
+                if (window.outerHeight - window.innerHeight > threshold || 
+                    window.outerWidth - window.innerWidth > threshold) {
+                    if (!devtools.open) {
+                        devtools.open = true;
+                        console.clear();
+                        document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#18191a;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Arial;font-size:24px;z-index:99999;">Access Denied</div>';
+                    }
+                } else {
+                    devtools.open = false;
+                }
+            };
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            
+            // Disable common developer shortcuts
+            document.addEventListener('keydown', e => {
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
+                    (e.ctrlKey && e.key === 'U') ||
+                    (e.ctrlKey && e.key === 'S')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+            
+            // Detect developer tools opening
+            setInterval(checkDevTools, 100);
+            
+            // Clear console periodically
+            setInterval(() => {
+                console.clear();
+                console.log('%cAccess Denied', 'color: #ff4444; font-size: 20px; font-weight: bold;');
+            }, 1000);
+            
+            // Disable console debugging
+            Object.defineProperty(window, 'console', {
+                value: new Proxy(console, {
+                    get(target, prop) {
+                        if (['log', 'warn', 'error', 'info', 'debug'].includes(prop)) {
+                            return () => {};
+                        }
+                        return target[prop];
+                    }
+                })
+            });
+        })();
     </script>
     
     <!-- reCAPTCHA v3 -->
@@ -1398,9 +1456,61 @@
         const teamListLoading = document.getElementById('team-list-loading');
         const teamListMessageContainer = document.getElementById('team-list-message-container');
 
+        // Spam protection for team list submissions
+        let teamListLastSubmission = parseInt(localStorage.getItem('fmscTeamListLastSubmission') || '0');
+        let teamListSubmitting = false;
+        let teamListSubmissionCount = parseInt(sessionStorage.getItem('fmscTeamListSubmissionCount') || '0');
+        const TEAM_LIST_COOLDOWN = 30000; // 30 seconds cooldown
+        
+        // Progressive delay - increases with each submission in the same session
+        function getTeamListCooldown() {
+            return TEAM_LIST_COOLDOWN + (teamListSubmissionCount * 10000); // Add 10 seconds per previous submission
+        }
+
+        // Function to update team list button state
+        function updateTeamListButtonState() {
+            const submitButton = teamListForm.querySelector('button[type="submit"]');
+            const now = Date.now();
+            const timeSinceLastSubmission = now - teamListLastSubmission;
+            const currentCooldown = getTeamListCooldown();
+            
+            if (teamListSubmitting || (teamListLastSubmission > 0 && timeSinceLastSubmission < currentCooldown)) {
+                submitButton.disabled = true;
+                if (teamListSubmitting) {
+                    submitButton.textContent = 'Submitting...';
+                } else {
+                    const remainingSeconds = Math.ceil((currentCooldown - timeSinceLastSubmission) / 1000);
+                    submitButton.textContent = `Wait ${remainingSeconds}s`;
+                }
+            } else {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit Team List';
+            }
+        }
+
+        // Update team list button state every second
+        setInterval(updateTeamListButtonState, 1000);
+
         teamListForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Check if already submitting
+            if (teamListSubmitting) {
+                teamListMessageContainer.innerHTML = '<div class="message error">Please wait, submission is in progress...</div>';
+                return;
+            }
+            
+            // Check cooldown period
+            const now = Date.now();
+            const timeSinceLastSubmission = now - teamListLastSubmission;
+            const currentCooldown = getTeamListCooldown();
+            if (timeSinceLastSubmission < currentCooldown) {
+                const remainingSeconds = Math.ceil((currentCooldown - timeSinceLastSubmission) / 1000);
+                teamListMessageContainer.innerHTML = `<div class="message error">Please wait ${remainingSeconds} seconds before submitting again.</div>`;
+                return;
+            }
+            
+            teamListSubmitting = true;
             teamListLoading.style.display = 'block';
             
             // Collect player data
@@ -1422,8 +1532,15 @@
             if (!teamList) {
                 teamListMessageContainer.innerHTML = '<div class="message error">Please add at least one player.</div>';
                 teamListLoading.style.display = 'none';
+                teamListSubmitting = false;
                 return;
             }
+            
+            // Update last submission time and increment counter
+            teamListLastSubmission = now;
+            teamListSubmissionCount++;
+            localStorage.setItem('fmscTeamListLastSubmission', now.toString());
+            sessionStorage.setItem('fmscTeamListSubmissionCount', teamListSubmissionCount.toString());
             
             // Submit to Google Form
             submitTeamListForm(localStorage.getItem('fmscTeamName'), teamList);
@@ -1463,6 +1580,7 @@
             const handleSubmission = () => {
                 if (!submitted) {
                     submitted = true;
+                    teamListSubmitting = false; // Reset submission flag
                     teamListLoading.style.display = 'none';
                     teamListMessageContainer.innerHTML = '<div class="message success">Team list submitted successfully!</div>';
                     
@@ -1493,6 +1611,7 @@
             try {
                 form.submit();
             } catch (error) {
+                teamListSubmitting = false;
                 teamListLoading.style.display = 'none';
                 teamListMessageContainer.innerHTML = '<div class="message error">There was an error submitting the team list. Please try again.</div>';
             }
@@ -1503,9 +1622,61 @@
         const jerseyColorsLoading = document.getElementById('jersey-colors-loading');
         const jerseyColorsMessageContainer = document.getElementById('jersey-colors-message-container');
 
+        // Spam protection for jersey colors submissions
+        let jerseyColorsLastSubmission = parseInt(localStorage.getItem('fmscJerseyColorsLastSubmission') || '0');
+        let jerseyColorsSubmitting = false;
+        let jerseyColorsSubmissionCount = parseInt(sessionStorage.getItem('fmscJerseyColorsSubmissionCount') || '0');
+        const JERSEY_COLORS_COOLDOWN = 30000; // 30 seconds cooldown
+        
+        // Progressive delay - increases with each submission in the same session
+        function getJerseyColorsCooldown() {
+            return JERSEY_COLORS_COOLDOWN + (jerseyColorsSubmissionCount * 10000); // Add 10 seconds per previous submission
+        }
+
+        // Function to update jersey colors button state
+        function updateJerseyColorsButtonState() {
+            const submitButton = jerseyColorsForm.querySelector('button[type="submit"]');
+            const now = Date.now();
+            const timeSinceLastSubmission = now - jerseyColorsLastSubmission;
+            const currentCooldown = getJerseyColorsCooldown();
+            
+            if (jerseyColorsSubmitting || (jerseyColorsLastSubmission > 0 && timeSinceLastSubmission < currentCooldown)) {
+                submitButton.disabled = true;
+                if (jerseyColorsSubmitting) {
+                    submitButton.textContent = 'Submitting...';
+                } else {
+                    const remainingSeconds = Math.ceil((currentCooldown - timeSinceLastSubmission) / 1000);
+                    submitButton.textContent = `Wait ${remainingSeconds}s`;
+                }
+            } else {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit Jersey Colors';
+            }
+        }
+
+        // Update jersey colors button state every second
+        setInterval(updateJerseyColorsButtonState, 1000);
+
         jerseyColorsForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Check if already submitting
+            if (jerseyColorsSubmitting) {
+                jerseyColorsMessageContainer.innerHTML = '<div class="message error">Please wait, submission is in progress...</div>';
+                return;
+            }
+            
+            // Check cooldown period
+            const now = Date.now();
+            const timeSinceLastSubmission = now - jerseyColorsLastSubmission;
+            const currentCooldown = getJerseyColorsCooldown();
+            if (timeSinceLastSubmission < currentCooldown) {
+                const remainingSeconds = Math.ceil((currentCooldown - timeSinceLastSubmission) / 1000);
+                jerseyColorsMessageContainer.innerHTML = `<div class="message error">Please wait ${remainingSeconds} seconds before submitting again.</div>`;
+                return;
+            }
+            
+            jerseyColorsSubmitting = true;
             jerseyColorsLoading.style.display = 'block';
             
             const primaryColor = document.getElementById('primary-color-input').value.trim();
@@ -1514,8 +1685,15 @@
             if (!primaryColor.match(/^#[0-9A-F]{6}$/i) || !secondaryColor.match(/^#[0-9A-F]{6}$/i)) {
                 jerseyColorsMessageContainer.innerHTML = '<div class="message error">Please enter valid hex colors (e.g., #03bded).</div>';
                 jerseyColorsLoading.style.display = 'none';
+                jerseyColorsSubmitting = false;
                 return;
             }
+            
+            // Update last submission time and increment counter
+            jerseyColorsLastSubmission = now;
+            jerseyColorsSubmissionCount++;
+            localStorage.setItem('fmscJerseyColorsLastSubmission', now.toString());
+            sessionStorage.setItem('fmscJerseyColorsSubmissionCount', jerseyColorsSubmissionCount.toString());
             
             submitJerseyColorsForm(localStorage.getItem('fmscTeamName'), `${primaryColor}, ${secondaryColor}`);
         });
@@ -1554,6 +1732,7 @@
             const handleSubmission = () => {
                 if (!submitted) {
                     submitted = true;
+                    jerseyColorsSubmitting = false; // Reset submission flag
                     jerseyColorsLoading.style.display = 'none';
                     jerseyColorsMessageContainer.innerHTML = '<div class="message success">Jersey colors submitted successfully!</div>';
                     
@@ -1584,6 +1763,7 @@
             try {
                 form.submit();
             } catch (error) {
+                jerseyColorsSubmitting = false;
                 jerseyColorsLoading.style.display = 'none';
                 jerseyColorsMessageContainer.innerHTML = '<div class="message error">There was an error submitting the jersey colors. Please try again.</div>';
             }
