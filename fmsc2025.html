@@ -8,6 +8,9 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
     
+    <!-- Cloudinary Upload Widget -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    
     <script>
         // Obfuscated configuration
         const _0x4f2a = ['aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZHZZa2dkVGx3T2llSEpRYTZ4MGl6SjBNQjdheE1jWGRIZEhQbmY0eGc2RW4xNVdnL2Zvcm1SZXNwb25zZQ==',
@@ -32,9 +35,9 @@
             get logoUpload() { return _0xd4b8(_0x4f2a[3]); },
             get flagUpload() { return _0xd4b8(_0x4f2a[4]); },
             entries: (function() {
-                const _e = ['ZW50cnkuMTIzMjcxMDI1OQ==','ZW50cnkuOTAyNzc0NjM0','ZW50cnkuNzI3NTk4NTQx','ZW50cnkuNzU0MDI3ODgz','ZW50cnkuMzMwMDQzOTM0','ZW50cnkuMTE3NDM5NTg5OQ==','ZW50cnkuNjg5ODA4Mjc4','ZW50cnkuMTk5NTMwNDAwOA==','ZW50cnkuMjA4MTExNTg0NA=='];
+                const _e = ['ZW50cnkuMTIzMjcxMDI1OQ==','ZW50cnkuOTAyNzc0NjM0','ZW50cnkuNzI3NTk4NTQx','ZW50cnkuNzU0MDI3ODgz','ZW50cnkuMzMwMDQzOTM0','ZW50cnkuMTE3NDM5NTg5OQ==','ZW50cnkuNjg5ODA4Mjc4','ZW50cnkuMTk5NTMwNDAwOA==','ZW50cnkuMjA4MTExNTg0NA==','ZW50cnkuMTEyMzI0ODkyNA==','ZW50cnkuMzc2MDIyNjE3'];
                 return {
-                    main: [_0xd4b8(_e[0]), _0xd4b8(_e[1]), _0xd4b8(_e[2]), _0xd4b8(_e[3]), _0xd4b8(_e[4])],
+                    main: [_0xd4b8(_e[0]), _0xd4b8(_e[1]), _0xd4b8(_e[2]), _0xd4b8(_e[3]), _0xd4b8(_e[4]), _0xd4b8(_e[9]), _0xd4b8(_e[10])],
                     teamList: [_0xd4b8(_e[5]), _0xd4b8(_e[6])],
                     colors: [_0xd4b8(_e[7]), _0xd4b8(_e[8])]
                 };
@@ -299,26 +302,97 @@
             font-weight: 600;
         }
 
-        .file-upload-btn {
-            background: rgba(3, 189, 237, 0.1);
-            color: var(--primary-color);
-            font-family: 'Montserrat', Arial, sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 12px 24px;
+        .file-upload-zone {
+            background: rgba(3, 189, 237, 0.05);
+            border: 2px dashed var(--primary-color);
+            border-radius: 12px;
+            padding: 30px 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
             margin-bottom: 8px;
-            text-decoration: none;
-            display: inline-block;
+            text-align: center;
+            position: relative;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        .file-upload-btn:hover {
-            background: rgba(3, 189, 237, 0.2);
-            transform: translateY(-1px);
+        .file-upload-zone:hover {
+            background: rgba(3, 189, 237, 0.1);
+            border-color: rgba(3, 189, 237, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .file-upload-zone.dragover {
+            background: rgba(3, 189, 237, 0.15);
+            border-color: var(--primary-color);
+            border-style: solid;
+        }
+
+        .file-upload-zone.uploaded {
+            background: rgba(68, 255, 68, 0.05);
+            border-color: var(--success-color);
+            border-style: solid;
+        }
+
+        .file-upload-zone.required-error {
+            background: rgba(255, 68, 68, 0.05);
+            border-color: #ff4444;
+            border-style: solid;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+
+        .upload-text {
+            color: var(--primary-color);
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .upload-subtext {
+            color: var(--text-color);
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .upload-status {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            padding: 5px 8px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .upload-status.success {
+            background: rgba(68, 255, 68, 0.1);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .upload-status.uploading {
+            background: rgba(3, 189, 237, 0.1);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .upload-status.error {
+            background: rgba(255, 68, 68, 0.1);
+            color: #ff4444;
+            border: 1px solid #ff4444;
         }
 
         /* Messages */
@@ -698,6 +772,53 @@
                 font-size: 1.6rem;
             }
         }
+
+        /* Rules and Regulations Styles */
+        .rules-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(68, 68, 68, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .rules-text {
+            color: var(--text-color);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .rules-download-btn {
+            background: rgba(3, 189, 237, 0.1);
+            color: var(--primary-color);
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rules-download-btn:hover {
+            background: rgba(3, 189, 237, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .rules-download-btn:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -706,7 +827,7 @@
             <img src="Tounament logo.svg" alt="FMSC 2025 Tournament Logo" class="tournament-logo">
         </div>
         <div class="subtitle">Join the Fonadhoo Youth Futsal Challenge 2025 - register your team now!</div>
-        <button class="main-btn" id="showFormBtn">Application Form</button>
+        <button class="main-btn" id="showFormBtn">Registration Form</button>
         
         <div id="formContainer" style="display:none; margin-top:32px;">
             <div class="autosave-notice">
@@ -743,13 +864,35 @@
                 </div>
                 
                 <div class="upload-section">
-                    <div class="upload-title">Team Logo</div>
-                    <a href="#" id="logo-upload-link" class="file-upload-btn">Upload Team Logo</a>
+                    <div class="upload-title">Team Logo<span class="required">*</span></div>
+                    <div id="logo-upload-zone" class="file-upload-zone">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">Drop your team logo here</div>
+                        <div class="upload-subtext">or click to browse files (Images, SVG)</div>
+                        <input type="file" id="logo-file-input" class="hidden-file-input" accept="image/*,.svg" required>
+                    </div>
+                    <div id="logo-upload-status" class="upload-status"></div>
                 </div>
                 
                 <div class="upload-section">
-                    <div class="upload-title">Team Flag</div>
-                    <a href="#" id="flag-upload-link" class="file-upload-btn">Upload Team Flag</a>
+                    <div class="upload-title">Team Flag<span class="required">*</span></div>
+                    <div id="flag-upload-zone" class="file-upload-zone">
+                        <div class="upload-icon">🏴</div>
+                        <div class="upload-text">Drop your team flag here</div>
+                        <div class="upload-subtext">or click to browse files (Images, SVG)</div>
+                        <input type="file" id="flag-file-input" class="hidden-file-input" accept="image/*,.svg" required>
+                    </div>
+                    <div id="flag-upload-status" class="upload-status"></div>
+                </div>
+                
+                <!-- Rules and Regulations Section -->
+                <div class="rules-section">
+                    <div class="rules-text">
+                        By submitting registration form you agree to comply with rules and regulations of the tournament
+                    </div>
+                    <a href="Rules_and_Regulations _ FMSC _ Futsal_2025.pdf" download class="rules-download-btn">
+                        Rules and Regulations
+                    </a>
                 </div>
                 
                 <button type="submit" class="main-btn">Submit Application</button>
@@ -772,6 +915,20 @@
         <p class="success-message">
             Thank you for your interest in FMSC 2025! Your application has been received and we'll get back to you soon.
         </p>
+        
+        <!-- Downloads Section -->
+        <div class="rules-text">
+            Downloads
+        </div>
+        <div class="rules-section">
+            <a href="Rules_and_Regulations _ FMSC _ Futsal_2025.pdf" download class="rules-download-btn">
+                Rules and Regulations
+            </a>
+            <a href="Tounament logo.pdf" download class="rules-download-btn">
+                Tournament Logo
+            </a>
+        </div>
+        
         <div class="additional-forms">
             <button class="additional-btn" id="team-list-btn">Submit Team List</button>
             <button class="additional-btn" id="jersey-colors-btn">Submit Jersey Colors</button>
@@ -803,6 +960,16 @@
                     </div>
                 </div>
                 <button type="button" class="add-player-btn" id="add-player">+</button>
+            </div>
+            
+            <!-- Rules and Regulations Section -->
+            <div class="rules-section">
+                <div class="rules-text">
+                    By submitting registration form you agree to comply with rules and regulations of the tournament
+                </div>
+                <a href="Rules_and_Regulations _ FMSC _ Futsal_2025.pdf" download class="rules-download-btn">
+                    Rules and Regulations
+                </a>
             </div>
             
             <div class="form-buttons">
@@ -847,6 +1014,16 @@
                 </div>
             </div>
             
+            <!-- Rules and Regulations Section -->
+            <div class="rules-section">
+                <div class="rules-text">
+                    By submitting registration form you agree to comply with rules and regulations of the tournament
+                </div>
+                <a href="Rules_and_Regulations _ FMSC _ Futsal_2025.pdf" download class="rules-download-btn">
+                    Rules and Regulations
+                </a>
+            </div>
+            
             <div class="form-buttons">
                 <button type="button" class="back-btn" id="jersey-colors-back-btn">← Back</button>
                 <button type="submit" class="main-btn">Submit Jersey Colors</button>
@@ -886,17 +1063,8 @@
             
             // Set obfuscated upload links
             if (window._FMSCConfig) {
-                const logoLink = document.getElementById('logo-upload-link');
-                const flagLink = document.getElementById('flag-upload-link');
-                
-                if (logoLink) {
-                    logoLink.href = window._FMSCConfig.logoUpload;
-                    logoLink.target = '_blank';
-                }
-                if (flagLink) {
-                    flagLink.href = window._FMSCConfig.flagUpload;
-                    flagLink.target = '_blank';
-                }
+                // Initialize Cloudinary Upload Widgets
+                initializeCloudinaryUploads();
             }
         });
 
@@ -910,6 +1078,148 @@
                 email: document.getElementById('email').value
             };
             localStorage.setItem('fmscMainFormData', JSON.stringify(formData));
+        }
+
+        // Cloudinary Upload Configuration
+        let logoUploadUrl = '';
+        let flagUploadUrl = '';
+
+        function initializeCloudinaryUploads() {
+            initializeDragAndDrop('logo');
+            initializeDragAndDrop('flag');
+        }
+
+        function isValidFileType(file) {
+            // Accept standard image formats
+            if (file.type.startsWith('image/')) {
+                return true;
+            }
+            // Accept SVG files (sometimes have different MIME types)
+            if (file.type === 'image/svg+xml' || 
+                file.type === 'application/svg+xml' || 
+                file.name.toLowerCase().endsWith('.svg')) {
+                return true;
+            }
+            return false;
+        }
+
+        function initializeDragAndDrop(type) {
+            const zone = document.getElementById(`${type}-upload-zone`);
+            const input = document.getElementById(`${type}-file-input`);
+
+            // Click to browse
+            zone.addEventListener('click', () => {
+                input.click();
+            });
+
+            // File input change
+            input.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    if (isValidFileType(file)) {
+                        uploadFile(file, type);
+                    } else {
+                        updateUploadStatus(type, 'error', 'Please upload an image or SVG file');
+                        setTimeout(() => {
+                            const statusEl = document.getElementById(`${type}-upload-status`);
+                            statusEl.style.display = 'none';
+                        }, 3000);
+                    }
+                }
+            });
+
+            // Drag and drop events
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+
+            zone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (isValidFileType(file)) {
+                        uploadFile(file, type);
+                    } else {
+                        updateUploadStatus(type, 'error', 'Please upload an image or SVG file');
+                        setTimeout(() => {
+                            const statusEl = document.getElementById(`${type}-upload-status`);
+                            statusEl.style.display = 'none';
+                        }, 3000);
+                    }
+                }
+            });
+        }
+
+        function uploadFile(file, type) {
+            updateUploadStatus(type, 'uploading', 'Uploading...');
+            
+            // Create FormData for Cloudinary upload
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'fmsc-uploads');
+            formData.append('folder', `fmsc-2025/${type}s`);
+
+            fetch('https://api.cloudinary.com/v1_1/dgvde8x6e/image/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.secure_url) {
+                    if (type === 'logo') {
+                        logoUploadUrl = data.secure_url;
+                    } else {
+                        flagUploadUrl = data.secure_url;
+                    }
+                    
+                    updateUploadStatus(type, 'success', `${type === 'logo' ? 'Team logo' : 'Team flag'} uploaded successfully!`);
+                    updateUploadZone(type, 'uploaded', file.name);
+                } else {
+                    throw new Error('Upload failed');
+                }
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                updateUploadStatus(type, 'error', 'Upload failed. Please try again.');
+                updateUploadZone(type, 'error', '');
+            });
+        }
+
+        function updateUploadZone(type, status, fileName) {
+            const zone = document.getElementById(`${type}-upload-zone`);
+            const icon = zone.querySelector('.upload-icon');
+            const text = zone.querySelector('.upload-text');
+            const subtext = zone.querySelector('.upload-subtext');
+            
+            if (status === 'uploaded') {
+                zone.classList.add('uploaded');
+                zone.classList.remove('required-error');
+                icon.textContent = '✅';
+                text.textContent = fileName;
+                subtext.textContent = 'Upload successful! Click to change.';
+            } else if (status === 'error') {
+                zone.classList.add('required-error');
+                zone.classList.remove('uploaded');
+                icon.textContent = type === 'logo' ? '📸' : '🏴';
+                text.textContent = `Drop your team ${type} here`;
+                subtext.textContent = 'or click to browse files';
+            }
+        }
+
+        function updateUploadStatus(type, status, message) {
+            const statusElement = document.getElementById(`${type}-upload-status`);
+            statusElement.textContent = message;
+            statusElement.className = `upload-status ${status}`;
+            statusElement.style.display = 'block';
         }
 
         function loadMainFormData() {
@@ -1137,6 +1447,14 @@
                 { name: 'g-recaptcha-response', value: recaptchaToken }
             ];
 
+            // Add file upload URLs if available
+            if (logoUploadUrl) {
+                fields.push({ name: entries[5], value: logoUploadUrl });
+            }
+            if (flagUploadUrl) {
+                fields.push({ name: entries[6], value: flagUploadUrl });
+            }
+
             fields.forEach(field => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -1280,6 +1598,23 @@
             const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
             if (!emailRegex.test(email)) {
                 showMessage('Please enter a valid email address.', 'error');
+                resetSubmitButton();
+                return;
+            }
+            
+            // File upload validation
+            if (!logoUploadUrl) {
+                showMessage('Please upload your team logo.', 'error');
+                const logoZone = document.getElementById('logo-upload-zone');
+                logoZone.classList.add('required-error');
+                resetSubmitButton();
+                return;
+            }
+            
+            if (!flagUploadUrl) {
+                showMessage('Please upload your team flag.', 'error');
+                const flagZone = document.getElementById('flag-upload-zone');
+                flagZone.classList.add('required-error');
                 resetSubmitButton();
                 return;
             }
