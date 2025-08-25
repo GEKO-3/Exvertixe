@@ -189,6 +189,23 @@
             letter-spacing: 1px;
         }
 
+        .due-date-notice {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .due-date-notice .date {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
         .main-btn {
             background: var(--primary-color);
             color: var(--bg-color);
@@ -828,6 +845,9 @@
         </div>
         <div class="subtitle">Join the Fonadhoo Youth Futsal Challenge 2025 - register your team now!</div>
         <button class="main-btn" id="showFormBtn">Registration Form</button>
+        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
+            Registration deadline: September 20, 2025
+        </div>
         
         <div id="formContainer" style="display:none; margin-top:32px;">
             <div class="autosave-notice">
@@ -896,6 +916,9 @@
                 </div>
                 
                 <button type="submit" class="main-btn">Submit Application</button>
+                <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
+                    Registration deadline: September 20, 2025
+                </div>
                 
                 <!-- Loading Animation -->
                 <div class="loading" id="loading">
@@ -938,6 +961,7 @@
     <!-- Team List Form -->
     <div class="container" id="team-list-container" style="display: none;">
         <div class="form-title">Submit Team List</div>
+        
         <div class="autosave-notice">
             📝 Your team list is automatically saved as you type. You can close this page and return later to continue editing before submitting.
         </div>
@@ -987,6 +1011,7 @@
     <!-- Jersey Colors Form -->
     <div class="container" id="jersey-colors-container" style="display: none;">
         <div class="form-title">Submit Jersey Colors</div>
+        
         <div class="autosave-notice">
             📝 Your jersey colors are automatically saved as you select them. You can close this page and return later to continue editing before submitting.
         </div>
