@@ -46,64 +46,6 @@
         
         // Obfuscate reCAPTCHA key
         const _rcKey = '6LeTVbArAAAA' + 'ALwhBNZOJ2c9nEh0oeaUVS7iqhEp'.split('').reverse().join('').split('').reverse().join('');
-        
-        // Developer tools protection
-        (function() {
-            let devtools = {
-                open: false,
-                orientation: null
-            };
-            
-            const threshold = 160;
-            const checkDevTools = () => {
-                if (window.outerHeight - window.innerHeight > threshold || 
-                    window.outerWidth - window.innerWidth > threshold) {
-                    if (!devtools.open) {
-                        devtools.open = true;
-                        console.clear();
-                        document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:#18191a;color:#fff;display:flex;align-items:center;justify-content:center;font-family:Arial;font-size:24px;z-index:99999;">Access Denied</div>';
-                    }
-                } else {
-                    devtools.open = false;
-                }
-            };
-            
-            // Disable right-click context menu
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            
-            // Disable common developer shortcuts
-            document.addEventListener('keydown', e => {
-                if (e.key === 'F12' || 
-                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
-                    (e.ctrlKey && e.key === 'U') ||
-                    (e.ctrlKey && e.key === 'S')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-            });
-            
-            // Detect developer tools opening
-            setInterval(checkDevTools, 100);
-            
-            // Clear console periodically
-            setInterval(() => {
-                console.clear();
-                console.log('%cAccess Denied', 'color: #ff4444; font-size: 20px; font-weight: bold;');
-            }, 1000);
-            
-            // Disable console debugging
-            Object.defineProperty(window, 'console', {
-                value: new Proxy(console, {
-                    get(target, prop) {
-                        if (['log', 'warn', 'error', 'info', 'debug'].includes(prop)) {
-                            return () => {};
-                        }
-                        return target[prop];
-                    }
-                })
-            });
-        })();
     </script>
     
     <!-- reCAPTCHA v3 -->
