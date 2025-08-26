@@ -664,6 +664,7 @@
             gap: 15px;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .color-picker {
@@ -677,6 +678,7 @@
 
         .color-input {
             flex: 1;
+            min-width: 150px;
             background: var(--bg-color);
             color: var(--text-color);
             border: 1.5px solid var(--border-color);
@@ -689,6 +691,21 @@
         .color-input:focus {
             outline: none;
             border-color: var(--primary-color);
+        }
+
+        .color-set {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .color-label {
+            font-size: 0.85rem;
+            color: #b0b3b8;
+            font-weight: 500;
+            min-width: 80px;
+            text-align: center;
         }
 
         /* Loading Animation */
@@ -1052,18 +1069,66 @@
             </div>
             
             <div class="input-group">
-                <label class="form-label">Primary Jersey Color<span class="required">*</span></label>
+                <label class="form-label">Primary Kit Colors<span class="required">*</span></label>
                 <div class="color-row">
-                    <input type="color" id="primary-color-picker" class="color-picker" value="#03bded">
-                    <input type="text" id="primary-color-input" class="color-input" placeholder="Enter hex color (e.g., #03bded)" required>
+                    <div class="color-set">
+                        <div class="color-label">Player Jersey</div>
+                        <input type="color" id="primary-player-jersey-picker" class="color-picker" value="#03bded">
+                        <input type="text" id="primary-player-jersey-input" class="color-input" placeholder="Player jersey color (e.g., #03bded)" required>
+                    </div>
+                </div>
+                <div class="color-row">
+                    <div class="color-set">
+                        <div class="color-label">Player Socks</div>
+                        <input type="color" id="primary-player-socks-picker" class="color-picker" value="#ffffff">
+                        <input type="text" id="primary-player-socks-input" class="color-input" placeholder="Player socks color (e.g., #ffffff)" required>
+                    </div>
+                </div>
+                <div class="color-row">
+                    <div class="color-set">
+                        <div class="color-label">GK Jersey</div>
+                        <input type="color" id="primary-gk-jersey-picker" class="color-picker" value="#000000">
+                        <input type="text" id="primary-gk-jersey-input" class="color-input" placeholder="Goalkeeper jersey color (e.g., #000000)" required>
+                    </div>
+                </div>
+                <div class="color-row">
+                    <div class="color-set">
+                        <div class="color-label">GK Socks</div>
+                        <input type="color" id="primary-gk-socks-picker" class="color-picker" value="#cccccc">
+                        <input type="text" id="primary-gk-socks-input" class="color-input" placeholder="Goalkeeper socks color (e.g., #cccccc)" required>
+                    </div>
                 </div>
             </div>
             
             <div class="input-group">
-                <label class="form-label">Secondary Jersey Color<span class="required">*</span></label>
+                <label class="form-label">Secondary Kit Colors<span class="required">*</span></label>
                 <div class="color-row">
-                    <input type="color" id="secondary-color-picker" class="color-picker" value="#ffffff">
-                    <input type="text" id="secondary-color-input" class="color-input" placeholder="Enter hex color (e.g., #ffffff)" required>
+                    <div class="color-set">
+                        <div class="color-label">Player Jersey</div>
+                        <input type="color" id="secondary-player-jersey-picker" class="color-picker" value="#ffffff">
+                        <input type="text" id="secondary-player-jersey-input" class="color-input" placeholder="Player jersey color (e.g., #ffffff)" required>
+                    </div>
+                </div>
+                <div class="color-row">
+                    <div class="color-set">
+                        <div class="color-label">Player Socks</div>
+                        <input type="color" id="secondary-player-socks-picker" class="color-picker" value="#03bded">
+                        <input type="text" id="secondary-player-socks-input" class="color-input" placeholder="Player socks color (e.g., #03bded)" required>
+                    </div>
+                </div>
+                <div class="color-row">
+                    <div class="color-set">
+                        <div class="color-label">GK Jersey</div>
+                        <input type="color" id="secondary-gk-jersey-picker" class="color-picker" value="#ffff00">
+                        <input type="text" id="secondary-gk-jersey-input" class="color-input" placeholder="Goalkeeper jersey color (e.g., #ffff00)" required>
+                    </div>
+                </div>
+                <div class="color-row">
+                    <div class="color-set">
+                        <div class="color-label">GK Socks</div>
+                        <input type="color" id="secondary-gk-socks-picker" class="color-picker" value="#000000">
+                        <input type="text" id="secondary-gk-socks-input" class="color-input" placeholder="Goalkeeper socks color (e.g., #000000)" required>
+                    </div>
                 </div>
             </div>
             
@@ -1474,8 +1539,14 @@
         // Auto-save for jersey colors
         function saveJerseyColorsData() {
             const colorsData = {
-                primaryColor: document.getElementById('primary-color-input').value,
-                secondaryColor: document.getElementById('secondary-color-input').value
+                primaryPlayerJersey: document.getElementById('primary-player-jersey-input').value,
+                primaryPlayerSocks: document.getElementById('primary-player-socks-input').value,
+                primaryGkJersey: document.getElementById('primary-gk-jersey-input').value,
+                primaryGkSocks: document.getElementById('primary-gk-socks-input').value,
+                secondaryPlayerJersey: document.getElementById('secondary-player-jersey-input').value,
+                secondaryPlayerSocks: document.getElementById('secondary-player-socks-input').value,
+                secondaryGkJersey: document.getElementById('secondary-gk-jersey-input').value,
+                secondaryGkSocks: document.getElementById('secondary-gk-socks-input').value
             };
             localStorage.setItem('fmscJerseyColorsData', JSON.stringify(colorsData));
         }
@@ -1484,10 +1555,26 @@
             const savedData = localStorage.getItem('fmscJerseyColorsData');
             if (savedData) {
                 const colorsData = JSON.parse(savedData);
-                document.getElementById('primary-color-input').value = colorsData.primaryColor || '#03bded';
-                document.getElementById('primary-color-picker').value = colorsData.primaryColor || '#03bded';
-                document.getElementById('secondary-color-input').value = colorsData.secondaryColor || '#ffffff';
-                document.getElementById('secondary-color-picker').value = colorsData.secondaryColor || '#ffffff';
+                
+                // Primary kit colors
+                document.getElementById('primary-player-jersey-input').value = colorsData.primaryPlayerJersey || '#03bded';
+                document.getElementById('primary-player-jersey-picker').value = colorsData.primaryPlayerJersey || '#03bded';
+                document.getElementById('primary-player-socks-input').value = colorsData.primaryPlayerSocks || '#ffffff';
+                document.getElementById('primary-player-socks-picker').value = colorsData.primaryPlayerSocks || '#ffffff';
+                document.getElementById('primary-gk-jersey-input').value = colorsData.primaryGkJersey || '#000000';
+                document.getElementById('primary-gk-jersey-picker').value = colorsData.primaryGkJersey || '#000000';
+                document.getElementById('primary-gk-socks-input').value = colorsData.primaryGkSocks || '#cccccc';
+                document.getElementById('primary-gk-socks-picker').value = colorsData.primaryGkSocks || '#cccccc';
+                
+                // Secondary kit colors
+                document.getElementById('secondary-player-jersey-input').value = colorsData.secondaryPlayerJersey || '#ffffff';
+                document.getElementById('secondary-player-jersey-picker').value = colorsData.secondaryPlayerJersey || '#ffffff';
+                document.getElementById('secondary-player-socks-input').value = colorsData.secondaryPlayerSocks || '#03bded';
+                document.getElementById('secondary-player-socks-picker').value = colorsData.secondaryPlayerSocks || '#03bded';
+                document.getElementById('secondary-gk-jersey-input').value = colorsData.secondaryGkJersey || '#ffff00';
+                document.getElementById('secondary-gk-jersey-picker').value = colorsData.secondaryGkJersey || '#ffff00';
+                document.getElementById('secondary-gk-socks-input').value = colorsData.secondaryGkSocks || '#000000';
+                document.getElementById('secondary-gk-socks-picker').value = colorsData.secondaryGkSocks || '#000000';
             }
         }
 
@@ -1846,38 +1933,45 @@
         });
 
         // Color picker synchronization
-        const primaryColorPicker = document.getElementById('primary-color-picker');
-        const primaryColorInput = document.getElementById('primary-color-input');
-        const secondaryColorPicker = document.getElementById('secondary-color-picker');
-        const secondaryColorInput = document.getElementById('secondary-color-input');
+        const colorPickers = [
+            { picker: 'primary-player-jersey-picker', input: 'primary-player-jersey-input' },
+            { picker: 'primary-player-socks-picker', input: 'primary-player-socks-input' },
+            { picker: 'primary-gk-jersey-picker', input: 'primary-gk-jersey-input' },
+            { picker: 'primary-gk-socks-picker', input: 'primary-gk-socks-input' },
+            { picker: 'secondary-player-jersey-picker', input: 'secondary-player-jersey-input' },
+            { picker: 'secondary-player-socks-picker', input: 'secondary-player-socks-input' },
+            { picker: 'secondary-gk-jersey-picker', input: 'secondary-gk-jersey-input' },
+            { picker: 'secondary-gk-socks-picker', input: 'secondary-gk-socks-input' }
+        ];
 
-        primaryColorPicker.addEventListener('input', function() {
-            primaryColorInput.value = this.value;
-            saveJerseyColorsData();
-        });
+        colorPickers.forEach(({ picker, input }) => {
+            const pickerElement = document.getElementById(picker);
+            const inputElement = document.getElementById(input);
+            
+            if (pickerElement && inputElement) {
+                pickerElement.addEventListener('input', function() {
+                    inputElement.value = this.value;
+                    saveJerseyColorsData();
+                });
 
-        primaryColorInput.addEventListener('input', function() {
-            if (this.value.match(/^#[0-9A-F]{6}$/i)) {
-                primaryColorPicker.value = this.value;
+                inputElement.addEventListener('input', function() {
+                    if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+                        pickerElement.value = this.value;
+                    }
+                    saveJerseyColorsData();
+                });
             }
-            saveJerseyColorsData();
-        });
-
-        secondaryColorPicker.addEventListener('input', function() {
-            secondaryColorInput.value = this.value;
-            saveJerseyColorsData();
-        });
-
-        secondaryColorInput.addEventListener('input', function() {
-            if (this.value.match(/^#[0-9A-F]{6}$/i)) {
-                secondaryColorPicker.value = this.value;
-            }
-            saveJerseyColorsData();
         });
 
         // Set initial values
-        primaryColorInput.value = '#03bded';
-        secondaryColorInput.value = '#ffffff';
+        document.getElementById('primary-player-jersey-input').value = '#03bded';
+        document.getElementById('primary-player-socks-input').value = '#ffffff';
+        document.getElementById('primary-gk-jersey-input').value = '#000000';
+        document.getElementById('primary-gk-socks-input').value = '#cccccc';
+        document.getElementById('secondary-player-jersey-input').value = '#ffffff';
+        document.getElementById('secondary-player-socks-input').value = '#03bded';
+        document.getElementById('secondary-gk-jersey-input').value = '#ffff00';
+        document.getElementById('secondary-gk-socks-input').value = '#000000';
 
         // Team List Form submission
         const teamListForm = document.getElementById('team-list-form');
@@ -2135,11 +2229,21 @@
             jerseyColorsSubmitting = true;
             jerseyColorsLoading.style.display = 'block';
             
-            const primaryColor = document.getElementById('primary-color-input').value.trim();
-            const secondaryColor = document.getElementById('secondary-color-input').value.trim();
+            const primaryPlayerJersey = document.getElementById('primary-player-jersey-input').value.trim();
+            const primaryPlayerSocks = document.getElementById('primary-player-socks-input').value.trim();
+            const primaryGkJersey = document.getElementById('primary-gk-jersey-input').value.trim();
+            const primaryGkSocks = document.getElementById('primary-gk-socks-input').value.trim();
+            const secondaryPlayerJersey = document.getElementById('secondary-player-jersey-input').value.trim();
+            const secondaryPlayerSocks = document.getElementById('secondary-player-socks-input').value.trim();
+            const secondaryGkJersey = document.getElementById('secondary-gk-jersey-input').value.trim();
+            const secondaryGkSocks = document.getElementById('secondary-gk-socks-input').value.trim();
             
-            if (!primaryColor.match(/^#[0-9A-F]{6}$/i) || !secondaryColor.match(/^#[0-9A-F]{6}$/i)) {
-                jerseyColorsMessageContainer.innerHTML = '<div class="message error">Please enter valid hex colors (e.g., #03bded).</div>';
+            // Validate all colors
+            const colors = [primaryPlayerJersey, primaryPlayerSocks, primaryGkJersey, primaryGkSocks, secondaryPlayerJersey, secondaryPlayerSocks, secondaryGkJersey, secondaryGkSocks];
+            const invalidColors = colors.filter(color => !color.match(/^#[0-9A-F]{6}$/i));
+            
+            if (invalidColors.length > 0) {
+                jerseyColorsMessageContainer.innerHTML = '<div class="message error">Please enter valid hex colors for all fields (e.g., #03bded).</div>';
                 jerseyColorsLoading.style.display = 'none';
                 jerseyColorsSubmitting = false;
                 return;
@@ -2151,7 +2255,10 @@
             localStorage.setItem('fmscJerseyColorsLastSubmission', now.toString());
             sessionStorage.setItem('fmscJerseyColorsSubmissionCount', jerseyColorsSubmissionCount.toString());
             
-            submitJerseyColorsForm(localStorage.getItem('fmscTeamName'), `${primaryColor}, ${secondaryColor}`);
+            // Create comprehensive color data
+            const colorData = `PRIMARY KIT: Player Jersey=${primaryPlayerJersey}, Player Socks=${primaryPlayerSocks}, GK Jersey=${primaryGkJersey}, GK Socks=${primaryGkSocks} | SECONDARY KIT: Player Jersey=${secondaryPlayerJersey}, Player Socks=${secondaryPlayerSocks}, GK Jersey=${secondaryGkJersey}, GK Socks=${secondaryGkSocks}`;
+            
+            submitJerseyColorsForm(localStorage.getItem('fmscTeamName'), colorData);
         });
 
         function submitJerseyColorsForm(teamName, colors) {
