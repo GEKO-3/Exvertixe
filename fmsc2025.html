@@ -556,7 +556,7 @@
         /* Team List Form Styles */
         .player-row {
             display: grid;
-            grid-template-columns: 80px 1fr 40px;
+            grid-template-columns: 80px 1fr 50px 40px;
             gap: 10px;
             align-items: center;
             margin-bottom: 10px;
@@ -582,6 +582,32 @@
             font-size: 0.8rem;
             font-weight: 600;
             border-radius: 4px;
+        }
+
+        .id-btn {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 0.8rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-align: center;
+            min-width: 45px;
+        }
+
+        .id-btn:hover {
+            background: rgba(255, 193, 7, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .id-btn.uploaded {
+            background: rgba(68, 255, 68, 0.2);
+            color: var(--success-color);
+            border-color: var(--success-color);
         }
 
         .player-input {
@@ -889,51 +915,61 @@
                     <div class="player-row gk-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Goalkeeper Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="0">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="1">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="2">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="3">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="4">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="5">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="6">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="7">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="8">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <input type="number" class="jersey-input" placeholder="Jersey #" min="1" max="99" inputmode="numeric" pattern="[0-9]*" required>
                         <input type="text" class="player-input" placeholder="Player Name" required>
+                        <button type="button" class="id-btn" data-type="player" data-index="9">ID</button>
                         <div></div>
                     </div>
                 </div>
@@ -945,26 +981,31 @@
                     <div class="player-row">
                         <div class="jersey-input" style="display: flex; align-items: center; justify-content: center; background: var(--primary-color); color: var(--bg-color); font-weight: 600; font-size: 0.9rem;">Manager</div>
                         <input type="text" class="player-input" placeholder="Manager Name" required>
+                        <button type="button" class="id-btn" data-type="official" data-index="0">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <div class="jersey-input" style="display: flex; align-items: center; justify-content: center; background: var(--primary-color); color: var(--bg-color); font-weight: 600; font-size: 0.9rem;">Coach</div>
                         <input type="text" class="player-input" placeholder="Coach Name" required>
+                        <button type="button" class="id-btn" data-type="official" data-index="1">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <div class="jersey-input" style="display: flex; align-items: center; justify-content: center; background: var(--primary-color); color: var(--bg-color); font-weight: 600; font-size: 0.9rem;">Official</div>
                         <input type="text" class="player-input" placeholder="Official Name" required>
+                        <button type="button" class="id-btn" data-type="official" data-index="2">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <div class="jersey-input" style="display: flex; align-items: center; justify-content: center; background: var(--primary-color); color: var(--bg-color); font-weight: 600; font-size: 0.9rem;">Official</div>
                         <input type="text" class="player-input" placeholder="Official Name" required>
+                        <button type="button" class="id-btn" data-type="official" data-index="3">ID</button>
                         <div></div>
                     </div>
                     <div class="player-row">
                         <div class="jersey-input" style="display: flex; align-items: center; justify-content: center; background: var(--primary-color); color: var(--bg-color); font-weight: 600; font-size: 0.9rem;">First Aid</div>
                         <input type="text" class="player-input" placeholder="First Aid Name" required>
+                        <button type="button" class="id-btn" data-type="official" data-index="4">ID</button>
                         <div></div>
                     </div>
                 </div>
@@ -990,6 +1031,9 @@
                 <p>Submitting team list...</p>
             </div>
         </form>
+        
+        <!-- Hidden file input for ID uploads -->
+        <input type="file" id="id-file-input" class="hidden-file-input" accept="image/*,.svg" style="display: none;">
     </div>
 
     <!-- Jersey Colors Form -->
@@ -1243,6 +1287,100 @@
             }
         }
 
+        // ID Upload System
+        let idUploads = {}; // Store ID upload URLs
+        let currentIdButton = null; // Track which button is being used for upload
+
+        function initializeIdUploadSystem() {
+            const idFileInput = document.getElementById('id-file-input');
+            const idButtons = document.querySelectorAll('.id-btn');
+
+            // Add click listeners to all ID buttons
+            idButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    currentIdButton = this;
+                    idFileInput.click();
+                });
+            });
+
+            // Handle file selection
+            idFileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0 && currentIdButton) {
+                    const file = e.target.files[0];
+                    if (isValidFileType(file)) {
+                        uploadIdFile(file, currentIdButton);
+                    } else {
+                        alert('Please upload an image file (JPG, PNG, SVG)');
+                    }
+                    // Reset file input
+                    e.target.value = '';
+                }
+            });
+        }
+
+        function uploadIdFile(file, button) {
+            const type = button.dataset.type;
+            const index = button.dataset.index;
+            const uploadKey = `${type}_${index}`;
+
+            // Show uploading state
+            button.textContent = '...';
+            button.disabled = true;
+
+            // Create FormData for Cloudinary upload
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'fmsc-uploads');
+            formData.append('folder', `fmsc-2025/ids/${type}s`);
+
+            fetch('https://api.cloudinary.com/v1_1/dgvde8x6e/image/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.secure_url) {
+                    // Store the upload URL
+                    idUploads[uploadKey] = data.secure_url;
+                    
+                    // Update button appearance
+                    button.textContent = '✓';
+                    button.classList.add('uploaded');
+                    button.disabled = false;
+                    
+                    // Save to localStorage
+                    localStorage.setItem('fmscIdUploads', JSON.stringify(idUploads));
+                    
+                    console.log(`ID uploaded for ${type} ${index}:`, data.secure_url);
+                } else {
+                    throw new Error('Upload failed');
+                }
+            })
+            .catch(error => {
+                console.error('ID upload error:', error);
+                button.textContent = 'ID';
+                button.disabled = false;
+                alert('Upload failed. Please try again.');
+            });
+        }
+
+        function loadIdUploads() {
+            const savedUploads = localStorage.getItem('fmscIdUploads');
+            if (savedUploads) {
+                idUploads = JSON.parse(savedUploads);
+                
+                // Update button states
+                Object.keys(idUploads).forEach(uploadKey => {
+                    const [type, index] = uploadKey.split('_');
+                    const button = document.querySelector(`.id-btn[data-type="${type}"][data-index="${index}"]`);
+                    if (button) {
+                        button.textContent = '✓';
+                        button.classList.add('uploaded');
+                    }
+                });
+            }
+        }
+
         // Auto-save for team list
         function saveTeamListData() {
             const playerRows = document.querySelectorAll('#players-container .player-row');
@@ -1254,11 +1392,13 @@
                 const jersey = jerseyInput ? jerseyInput.value : '';
                 const name = nameInput ? nameInput.value : '';
                 const isGK = index === 0; // First row is always GK
+                const idUrl = idUploads[`player_${index}`] || '';
                 
                 players.push({
                     jersey: jersey,
                     name: name,
-                    isGK: isGK
+                    isGK: isGK,
+                    idUrl: idUrl
                 });
             });
             
@@ -1271,10 +1411,12 @@
                 const nameInput = row.querySelector('.player-input');
                 const role = roleEl ? roleEl.textContent : '';
                 const name = nameInput ? nameInput.value : '';
+                const idUrl = idUploads[`official_${index}`] || '';
                 
                 officials.push({
                     role: role,
-                    name: name
+                    name: name,
+                    idUrl: idUrl
                 });
             });
             
@@ -1317,6 +1459,9 @@
                     }
                 });
             }
+            
+            // Load ID uploads
+            loadIdUploads();
             
             // Add auto-save listeners to all inputs
             const allInputs = document.querySelectorAll('#players-container input, #officials-container input');
@@ -1666,6 +1811,9 @@
             
             // Load saved team list data
             loadTeamListData();
+            
+            // Initialize ID upload system
+            initializeIdUploadSystem();
         });
 
         // Jersey Colors Form
@@ -1802,10 +1950,11 @@
                 const nameInput = row.querySelector('.player-input');
                 const jersey = jerseyInput ? jerseyInput.value : '';
                 const name = nameInput ? nameInput.value.trim() : '';
+                const idUrl = idUploads[`player_${index}`] || '';
                 
                 if (jersey && name) {
                     if (index > 0) teamList += '\n';
-                    teamList += `${jersey},${name}${index === 0 ? ',GK' : ''}`;
+                    teamList += `${jersey},${name}${index === 0 ? ',GK' : ''},${idUrl}`;
                 }
             });
             
@@ -1818,10 +1967,11 @@
                 const nameInput = row.querySelector('.player-input');
                 const role = roleEl ? roleEl.textContent : '';
                 const name = nameInput ? nameInput.value.trim() : '';
+                const idUrl = idUploads[`official_${index}`] || '';
                 
                 if (name) {
                     if (index > 0) officialsList += '\n';
-                    officialsList += `${role},${name}`;
+                    officialsList += `${role},${name},${idUrl}`;
                 }
             });
             
@@ -1840,7 +1990,7 @@
             }
             
             // Combine team list and officials
-            const completeTeamData = `PLAYERS:\n${teamList}\n\nOFFICIALS:\n${officialsList}`;
+            const completeTeamData = `PLAYERS:\nJersey,Name,Position,ID_URL\n${teamList}\n\nOFFICIALS:\nRole,Name,ID_URL\n${officialsList}`;
             
             // Update last submission time and increment counter
             teamListLastSubmission = now;
