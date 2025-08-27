@@ -526,6 +526,136 @@
             line-height: 1.4;
         }
 
+        /* Payment Section Styles */
+        .payment-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(3, 189, 237, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .payment-title {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .payment-details {
+            background: rgba(3, 189, 237, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+            line-height: 1.6;
+        }
+
+        .payment-upload {
+            margin-bottom: 20px;
+        }
+
+        .payment-drop-zone {
+            border: 2px dashed var(--primary-color);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(3, 189, 237, 0.05);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-drop-zone:hover,
+        .payment-drop-zone.dragover {
+            background: rgba(3, 189, 237, 0.1);
+            border-color: rgba(3, 189, 237, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .payment-drop-content p {
+            margin: 8px 0;
+            color: white;
+        }
+
+        .payment-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .payment-or {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin: 10px 0 !important;
+        }
+
+        .payment-browse-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .payment-browse-btn:hover {
+            background: #029ac7;
+            transform: translateY(-1px);
+        }
+
+        .payment-preview {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .payment-preview p {
+            margin: 10px 0;
+            color: white;
+            font-weight: 500;
+        }
+
+        .payment-remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .payment-remove-btn:hover {
+            background: #c82333;
+        }
+
+        .payment-loading {
+            text-align: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .payment-loading .spinner {
+            border: 3px solid rgba(3, 189, 237, 0.3);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
         .additional-forms {
             display: flex;
             gap: 15px;
@@ -903,6 +1033,42 @@
             <a href="Tounament logo.pdf" download class="rules-download-btn">
                 Tournament Logo
             </a>
+        </div>
+        
+        <!-- Payment Receipt Section -->
+        <div class="payment-section">
+            <div class="payment-info">
+                <h3 class="payment-title">Participation Fee - MVR 2000</h3>
+                <p class="payment-details">
+                    <strong>Account Name:</strong> F.M.S.C<br>
+                    <strong>Account Number:</strong> 7770000042810
+                </p>
+            </div>
+            
+            <div class="payment-upload">
+                <label class="form-label">Upload Payment Receipt<span class="required">*</span></label>
+                <div class="payment-drop-zone" id="payment-drop-zone">
+                    <div class="payment-drop-content">
+                        <div class="payment-upload-icon">📄</div>
+                        <p>Drag and drop your payment receipt here</p>
+                        <p class="payment-or">or</p>
+                        <button type="button" class="payment-browse-btn" id="payment-browse-btn">Browse Files</button>
+                        <input type="file" id="payment-file-input" accept="image/*,.pdf" style="display: none;">
+                    </div>
+                </div>
+                <div class="payment-preview" id="payment-preview" style="display: none;">
+                    <img id="payment-preview-img" alt="Payment Receipt Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+                    <p id="payment-file-name"></p>
+                    <button type="button" class="payment-remove-btn" id="payment-remove-btn">Remove</button>
+                </div>
+                <div class="payment-loading" id="payment-loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Uploading payment receipt...</p>
+                </div>
+            </div>
+            
+            <button type="button" class="main-btn" id="payment-submit-btn" disabled>Submit Payment Receipt</button>
+            <div id="payment-message-container"></div>
         </div>
         
         <div class="additional-forms">
@@ -1630,6 +1796,7 @@
         function showSuccessPage() {
             formContainerDiv.style.display = 'none';
             successContainer.classList.add('show');
+            initializePaymentUpload();
         }
 
         // Dialog event listeners
@@ -2331,6 +2498,293 @@
                 jerseyColorsMessageContainer.innerHTML = '<div class="message error">There was an error submitting the jersey colors. Please try again.</div>';
             }
         }
+
+        // Payment Receipt Upload System
+        let paymentFile = null;
+        let paymentUploadUrl = '';
+
+        function initializePaymentUpload() {
+            const dropZone = document.getElementById('payment-drop-zone');
+            const fileInput = document.getElementById('payment-file-input');
+            const browseBtn = document.getElementById('payment-browse-btn');
+            const preview = document.getElementById('payment-preview');
+            const previewImg = document.getElementById('payment-preview-img');
+            const fileName = document.getElementById('payment-file-name');
+            const removeBtn = document.getElementById('payment-remove-btn');
+            const submitBtn = document.getElementById('payment-submit-btn');
+            const loading = document.getElementById('payment-loading');
+
+            // Check if payment has already been submitted
+            if (localStorage.getItem('fmscPaymentSubmitted') === 'true') {
+                // Show submitted state
+                submitBtn.textContent = 'Payment Receipt Submitted';
+                submitBtn.disabled = true;
+                submitBtn.style.background = '#28a745';
+                submitBtn.style.cursor = 'not-allowed';
+                removeBtn.style.display = 'none';
+                dropZone.style.pointerEvents = 'none';
+                dropZone.style.opacity = '0.6';
+                fileInput.disabled = true;
+                
+                // Update drop zone content
+                const dropContent = dropZone.querySelector('.payment-drop-content');
+                if (dropContent) {
+                    dropContent.innerHTML = `
+                        <div class="payment-upload-icon">✅</div>
+                        <p style="color: #28a745; font-weight: bold;">Payment Receipt Submitted Successfully</p>
+                        <p style="color: rgba(255, 255, 255, 0.7);">No further action required</p>
+                    `;
+                }
+                
+                showPaymentMessage('Payment receipt has already been submitted successfully.', 'success');
+                return; // Don't set up event listeners
+            }
+
+            // Browse button click
+            browseBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Drop zone click
+            dropZone.addEventListener('click', (e) => {
+                if (e.target === dropZone || e.target.closest('.payment-drop-content')) {
+                    fileInput.click();
+                }
+            });
+
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handlePaymentFile(e.target.files[0]);
+                }
+            });
+
+            // Drag and drop handlers
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handlePaymentFile(e.dataTransfer.files[0]);
+                }
+            });
+
+            // Remove button
+            removeBtn.addEventListener('click', () => {
+                paymentFile = null;
+                paymentUploadUrl = '';
+                preview.style.display = 'none';
+                dropZone.style.display = 'flex';
+                submitBtn.disabled = true;
+                fileInput.value = '';
+            });
+
+            // Submit button
+            submitBtn.addEventListener('click', () => {
+                if (paymentUploadUrl && !submitBtn.disabled) {
+                    submitPaymentReceipt();
+                }
+            });
+        }
+
+        function handlePaymentFile(file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+
+            if (!allowedTypes.includes(file.type)) {
+                showPaymentMessage('Please select a valid image or PDF file.', 'error');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                showPaymentMessage('File size must be less than 10MB.', 'error');
+                return;
+            }
+
+            paymentFile = file;
+            document.getElementById('payment-file-name').textContent = file.name;
+            
+            // Show preview for images
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('payment-preview-img').src = e.target.result;
+                    document.getElementById('payment-preview-img').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('payment-preview-img').style.display = 'none';
+            }
+
+            // Upload to Cloudinary
+            uploadPaymentFile(file);
+        }
+
+        function uploadPaymentFile(file) {
+            const loading = document.getElementById('payment-loading');
+            const dropZone = document.getElementById('payment-drop-zone');
+            const preview = document.getElementById('payment-preview');
+
+            loading.style.display = 'block';
+            dropZone.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'fmsc-uploads');
+            formData.append('cloud_name', 'dgvde8x6e');
+
+            fetch('https://api.cloudinary.com/v1_1/dgvde8x6e/auto/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                if (data.secure_url) {
+                    paymentUploadUrl = data.secure_url;
+                    preview.style.display = 'block';
+                    document.getElementById('payment-submit-btn').disabled = false;
+                    showPaymentMessage('Payment receipt uploaded successfully!', 'success');
+                } else {
+                    dropZone.style.display = 'flex';
+                    showPaymentMessage('Upload failed. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                dropZone.style.display = 'flex';
+                showPaymentMessage('Upload failed. Please check your connection and try again.', 'error');
+            });
+        }
+
+        function submitPaymentReceipt() {
+            const teamName = localStorage.getItem('fmscTeamName');
+            if (!teamName) {
+                showPaymentMessage('Team name not found. Please complete the main registration first.', 'error');
+                return;
+            }
+
+            if (!paymentUploadUrl) {
+                showPaymentMessage('Please upload a payment receipt first.', 'error');
+                return;
+            }
+
+            // Check if already submitted
+            if (localStorage.getItem('fmscPaymentSubmitted') === 'true') {
+                showPaymentMessage('Payment receipt has already been submitted.', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('payment-submit-btn');
+            const removeBtn = document.getElementById('payment-remove-btn');
+            const dropZone = document.getElementById('payment-drop-zone');
+            const fileInput = document.getElementById('payment-file-input');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Create form and submit to Google Forms
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'payment_iframe';
+            document.body.appendChild(iframe);
+
+            const form = document.createElement('form');
+            form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSfpBoPgAKnezk7gsEAUaGzo_0CecTXN0Y7NiqvpDVZ6W-GT0w/formResponse';
+            form.method = 'POST';
+            form.target = 'payment_iframe';
+            form.style.display = 'none';
+
+            // Add form fields
+            const teamNameField = document.createElement('input');
+            teamNameField.name = 'entry.834797500';
+            teamNameField.value = teamName;
+            form.appendChild(teamNameField);
+
+            const receiptField = document.createElement('input');
+            receiptField.name = 'entry.2059260008';
+            receiptField.value = paymentUploadUrl;
+            form.appendChild(receiptField);
+
+            document.body.appendChild(form);
+
+            let submitted = false;
+            const handleSubmission = () => {
+                if (submitted) return;
+                submitted = true;
+
+                // Mark as submitted in localStorage
+                localStorage.setItem('fmscPaymentSubmitted', 'true');
+                
+                // Permanently disable the form
+                submitBtn.textContent = 'Payment Receipt Submitted';
+                submitBtn.style.background = '#28a745';
+                submitBtn.style.cursor = 'not-allowed';
+                removeBtn.style.display = 'none';
+                dropZone.style.pointerEvents = 'none';
+                dropZone.style.opacity = '0.6';
+                fileInput.disabled = true;
+                
+                // Update drop zone content to show submitted state
+                const dropContent = dropZone.querySelector('.payment-drop-content');
+                if (dropContent) {
+                    dropContent.innerHTML = `
+                        <div class="payment-upload-icon">✅</div>
+                        <p style="color: #28a745; font-weight: bold;">Payment Receipt Submitted Successfully</p>
+                        <p style="color: rgba(255, 255, 255, 0.7);">No further action required</p>
+                    `;
+                }
+
+                showPaymentMessage('Payment receipt submitted successfully! No further payment submission is required.', 'success');
+                
+                // Clean up
+                setTimeout(() => {
+                    if (document.body.contains(form)) {
+                        document.body.removeChild(form);
+                    }
+                    if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                    }
+                }, 1000);
+            };
+
+            iframe.addEventListener('load', handleSubmission);
+            iframe.addEventListener('error', handleSubmission);
+            
+            setTimeout(() => {
+                if (!submitted) {
+                    handleSubmission();
+                }
+            }, 3000);
+
+            try {
+                form.submit();
+            } catch (error) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Payment Receipt';
+                showPaymentMessage('Submission failed. Please try again.', 'error');
+            }
+        }
+
+        function showPaymentMessage(message, type) {
+            const container = document.getElementById('payment-message-container');
+            container.innerHTML = `<div class="message ${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
     </script>
 </body>
 </html>
