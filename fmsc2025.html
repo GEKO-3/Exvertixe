@@ -12,44 +12,32 @@
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
     
     <script>
-        // Obfuscated configuration
-        const _0x4f2a = ['aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZHZZa2dkVGx3T2llSEpRYTZ4MGl6SjBNQjdheE1jWGRIZEhQbmY0eGc2RW4xNVdnL2Zvcm1SZXNwb25zZQ==',
-        'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTY0M0UFhRTDJNYnZMZ1RzWXdodTJfYlRqUlNjSGI2cDllSUJGWV9vdHhHRkd5VEZ3L2Zvcm1SZXNwb25zZQ==',
-        'aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZmplcW56WkliQUFBTWY2dHEyLW9CZmkyd1lteTVCMG8xZHJPQmNGby1RYWhxLWxnL2Zvcm1SZXNwb25zZQ==',
-        'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vcmVxdWVzdC9SZ0VSSzlFckplSlNhZkRyYUJrSg==',
-        'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vcmVxdWVzdC9HVlhJR01tZlozMHJ5Y0xyY2ZwYg=='];
-        
-        function _0xd4b8(str) {
-            try {
-                return atob(str);
-            } catch(e) {
-                return '';
-            }
-        }
-        
-        // Form configuration object
-        window._FMSCConfig = {
-            get mainForm() { return _0xd4b8(_0x4f2a[0]); },
-            get teamListForm() { return _0xd4b8(_0x4f2a[1]); },
-            get colorsForm() { return _0xd4b8(_0x4f2a[2]).replace('*', '2'); },
-            get logoUpload() { return _0xd4b8(_0x4f2a[3]); },
-            get flagUpload() { return _0xd4b8(_0x4f2a[4]); },
-            entries: (function() {
-                const _e = ['ZW50cnkuMTIzMjcxMDI1OQ==','ZW50cnkuOTAyNzc0NjM0','ZW50cnkuNzI3NTk4NTQx','ZW50cnkuNzU0MDI3ODgz','ZW50cnkuMzMwMDQzOTM0','ZW50cnkuMTE3NDM5NTg5OQ==','ZW50cnkuNjg5ODA4Mjc4','ZW50cnkuMTk5NTMwNDAwOA==','ZW50cnkuMjA4MTExNTg0NA==','ZW50cnkuMTEyMzI0ODkyNA==','ZW50cnkuMzc2MDIyNjE3'];
-                return {
-                    main: [_0xd4b8(_e[0]), _0xd4b8(_e[1]), _0xd4b8(_e[2]), _0xd4b8(_e[3]), _0xd4b8(_e[4]), _0xd4b8(_e[9]), _0xd4b8(_e[10])],
-                    teamList: [_0xd4b8(_e[5]), _0xd4b8(_e[6])],
-                    colors: [_0xd4b8(_e[7]), _0xd4b8(_e[8])]
-                };
-            })()
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
         };
         
-        // Obfuscate reCAPTCHA key
-        const _rcKey = '6LeTVbArAAAA' + 'ALwhBNZOJ2c9nEh0oeaUVS7iqhEp'.split('').reverse().join('').split('').reverse().join('');
+        // Cloudinary uploads are the primary method for file uploads
+        // No backup upload links needed as Cloudinary handles all uploads
+        window._FMSCConfig = {};
     </script>
     
-    <!-- reCAPTCHA v3 -->
-    <script src="https://www.google.com/recaptcha/api.js?render=6LeTVbArAAAAALwhBNZOJ2c9nEh0oeaUVS7iqhEp"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <!-- Initialize Firebase -->
+    <script>
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
     
     <style>
         :root {
@@ -1811,105 +1799,44 @@
         dialogConfirm.addEventListener('click', function() {
             hideDialog();
             
-            // Execute reCAPTCHA v3
-            grecaptcha.ready(function() {
-                grecaptcha.execute(_rcKey, {action: 'submit'}).then(function(token) {
-                    // Get form data
-                    const teamName = document.getElementById('team-name').value.trim();
-                    const address = document.getElementById('address').value.trim();
-                    const managerName = document.getElementById('manager-name').value.trim();
-                    const contactNumber = document.getElementById('contact-number').value.trim();
-                    const email = document.getElementById('email').value.trim();
-                    
-                    // Submit to Google Form using hidden iframe method
-                    submitToGoogleForm(teamName, address, managerName, contactNumber, email, token);
-                }).catch(function(error) {
-                    handleSubmissionError();
-                });
-            });
+            // Get form data
+            const teamName = document.getElementById('team-name').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const managerName = document.getElementById('manager-name').value.trim();
+            const contactNumber = document.getElementById('contact-number').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            // Submit to Firebase Realtime Database
+            submitToFirebase(teamName, address, managerName, contactNumber, email);
         });
 
-        // Function to submit to Google Form using hidden iframe
-        function submitToGoogleForm(teamName, address, managerName, contactNumber, email, recaptchaToken) {
-            // Create hidden iframe
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.name = 'hidden_iframe';
-            document.body.appendChild(iframe);
-
-            // Create form
-            const hiddenForm = document.createElement('form');
-            hiddenForm.action = window._FMSCConfig.mainForm;
-            hiddenForm.method = 'POST';
-            hiddenForm.target = 'hidden_iframe';
-            hiddenForm.style.display = 'none';
-
-            // Add form fields with obfuscated entry names
-            const entries = window._FMSCConfig.entries.main;
-            const fields = [
-                { name: entries[0], value: teamName },
-                { name: entries[1], value: address },
-                { name: entries[2], value: managerName },
-                { name: entries[3], value: contactNumber },
-                { name: entries[4], value: email },
-                { name: 'g-recaptcha-response', value: recaptchaToken }
-            ];
-
-            // Add file upload URLs if available
-            if (logoUploadUrl) {
-                fields.push({ name: entries[5], value: logoUploadUrl });
-            }
-            if (flagUploadUrl) {
-                fields.push({ name: entries[6], value: flagUploadUrl });
-            }
-
-            fields.forEach(field => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = field.name;
-                input.value = field.value;
-                hiddenForm.appendChild(input);
-            });
-
-            document.body.appendChild(hiddenForm);
-
-            // Handle submission completion
-            let submitted = false;
+        // Function to submit to Firebase Realtime Database
+        function submitToFirebase(teamName, address, managerName, contactNumber, email) {
+            // Generate unique submission ID
+            const submissionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
-            const handleSubmission = () => {
-                if (!submitted) {
-                    submitted = true;
-                    handleSubmissionSuccess();
-                    
-                    // Clean up
-                    setTimeout(() => {
-                        if (document.body.contains(hiddenForm)) {
-                            document.body.removeChild(hiddenForm);
-                        }
-                        if (document.body.contains(iframe)) {
-                            document.body.removeChild(iframe);
-                        }
-                    }, 1000);
-                }
+            // Prepare data for Firebase
+            const submissionData = {
+                teamName: teamName,
+                address: address,
+                managerName: managerName,
+                contactNumber: contactNumber,
+                email: email,
+                logoUrl: logoUploadUrl || null,
+                flagUrl: flagUploadUrl || null,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                submissionDate: new Date().toISOString()
             };
 
-            // Google Forms blocks iframe loading due to CSP, but submission still works
-            iframe.addEventListener('load', handleSubmission);
-            iframe.addEventListener('error', handleSubmission);
-            
-            // Assume success after brief delay since CSP will block iframe
-            setTimeout(() => {
-                if (!submitted) {
-                    handleSubmission();
-                }
-            }, 2000);
-
-            // Submit the form
-            try {
-                hiddenForm.submit();
-            } catch (error) {
-                handleSubmissionError();
-            }
+            // Write to Firebase
+            database.ref('applications/' + submissionId).set(submissionData)
+                .then(() => {
+                    handleSubmissionSuccess();
+                })
+                .catch((error) => {
+                    console.error('Error writing to Firebase:', error);
+                    handleSubmissionError();
+                });
         }
         
         function handleSubmissionSuccess() {
@@ -2259,79 +2186,35 @@
             localStorage.setItem('fmscTeamListLastSubmission', now.toString());
             sessionStorage.setItem('fmscTeamListSubmissionCount', teamListSubmissionCount.toString());
             
-            // Submit to Google Form
+            // Submit to Firebase Database
             submitTeamListForm(localStorage.getItem('fmscTeamName'), completeTeamData);
         });
 
         function submitTeamListForm(teamName, teamList) {
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.name = 'team_list_iframe';
-            document.body.appendChild(iframe);
-
-            const form = document.createElement('form');
-            form.action = window._FMSCConfig.teamListForm;
-            form.method = 'POST';
-            form.target = 'team_list_iframe';
-            form.style.display = 'none';
-
-            const entries = window._FMSCConfig.entries.teamList;
-            const fields = [
-                { name: entries[0], value: teamName },
-                { name: entries[1], value: teamList }
-            ];
-
-            fields.forEach(field => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = field.name;
-                input.value = field.value;
-                form.appendChild(input);
-            });
-
-            document.body.appendChild(form);
-
-            // Handle submission completion
-            let submitted = false;
+            // Generate unique submission ID for team list
+            const submissionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
-            const handleSubmission = () => {
-                if (!submitted) {
-                    submitted = true;
+            // Prepare data for Firebase
+            const teamListData = {
+                teamName: teamName,
+                teamList: teamList,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                submissionDate: new Date().toISOString()
+            };
+
+            // Write to Firebase
+            database.ref('teamLists/' + submissionId).set(teamListData)
+                .then(() => {
                     teamListSubmitting = false; // Reset submission flag
                     teamListLoading.style.display = 'none';
                     teamListMessageContainer.innerHTML = '<div class="message success">Team list submitted successfully!</div>';
-                    
-                    // Clean up
-                    setTimeout(() => {
-                        if (document.body.contains(form)) {
-                            document.body.removeChild(form);
-                        }
-                        if (document.body.contains(iframe)) {
-                            document.body.removeChild(iframe);
-                        }
-                    }, 1000);
-                }
-            };
-
-            // Google Forms blocks iframe loading due to CSP, but submission still works
-            iframe.addEventListener('load', handleSubmission);
-            iframe.addEventListener('error', handleSubmission);
-            
-            // Assume success after brief delay since CSP will block iframe
-            setTimeout(() => {
-                if (!submitted) {
-                    handleSubmission();
-                }
-            }, 2000);
-
-            // Submit the form
-            try {
-                form.submit();
-            } catch (error) {
-                teamListSubmitting = false;
-                teamListLoading.style.display = 'none';
-                teamListMessageContainer.innerHTML = '<div class="message error">There was an error submitting the team list. Please try again.</div>';
-            }
+                })
+                .catch((error) => {
+                    console.error('Error writing team list to Firebase:', error);
+                    teamListSubmitting = false;
+                    teamListLoading.style.display = 'none';
+                    teamListMessageContainer.innerHTML = '<div class="message error">Error submitting team list. Please try again.</div>';
+                });
         }
 
         // Jersey Colors Form submission
@@ -2429,74 +2312,30 @@
         });
 
         function submitJerseyColorsForm(teamName, colors) {
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.name = 'jersey_colors_iframe';
-            document.body.appendChild(iframe);
-
-            const form = document.createElement('form');
-            form.action = window._FMSCConfig.colorsForm;
-            form.method = 'POST';
-            form.target = 'jersey_colors_iframe';
-            form.style.display = 'none';
-
-            const entries = window._FMSCConfig.entries.colors;
-            const fields = [
-                { name: entries[0], value: teamName },
-                { name: entries[1], value: colors }
-            ];
-
-            fields.forEach(field => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = field.name;
-                input.value = field.value;
-                form.appendChild(input);
-            });
-
-            document.body.appendChild(form);
-
-            // Handle submission completion
-            let submitted = false;
+            // Generate unique submission ID for jersey colors
+            const submissionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
-            const handleSubmission = () => {
-                if (!submitted) {
-                    submitted = true;
+            // Prepare data for Firebase
+            const jerseyColorsData = {
+                teamName: teamName,
+                colors: colors,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                submissionDate: new Date().toISOString()
+            };
+
+            // Write to Firebase
+            database.ref('jerseyColors/' + submissionId).set(jerseyColorsData)
+                .then(() => {
                     jerseyColorsSubmitting = false; // Reset submission flag
                     jerseyColorsLoading.style.display = 'none';
                     jerseyColorsMessageContainer.innerHTML = '<div class="message success">Jersey colors submitted successfully!</div>';
-                    
-                    // Clean up
-                    setTimeout(() => {
-                        if (document.body.contains(form)) {
-                            document.body.removeChild(form);
-                        }
-                        if (document.body.contains(iframe)) {
-                            document.body.removeChild(iframe);
-                        }
-                    }, 1000);
-                }
-            };
-
-            // Google Forms blocks iframe loading due to CSP, but submission still works
-            iframe.addEventListener('load', handleSubmission);
-            iframe.addEventListener('error', handleSubmission);
-            
-            // Assume success after brief delay since CSP will block iframe
-            setTimeout(() => {
-                if (!submitted) {
-                    handleSubmission();
-                }
-            }, 2000);
-
-            // Submit the form
-            try {
-                form.submit();
-            } catch (error) {
-                jerseyColorsSubmitting = false;
-                jerseyColorsLoading.style.display = 'none';
-                jerseyColorsMessageContainer.innerHTML = '<div class="message error">There was an error submitting the jersey colors. Please try again.</div>';
-            }
+                })
+                .catch((error) => {
+                    console.error('Error writing jersey colors to Firebase:', error);
+                    jerseyColorsSubmitting = false;
+                    jerseyColorsLoading.style.display = 'none';
+                    jerseyColorsMessageContainer.innerHTML = '<div class="message error">Error submitting jersey colors. Please try again.</div>';
+                });
         }
 
         // Payment Receipt Upload System
@@ -2693,87 +2532,50 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            // Create form and submit to Google Forms
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.name = 'payment_iframe';
-            document.body.appendChild(iframe);
-
-            const form = document.createElement('form');
-            form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSfpBoPgAKnezk7gsEAUaGzo_0CecTXN0Y7NiqvpDVZ6W-GT0w/formResponse';
-            form.method = 'POST';
-            form.target = 'payment_iframe';
-            form.style.display = 'none';
-
-            // Add form fields
-            const teamNameField = document.createElement('input');
-            teamNameField.name = 'entry.834797500';
-            teamNameField.value = teamName;
-            form.appendChild(teamNameField);
-
-            const receiptField = document.createElement('input');
-            receiptField.name = 'entry.2059260008';
-            receiptField.value = paymentUploadUrl;
-            form.appendChild(receiptField);
-
-            document.body.appendChild(form);
-
-            let submitted = false;
-            const handleSubmission = () => {
-                if (submitted) return;
-                submitted = true;
-
-                // Mark as submitted in localStorage
-                localStorage.setItem('fmscPaymentSubmitted', 'true');
-                
-                // Permanently disable the form
-                submitBtn.textContent = 'Payment Receipt Submitted';
-                submitBtn.style.background = '#28a745';
-                submitBtn.style.cursor = 'not-allowed';
-                removeBtn.style.display = 'none';
-                dropZone.style.pointerEvents = 'none';
-                dropZone.style.opacity = '0.6';
-                fileInput.disabled = true;
-                
-                // Update drop zone content to show submitted state
-                const dropContent = dropZone.querySelector('.payment-drop-content');
-                if (dropContent) {
-                    dropContent.innerHTML = `
-                        <div class="payment-upload-icon">✅</div>
-                        <p style="color: #28a745; font-weight: bold;">Payment Receipt Submitted Successfully</p>
-                        <p style="color: rgba(255, 255, 255, 0.7);">No further action required</p>
-                    `;
-                }
-
-                showPaymentMessage('Payment receipt submitted successfully! No further payment submission is required.', 'success');
-                
-                // Clean up
-                setTimeout(() => {
-                    if (document.body.contains(form)) {
-                        document.body.removeChild(form);
-                    }
-                    if (document.body.contains(iframe)) {
-                        document.body.removeChild(iframe);
-                    }
-                }, 1000);
+            // Generate unique submission ID for payment receipt
+            const submissionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // Prepare data for Firebase
+            const paymentData = {
+                teamName: teamName,
+                receiptUrl: paymentUploadUrl,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                submissionDate: new Date().toISOString()
             };
 
-            iframe.addEventListener('load', handleSubmission);
-            iframe.addEventListener('error', handleSubmission);
-            
-            setTimeout(() => {
-                if (!submitted) {
-                    handleSubmission();
-                }
-            }, 3000);
+            // Submit to Firebase
+            database.ref('paymentReceipts/' + submissionId).set(paymentData)
+                .then(() => {
+                    // Mark as submitted in localStorage
+                    localStorage.setItem('fmscPaymentSubmitted', 'true');
+                    
+                    // Permanently disable the form
+                    submitBtn.textContent = 'Payment Receipt Submitted';
+                    submitBtn.style.background = '#28a745';
+                    submitBtn.style.cursor = 'not-allowed';
+                    removeBtn.style.display = 'none';
+                    dropZone.style.pointerEvents = 'none';
+                    dropZone.style.opacity = '0.6';
+                    fileInput.disabled = true;
+                    
+                    // Update drop zone content to show submitted state
+                    const dropContent = dropZone.querySelector('.payment-drop-content');
+                    if (dropContent) {
+                        dropContent.innerHTML = `
+                            <div class="payment-upload-icon">✅</div>
+                            <p style="color: #28a745; font-weight: bold;">Payment Receipt Submitted Successfully</p>
+                            <p style="color: rgba(255, 255, 255, 0.7);">No further action required</p>
+                        `;
+                    }
 
-            try {
-                form.submit();
-            } catch (error) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Payment Receipt';
-                showPaymentMessage('Submission failed. Please try again.', 'error');
-            }
+                    showPaymentMessage('Payment receipt submitted successfully! No further payment submission is required.', 'success');
+                })
+                .catch((error) => {
+                    console.error('Error writing payment receipt to Firebase:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Payment Receipt';
+                    showPaymentMessage('Submission failed. Please try again.', 'error');
+                });
         }
 
         function showPaymentMessage(message, type) {
