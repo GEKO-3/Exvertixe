@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Status Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        button {
+            background: #03bded;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 PWA Status Checker</h1>
+        
+        <div class="instructions">
+            <h3>📋 To Fix PWA Installation Issues:</h3>
+            <ol>
+                <li><strong>Icons:</strong> Click "Create Icons" below to generate required icons</li>
+                <li><strong>HTTPS:</strong> Serve your app over HTTPS (required for PWA)</li>
+                <li><strong>Service Worker:</strong> Must be registered and working</li>
+                <li><strong>Manifest:</strong> Must be valid and linked properly</li>
+            </ol>
+        </div>
+        
+        <button onclick="checkPWAStatus()">🔍 Check PWA Status</button>
+        <button onclick="createIcons()">🎨 Create Icons</button>
+        <button onclick="testInstall()">📱 Test Install</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function checkPWAStatus() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h3>🔍 PWA Status Check:</h3>';
+            
+            // Check HTTPS
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            results.innerHTML += `<div class="status ${isHTTPS ? 'success' : 'error'}">
+                HTTPS: ${isHTTPS ? '✅ Enabled' : '❌ Required for PWA'}
+            </div>`;
+            
+            // Check Service Worker
+            const hasSW = 'serviceWorker' in navigator;
+            results.innerHTML += `<div class="status ${hasSW ? 'success' : 'error'}">
+                Service Worker Support: ${hasSW ? '✅ Available' : '❌ Not supported'}
+            </div>`;
+            
+            // Check Manifest
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            results.innerHTML += `<div class="status ${manifestLink ? 'success' : 'error'}">
+                Manifest Link: ${manifestLink ? '✅ Found' : '❌ Missing'}
+            </div>`;
+            
+            // Check Install Criteria
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            results.innerHTML += `<div class="status ${isStandalone ? 'success' : 'warning'}">
+                PWA Mode: ${isStandalone ? '✅ Running as PWA' : '⚠️ Running in browser'}
+            </div>`;
+            
+            // Check beforeinstallprompt
+            results.innerHTML += `<div class="status warning">
+                Install Prompt: Will appear when all criteria are met
+            </div>`;
+        }
+        
+        function createIcons() {
+            // Create 192x192 icon
+            const canvas192 = document.createElement('canvas');
+            canvas192.width = 192;
+            canvas192.height = 192;
+            const ctx192 = canvas192.getContext('2d');
+            
+            ctx192.fillStyle = '#03bded';
+            ctx192.fillRect(0, 0, 192, 192);
+            ctx192.fillStyle = '#ffffff';
+            ctx192.font = 'bold 48px Arial';
+            ctx192.textAlign = 'center';
+            ctx192.fillText('FMSC', 96, 80);
+            ctx192.fillText('2025', 96, 140);
+            
+            canvas192.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'icon-192x192.png';
+                a.click();
+            });
+            
+            // Create 512x512 icon
+            setTimeout(() => {
+                const canvas512 = document.createElement('canvas');
+                canvas512.width = 512;
+                canvas512.height = 512;
+                const ctx512 = canvas512.getContext('2d');
+                
+                ctx512.fillStyle = '#03bded';
+                ctx512.fillRect(0, 0, 512, 512);
+                ctx512.fillStyle = '#ffffff';
+                ctx512.font = 'bold 120px Arial';
+                ctx512.textAlign = 'center';
+                ctx512.fillText('FMSC', 256, 200);
+                ctx512.fillText('2025', 256, 350);
+                
+                canvas512.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'icon-512x512.png';
+                    a.click();
+                });
+            }, 1000);
+            
+            alert('Icons will download shortly. Place them in your project root directory.');
+        }
+        
+        function testInstall() {
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(swReg) {
+                        console.log('Service Worker is registered', swReg);
+                        alert('✅ Service Worker registered successfully!');
+                    })
+                    .catch(function(error) {
+                        console.error('Service Worker Error', error);
+                        alert('❌ Service Worker registration failed: ' + error.message);
+                    });
+            } else {
+                alert('❌ Service Workers not supported in this browser');
+            }
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            setTimeout(checkPWAStatus, 500);
+        });
+    </script>
+</body>
+</html>

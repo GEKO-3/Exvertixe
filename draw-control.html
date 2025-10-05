@@ -772,55 +772,103 @@
             }, 1000); // Wait for elements to be created
         });
 
-        // PWA Service Worker Registration
+        // PWA Service Worker Registration and Install Prompt
+        let deferredPrompt;
+        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
                         console.log('SW registered: ', registration);
-                        
-                        // Show install prompt if available
-                        let deferredPrompt;
-                        window.addEventListener('beforeinstallprompt', (e) => {
-                            e.preventDefault();
-                            deferredPrompt = e;
-                            
-                            // Create install button
-                            const installBtn = document.createElement('button');
-                            installBtn.textContent = '📱 Install App';
-                            installBtn.style.cssText = `
-                                position: fixed;
-                                top: 20px;
-                                right: 20px;
-                                background: var(--primary-color);
-                                color: white;
-                                border: none;
-                                padding: 10px 15px;
-                                border-radius: 8px;
-                                cursor: pointer;
-                                font-weight: 600;
-                                z-index: 1000;
-                                font-size: 0.9rem;
-                            `;
-                            
-                            installBtn.addEventListener('click', () => {
-                                deferredPrompt.prompt();
-                                deferredPrompt.userChoice.then((choiceResult) => {
-                                    if (choiceResult.outcome === 'accepted') {
-                                        console.log('User accepted the A2HS prompt');
-                                    }
-                                    deferredPrompt = null;
-                                    installBtn.remove();
-                                });
-                            });
-                            
-                            document.body.appendChild(installBtn);
-                        });
                     })
                     .catch((registrationError) => {
                         console.log('SW registration failed: ', registrationError);
                     });
             });
+        }
+
+        // PWA Install Prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt fired');
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+
+        // Check if already installed
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed');
+            hideInstallButton();
+        });
+
+        function showInstallButton() {
+            // Remove existing button if any
+            const existingBtn = document.getElementById('install-btn');
+            if (existingBtn) existingBtn.remove();
+            
+            // Create install button
+            const installBtn = document.createElement('button');
+            installBtn.id = 'install-btn';
+            installBtn.innerHTML = '📱 Install App';
+            installBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--success-color);
+                color: white;
+                border: none;
+                padding: 12px 18px;
+                border-radius: 10px;
+                cursor: pointer;
+                font-weight: 600;
+                z-index: 9999;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 15px rgba(68, 255, 68, 0.3);
+                animation: pulse 2s infinite;
+            `;
+            
+            // Add pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const choiceResult = await deferredPrompt.userChoice;
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                    hideInstallButton();
+                }
+            });
+            
+            document.body.appendChild(installBtn);
+        }
+
+        function hideInstallButton() {
+            const installBtn = document.getElementById('install-btn');
+            if (installBtn) installBtn.remove();
+        }
+
+        // Check if running as PWA
+        function isPWA() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true;
+        }
+
+        if (isPWA()) {
+            console.log('Running as PWA');
+            document.body.classList.add('pwa-mode');
         }
     </script>
 </body>

@@ -1,14 +1,12 @@
 const CACHE_NAME = 'fmsc-control-v1';
 const urlsToCache = [
-  '/draw-control.html',
-  '/draw-display.html',
-  '/schedule-display.html',
-  '/manifest.json',
-  '/Tounament logo.svg',
-  'https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap',
-  'https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap',
-  'https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js'
+  './draw-control.html',
+  './draw-display.html',
+  './schedule-display.html',
+  './manifest.json',
+  './Tounament logo.svg',
+  './icon-192x192.png',
+  './icon-512x512.png'
 ];
 
 // Install event - cache resources
@@ -29,9 +27,10 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   // Skip caching for Firebase requests to ensure real-time data
   if (event.request.url.includes('firebaseapp.com') || 
-      event.request.url.includes('googleapis.com/firebasejs') ||
-      event.request.url.includes('gstatic.com/firebasejs')) {
-    return;
+      event.request.url.includes('googleapis.com') ||
+      event.request.url.includes('gstatic.com') ||
+      event.request.method !== 'GET') {
+    return fetch(event.request);
   }
 
   event.respondWith(
@@ -41,9 +40,11 @@ self.addEventListener('fetch', (event) => {
         if (response) {
           return response;
         }
-        return fetch(event.request);
-      }
-    )
+        return fetch(event.request).catch(() => {
+          // If network fails and no cache, return offline page
+          return new Response('Offline', { status: 503 });
+        });
+      })
   );
 });
 
