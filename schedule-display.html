@@ -39,74 +39,77 @@
                 radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
                 linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
             color: var(--text-color);
-            min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         .schedule-container {
             max-width: 1920px;
             margin: 0 auto;
             width: 100%;
-            height: calc(100vh - 40px);
+            height: 100%;
             display: flex;
             flex-direction: column;
             position: relative;
+            overflow: hidden;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 0;
+            margin-bottom: 20px;
+            padding: 15px 0;
             background: rgba(26, 29, 33, 0.3);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
+            border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .tournament-title {
             font-family: 'Bebas Neue', cursive;
-            font-size: 5rem;
+            font-size: 3.5rem;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-shadow: 0 0 30px rgba(3, 189, 237, 0.5);
-            margin-bottom: 15px;
-            letter-spacing: 3px;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
         }
 
         .schedule-subtitle {
-            font-size: 1.8rem;
+            font-size: 1.2rem;
             opacity: 0.9;
             font-weight: 300;
             color: rgba(255, 255, 255, 0.8);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .schedule-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
             flex: 1;
-            overflow-y: auto;
-            padding: 0 20px;
+            overflow: hidden;
+            padding: 0 15px;
+            max-height: calc(100vh - 140px);
         }
 
         .day-column {
             background: rgba(26, 29, 33, 0.4);
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 15px;
+            padding: 15px;
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
+            min-height: 0;
         }
 
         .day-column:hover {
@@ -118,32 +121,36 @@
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             text-align: center;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
             font-family: 'Bebas Neue', cursive;
-            font-size: 2rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            letter-spacing: 2px;
-            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+            font-size: 1.1rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(3, 189, 237, 0.3);
+            flex-shrink: 0;
         }
 
         .matches-list {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 8px;
+            overflow-y: auto;
+            min-height: 0;
         }
 
         .match-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 12px;
             border: 1px solid rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .match-card::before {
@@ -172,26 +179,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .match-type {
-            font-size: 1rem;
+            font-size: 0.8rem;
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .match-time {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.05);
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 3px 8px;
+            border-radius: 15px;
             font-weight: 500;
         }
 
@@ -199,17 +206,17 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            gap: 8px;
         }
 
         .team {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 6px;
             flex: 1;
-            padding: 10px;
+            padding: 6px;
             background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s ease;
         }
 
@@ -223,29 +230,30 @@
         }
 
         .team-logo {
-            width: 35px;
-            height: 35px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 0 10px rgba(3, 189, 237, 0.3);
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 5px rgba(3, 189, 237, 0.3);
         }
 
         .team-name {
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.9);
+            line-height: 1.2;
         }
 
         .vs-separator {
             font-family: 'Bebas Neue', cursive;
-            font-size: 1.5rem;
+            font-size: 1rem;
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 0 15px;
-            text-shadow: 0 0 10px rgba(3, 189, 237, 0.5);
+            margin: 0 8px;
+            text-shadow: 0 0 5px rgba(3, 189, 237, 0.5);
         }
 
         .loading-team {
@@ -320,38 +328,54 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* Responsive Design */
+        /* Responsive Design - optimized for 16:9 viewing */
         @media (max-width: 1400px) {
-            .tournament-title {
-                font-size: 4rem;
-            }
-            
             .schedule-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
             }
             
             .day-column {
-                max-height: none;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .tournament-title {
+                font-size: 3rem;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .day-column {
+                padding: 10px;
             }
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 15px;
+                padding: 8px;
             }
 
             .tournament-title {
-                font-size: 3rem;
+                font-size: 2.5rem;
             }
             
             .schedule-subtitle {
-                font-size: 1.4rem;
+                font-size: 1rem;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
             }
             
             .teams-container {
                 flex-direction: column;
-                gap: 15px;
+                gap: 8px;
             }
             
             .team.team-right {
@@ -361,16 +385,29 @@
             
             .vs-separator {
                 transform: rotate(90deg);
-                margin: 10px 0;
+                margin: 5px 0;
+                font-size: 0.8rem;
             }
 
             .match-card {
-                padding: 15px;
+                padding: 8px;
             }
 
             .day-header {
-                font-size: 1.6rem;
-                padding: 15px;
+                font-size: 1rem;
+                padding: 6px 8px;
+            }
+            
+            .team-name {
+                font-size: 0.7rem;
+            }
+            
+            .match-type {
+                font-size: 0.7rem;
+            }
+            
+            .match-time {
+                font-size: 0.65rem;
             }
         }
     </style>
@@ -384,23 +421,37 @@
         
         <div class="schedule-grid">
             <div class="day-column">
-                <div class="day-header">DAY 1 - GROUP STAGE</div>
-                <div class="matches-list" id="day1-matches">
-                    <!-- Day 1 matches will be populated here -->
+                <div class="day-header">OCTOBER 23</div>
+                <div class="matches-list" id="oct23-matches">
+                    <!-- October 23 matches will be populated here -->
                 </div>
             </div>
             
             <div class="day-column">
-                <div class="day-header">DAY 2 - KNOCKOUT</div>
-                <div class="matches-list" id="day2-matches">
-                    <!-- Day 2 matches will be populated here -->
+                <div class="day-header">OCTOBER 24</div>
+                <div class="matches-list" id="oct24-matches">
+                    <!-- October 24 matches will be populated here -->
                 </div>
             </div>
             
             <div class="day-column">
-                <div class="day-header">DAY 3 - FINALS</div>
-                <div class="matches-list" id="day3-matches">
-                    <!-- Day 3 matches will be populated here -->
+                <div class="day-header">OCTOBER 25</div>
+                <div class="matches-list" id="oct25-matches">
+                    <!-- October 25 matches will be populated here -->
+                </div>
+            </div>
+            
+            <div class="day-column">
+                <div class="day-header">OCTOBER 26</div>
+                <div class="matches-list" id="oct26-matches">
+                    <!-- October 26 matches will be populated here -->
+                </div>
+            </div>
+            
+            <div class="day-column">
+                <div class="day-header">OCTOBER 27</div>
+                <div class="matches-list" id="oct27-matches">
+                    <!-- October 27 matches will be populated here -->
                 </div>
             </div>
         </div>
@@ -439,51 +490,68 @@
             }
         });
 
-        // Schedule data based on your provided information
+        // Schedule data based on your provided tournament structure
         const scheduleData = {
-            day1: [
-                { match: 23, teams: ['A1', 'A2'], type: 'Group A', time: '9:00 AM' },
-                { match: 23, teams: ['B1', 'B2'], type: 'Group B', time: '9:30 AM' },
-                { match: 23, teams: ['C1', 'C2'], type: 'Group C', time: '10:00 AM' },
-                { match: 23, teams: ['D1', 'D2'], type: 'Group D', time: '10:30 AM' },
-                { match: 24, teams: ['A1', 'A3'], type: 'Group A', time: '11:00 AM' },
-                { match: 24, teams: ['B1', 'B3'], type: 'Group B', time: '11:30 AM' },
-                { match: 24, teams: ['C1', 'C3'], type: 'Group C', time: '12:00 PM' },
-                { match: 24, teams: ['B2', 'B4'], type: 'Group B', time: '12:30 PM' },
-                { match: 24, teams: ['A2', 'A4'], type: 'Group A', time: '1:00 PM' },
-                { match: 25, teams: ['D1', 'D3'], type: 'Group D', time: '1:30 PM' },
-                { match: 25, teams: ['C2', 'C4'], type: 'Group C', time: '2:00 PM' },
-                { match: 26, teams: ['C2', 'C3'], type: 'Group C', time: '2:30 PM' },
-                { match: 26, teams: ['D2', 'D3'], type: 'Group D', time: '3:00 PM' },
-                { match: 26, teams: ['C1', 'C4'], type: 'Group C', time: '3:30 PM' },
-                { match: 26, teams: ['A2', 'A3'], type: 'Group A', time: '4:00 PM' },
-                { match: 27, teams: ['A1', 'A4'], type: 'Group A', time: '4:30 PM' },
-                { match: 27, teams: ['B1', 'B4'], type: 'Group B', time: '5:00 PM' },
-                { match: 27, teams: ['B2', 'B3'], type: 'Group B', time: '5:30 PM' }
+            oct23: [
+                { teams: ['A1', 'A2'], type: 'Group A', time: '8:00 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '9:00 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '10:00 PM' },
+                { teams: ['D1', 'D2'], type: 'Group D', time: '11:00 PM' }
             ],
-            day2: [
-                { match: 28, teams: ['Quarter 1', 'Quarter 2'], type: 'Quarter Final', time: '10:00 AM' },
-                { match: 28, teams: ['Quarter 3', 'Quarter 4'], type: 'Quarter Final', time: '11:00 AM' },
-                { match: 29, teams: ['Semi 1', 'Semi 2'], type: 'Semi Final', time: '2:00 PM' }
+            oct24: [
+                { teams: ['B3', 'B4'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['C3', 'C4'], type: 'Group C', time: '9:00 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '10:00 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '11:00 PM' }
             ],
-            day3: [
-                { match: 31, teams: ['Final', 'Final'], type: 'Final', time: '3:00 PM' }
+            oct25: [
+                { teams: ['C1', 'C3'], type: 'Group C', time: '8:00 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '9:00 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '10:00 PM' },
+                { teams: ['B2', 'B4'], type: 'Group B', time: '11:00 PM' }
+            ],
+            oct26: [
+                { teams: ['D1', 'D3'], type: 'Group D', time: '4:30 PM' },
+                { teams: ['C1', 'C4'], type: 'Group C', time: '8:00 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['C2', 'C3'], type: 'Group C', time: '10:00 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '11:00 PM' }
+            ],
+            oct27: [
+                { teams: ['C2', 'C4'], type: 'Group C', time: '8:00 PM' },
+                { teams: ['B1', 'B4'], type: 'Group B', time: '9:00 PM' },
+                { teams: ['A1', 'A4'], type: 'Group A', time: '10:00 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '11:00 PM' }
             ]
         };
 
         let drawData = {};
+        let teams = {};
+        let drawAssignments = {};
 
-        // Listen for draw data changes
-        database.ref('draw').on('value', (snapshot) => {
-            drawData = snapshot.val() || {};
+        // Listen for draw assignments changes (same as draw display)
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            console.log('Draw assignments updated:', drawAssignments);
+            updateScheduleDisplay();
+        });
+
+        // Listen for team data changes
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            console.log('Teams data updated:', Object.keys(teams).length, 'teams loaded');
             updateScheduleDisplay();
         });
 
         function getTeamData(position) {
-            if (!drawData[position]) {
+            if (!drawAssignments[position] || !teams[drawAssignments[position]]) {
                 return null;
             }
-            return drawData[position];
+            const teamId = drawAssignments[position];
+            return {
+                name: teams[teamId].teamName,
+                logo: teams[teamId].teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase()
+            };
         }
 
         function createTeamElement(position, isRight = false) {
@@ -492,10 +560,27 @@
             teamElement.className = `team ${isRight ? 'team-right' : ''}`;
             
             if (teamData && teamData.name) {
-                teamElement.innerHTML = `
-                    <img src="logos/${teamData.logo}" alt="${teamData.name}" class="team-logo" onerror="this.style.display='none'">
-                    <span class="team-name">${teamData.name}</span>
-                `;
+                // Create logo element
+                const logoElement = document.createElement('img');
+                logoElement.className = 'team-logo';
+                logoElement.alt = teamData.name;
+                
+                // Try JPG first, then PNG
+                logoElement.src = `Team-Logos/${teamData.logo}.jpg`;
+                logoElement.onerror = () => {
+                    logoElement.src = `Team-Logos/${teamData.logo}.png`;
+                    logoElement.onerror = () => {
+                        logoElement.style.display = 'none';
+                    };
+                };
+                
+                // Create team name element
+                const nameElement = document.createElement('span');
+                nameElement.className = 'team-name';
+                nameElement.textContent = teamData.name;
+                
+                teamElement.appendChild(logoElement);
+                teamElement.appendChild(nameElement);
             } else {
                 teamElement.innerHTML = `
                     <div class="loading-team">
@@ -519,44 +604,17 @@
             const teamsContainer = document.createElement('div');
             teamsContainer.className = 'teams-container';
             
-            if (matchData.teams[0] === matchData.teams[1] && matchData.type === 'Final') {
-                // Final match - show TBD
-                teamsContainer.innerHTML = `
-                    <div class="team">
-                        <div class="loading-team">
-                            <div class="loading-dots">
-                                <div class="loading-dot"></div>
-                                <div class="loading-dot"></div>
-                                <div class="loading-dot"></div>
-                            </div>
-                            <span class="tbd-text">TBD</span>
-                        </div>
-                    </div>
-                    <span class="vs-separator">VS</span>
-                    <div class="team team-right">
-                        <div class="loading-team">
-                            <div class="loading-dots">
-                                <div class="loading-dot"></div>
-                                <div class="loading-dot"></div>
-                                <div class="loading-dot"></div>
-                            </div>
-                            <span class="tbd-text">TBD</span>
-                        </div>
-                    </div>
-                `;
-            } else {
-                const team1 = createTeamElement(matchData.teams[0]);
-                const team2 = createTeamElement(matchData.teams[1], true);
-                
-                teamsContainer.appendChild(team1);
-                
-                const vsSeparator = document.createElement('span');
-                vsSeparator.className = 'vs-separator';
-                vsSeparator.textContent = 'VS';
-                teamsContainer.appendChild(vsSeparator);
-                
-                teamsContainer.appendChild(team2);
-            }
+            const team1 = createTeamElement(matchData.teams[0]);
+            const team2 = createTeamElement(matchData.teams[1], true);
+            
+            teamsContainer.appendChild(team1);
+            
+            const vsSeparator = document.createElement('span');
+            vsSeparator.className = 'vs-separator';
+            vsSeparator.textContent = 'VS';
+            teamsContainer.appendChild(vsSeparator);
+            
+            teamsContainer.appendChild(team2);
             
             matchElement.innerHTML = `
                 <div class="match-header">
@@ -571,25 +629,39 @@
         }
 
         function updateScheduleDisplay() {
-            // Update Day 1 matches
-            const day1Container = document.getElementById('day1-matches');
-            day1Container.innerHTML = '';
-            scheduleData.day1.forEach(matchData => {
-                day1Container.appendChild(createMatchElement(matchData));
+            // Update October 23 matches
+            const oct23Container = document.getElementById('oct23-matches');
+            oct23Container.innerHTML = '';
+            scheduleData.oct23.forEach(matchData => {
+                oct23Container.appendChild(createMatchElement(matchData));
             });
             
-            // Update Day 2 matches
-            const day2Container = document.getElementById('day2-matches');
-            day2Container.innerHTML = '';
-            scheduleData.day2.forEach(matchData => {
-                day2Container.appendChild(createMatchElement(matchData));
+            // Update October 24 matches
+            const oct24Container = document.getElementById('oct24-matches');
+            oct24Container.innerHTML = '';
+            scheduleData.oct24.forEach(matchData => {
+                oct24Container.appendChild(createMatchElement(matchData));
             });
             
-            // Update Day 3 matches
-            const day3Container = document.getElementById('day3-matches');
-            day3Container.innerHTML = '';
-            scheduleData.day3.forEach(matchData => {
-                day3Container.appendChild(createMatchElement(matchData));
+            // Update October 25 matches
+            const oct25Container = document.getElementById('oct25-matches');
+            oct25Container.innerHTML = '';
+            scheduleData.oct25.forEach(matchData => {
+                oct25Container.appendChild(createMatchElement(matchData));
+            });
+            
+            // Update October 26 matches
+            const oct26Container = document.getElementById('oct26-matches');
+            oct26Container.innerHTML = '';
+            scheduleData.oct26.forEach(matchData => {
+                oct26Container.appendChild(createMatchElement(matchData));
+            });
+            
+            // Update October 27 matches
+            const oct27Container = document.getElementById('oct27-matches');
+            oct27Container.innerHTML = '';
+            scheduleData.oct27.forEach(matchData => {
+                oct27Container.appendChild(createMatchElement(matchData));
             });
         }
 
