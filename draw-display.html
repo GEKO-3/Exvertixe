@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Draw Display</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --group-a: #ff6b35;
+            --group-b: #4ecdc4;
+            --group-c: #45b7d1;
+            --group-d: #96ceb4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #1a1d21 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        /* Force landscape orientation message */
+        .rotate-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .rotate-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-height: 600px) and (orientation: portrait) {
+            .rotate-message {
+                display: flex;
+            }
+            .main-content {
+                display: none !important;
+            }
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+
+
+        .draw-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .group {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 3px solid;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+        }
+
+        .group-a {
+            border-color: var(--group-a);
+            color: var(--group-a);
+        }
+
+        .group-b {
+            border-color: var(--group-b);
+            color: var(--group-b);
+        }
+
+        .group-c {
+            border-color: var(--group-c);
+            color: var(--group-c);
+        }
+
+        .group-d {
+            border-color: var(--group-d);
+            color: var(--group-d);
+        }
+
+        .group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+
+        .group-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .team-slot {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            min-height: 80px;
+            display: flex;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .team-slot:last-child {
+            margin-bottom: 0;
+        }
+
+        .team-slot.filled {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: currentColor;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .position-label {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: currentColor;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .team-slot.filled .position-label {
+            left: 80px;
+            transform: translateX(0);
+        }
+
+        .team-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .team-logo-small {
+            flex-shrink: 0;
+            width: 50px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .team-logo-small .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .team-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            word-wrap: break-word;
+            line-height: 1.3;
+            flex: 1;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 25px;
+        }
+
+        .team-loading {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 35px;
+        }
+
+        .empty-slot {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+
+        .loading {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            margin: 100px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .draw-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .title {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .draw-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .group-title {
+                font-size: 2rem;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+
+        /* Animation for team assignments */
+        .team-slot.new-assignment {
+            animation: highlightAssignment 2s ease-in-out;
+        }
+
+        @keyframes highlightAssignment {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 25px currentColor;
+            }
+        }
+
+        /* Logo overlay styles */
+        .logo-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .logo-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .team-logo {
+            max-width: 300px;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(3, 189, 237, 0.3);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .draw-selection {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 16rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Animation states */
+        .logo-overlay.selecting .team-logo {
+            transform: translateX(100px) scale(0.8);
+        }
+
+        .logo-overlay.selecting .draw-selection {
+            opacity: 1;
+            transform: translateX(-50px);
+        }
+
+        /* Ensure smooth transitions for all states */
+        .team-logo {
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .draw-selection {
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo-overlay.closing {
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .logo-overlay.closing .team-logo {
+            /* Keep logo in current position during fade out */
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        /* When closing with text visible, keep logo positioned to the right */
+        .logo-overlay.selecting.closing .team-logo {
+            transform: translateX(150px) scale(0.8);
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .logo-overlay.closing .draw-selection {
+            /* Keep text in current position during fade out */
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        /* When closing with text visible, keep text positioned and visible during fade */
+        .logo-overlay.selecting.closing .draw-selection {
+            transform: translateX(0);
+            opacity: 0;
+            transition: opacity 1.1s ease-in-out;
+        }
+
+        /* Team name display */
+        .team-name-display {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        /* 3-dot loading animation */
+        .loading-dots {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .loading-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            animation: dotPulse 1.4s infinite ease-in-out;
+        }
+
+        .loading-dots .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        .loading-dots .dot:nth-child(3) {
+            animation-delay: 0s;
+        }
+
+        @keyframes dotPulse {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.4;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .team-slot .loading-dots .dot {
+            background-color: currentColor;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Rotation message for mobile -->
+    <div class="rotate-message">
+        <div class="rotate-icon">📱</div>
+        <h2>Please rotate your device</h2>
+        <p>This page is optimized for landscape mode</p>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 class="title">FMSC 2025</h1>
+            <h2 class="subtitle">Tournament Draw</h2>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Loading draw...
+        </div>
+
+        <div class="draw-container" id="draw-container" style="display: none;">
+            <div class="group group-a">
+                <h3 class="group-title">Group A</h3>
+                <div class="team-slot" data-position="A1">
+                    <div class="position-label">A1</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="A2">
+                    <div class="position-label">A2</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="A3">
+                    <div class="position-label">A3</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="A4">
+                    <div class="position-label">A4</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group group-b">
+                <h3 class="group-title">Group B</h3>
+                <div class="team-slot" data-position="B1">
+                    <div class="position-label">B1</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="B2">
+                    <div class="position-label">B2</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="B3">
+                    <div class="position-label">B3</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="B4">
+                    <div class="position-label">B4</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group group-c">
+                <h3 class="group-title">Group C</h3>
+                <div class="team-slot" data-position="C1">
+                    <div class="position-label">C1</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="C2">
+                    <div class="position-label">C2</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="C3">
+                    <div class="position-label">C3</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="C4">
+                    <div class="position-label">C4</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group group-d">
+                <h3 class="group-title">Group D</h3>
+                <div class="team-slot" data-position="D1">
+                    <div class="position-label">D1</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="D2">
+                    <div class="position-label">D2</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-slot" data-position="D3">
+                    <div class="position-label">D3</div>
+                    <div class="team-content">
+                        <div class="team-logo-small" style="display: none;">
+                            <img class="logo-img" alt="Team Logo">
+                        </div>
+                        <div class="team-name" style="display: none;"></div>
+                        <div class="team-loading">
+                            <div class="loading-dots">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Logo overlay for team selection -->
+    <div class="logo-overlay" id="logo-overlay">
+        <div class="logo-display">
+            <div class="draw-selection" id="draw-selection"></div>
+            <img class="team-logo" id="team-logo" alt="Team Logo">
+            <div class="team-name-display" id="team-name-display"></div>
+        </div>
+    </div>
+
+    <script>
+        let teams = {};
+        let drawAssignments = {};
+        let currentDisplayTeam = null;
+        let logoDisplayTimeout = null;
+
+        // Function to switch between display pages
+        function switchToPage(page) {
+            if (page === 'schedule') {
+                window.location.href = 'schedule-display.html';
+            }
+            // 'groups' page is the current page, so no action needed
+        }
+
+        // Load data and set up real-time listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up listeners');
+            
+            // Listen for display page changes from control panel
+            database.ref('displayPage').on('value', (snapshot) => {
+                const page = snapshot.val() || 'groups';
+                if (page !== 'groups') {
+                    switchToPage(page);
+                }
+            });
+            testDatabaseConnection();
+            setupRealtimeListeners();
+        });
+
+        function testDatabaseConnection() {
+            console.log('Testing database connection...');
+            database.ref('.info/connected').on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    console.log('Database connected successfully');
+                } else {
+                    console.log('Database disconnected');
+                }
+            });
+        }
+
+        // Add manual testing function (remove in production)
+        window.testLogoDisplay = function() {
+            console.log('Manual logo test triggered');
+            
+            // Check if logo overlay exists
+            const overlay = document.getElementById('logo-overlay');
+            console.log('Logo overlay exists:', !!overlay);
+            
+            if (!overlay) {
+                console.error('Logo overlay HTML is missing from the page!');
+                return;
+            }
+            
+            const firstTeamId = Object.keys(teams)[0];
+            if (firstTeamId && teams[firstTeamId]) {
+                console.log('Testing with first team:', teams[firstTeamId].teamName);
+                showTeamLogo(firstTeamId, teams[firstTeamId].teamName);
+            } else {
+                console.log('No teams available for testing');
+            }
+        };
+        
+        // Check if logo overlay HTML exists on page load
+        window.checkLogoOverlay = function() {
+            const overlay = document.getElementById('logo-overlay');
+            const logo = document.getElementById('team-logo');
+            const teamNameDisplay = document.getElementById('team-name-display');
+            const drawSelection = document.getElementById('draw-selection');
+            
+            console.log('Logo overlay elements check:', {
+                overlay: !!overlay,
+                logo: !!logo,
+                teamNameDisplay: !!teamNameDisplay,
+                drawSelection: !!drawSelection
+            });
+            
+            if (!overlay) {
+                console.error('CRITICAL: Logo overlay div is missing from HTML!');
+            }
+            
+            return {overlay, logo, teamNameDisplay, drawSelection};
+        };
+
+
+
+        function setupRealtimeListeners() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('draw-container');
+            let initialLoad = true;
+
+            // Listen for changes in draw assignments
+            database.ref('drawAssignments').on('value', (snapshot) => {
+                const newAssignments = snapshot.val() || {};
+                
+                // Check for new assignments to highlight them (skip on initial load)
+                const newPositions = [];
+                if (!initialLoad) {
+                    Object.keys(newAssignments).forEach(position => {
+                        if (!drawAssignments[position] || drawAssignments[position] !== newAssignments[position]) {
+                            newPositions.push(position);
+                        }
+                    });
+                }
+                
+                drawAssignments = newAssignments;
+                updateDrawDisplay();
+                
+                // Hide loading and show container on first load
+                if (initialLoad) {
+                    loading.style.display = 'none';
+                    container.style.display = 'grid';
+                }
+                
+                // Highlight new assignments (skip on initial load)
+                if (!initialLoad) {
+                    newPositions.forEach(position => {
+                        const slot = document.querySelector(`[data-position="${position}"]`);
+                        if (slot) {
+                            slot.classList.add('new-assignment');
+                            setTimeout(() => {
+                                slot.classList.remove('new-assignment');
+                            }, 2000);
+                        }
+                    });
+                }
+            });
+
+            // Listen for changes in team data
+            database.ref('applications').on('value', (snapshot) => {
+                teams = snapshot.val() || {};
+                console.log('Teams data updated:', Object.keys(teams).length, 'teams loaded');
+                updateDrawDisplay();
+                
+                // Mark initial load as complete
+                if (initialLoad) {
+                    initialLoad = false;
+                    console.log('Initial load complete, teams loaded');
+                }
+            });
+
+            // Listen for draw modal state changes
+            database.ref('drawModalState').on('value', (snapshot) => {
+                const modalState = snapshot.val();
+                console.log('Modal state changed:', modalState);
+                console.log('Current teams data:', Object.keys(teams));
+                
+                if (modalState && modalState.isOpen && modalState.teamId) {
+                    console.log('Conditions met - showing team logo for:', modalState.teamName, 'ID:', modalState.teamId);
+                    console.log('Team exists in data:', !!teams[modalState.teamId]);
+                    showTeamLogo(modalState.teamId, modalState.teamName);
+                } else {
+                    console.log('Conditions not met or modal closed - hiding team logo');
+                    hideTeamLogo();
+                }
+            }, (error) => {
+                console.error('Error listening to modal state:', error);
+            });
+
+            // Listen for draw selection events
+            database.ref('drawSelection').on('value', (snapshot) => {
+                const selection = snapshot.val();
+                console.log('Draw selection changed:', selection);
+                
+                if (selection && selection.teamId && selection.position) {
+                    console.log('Showing draw selection:', selection.position);
+                    // Ensure overlay is visible first, then show draw selection
+                    const overlay = document.getElementById('logo-overlay');
+                    if (overlay && overlay.style.display !== 'flex') {
+                        console.log('Overlay not visible yet, making it visible for draw selection');
+                        overlay.style.display = 'flex';
+                        overlay.style.opacity = '1';
+                    }
+                    showDrawSelection(selection.position);
+                } else if (selection === null) {
+                    // Selection was cleared, but only clear draw text if modal is also closed
+                    console.log('Draw selection cleared - checking if modal is still open');
+                    
+                    // Check current modal state before clearing draw text
+                    database.ref('drawModalState').once('value', (modalSnapshot) => {
+                        const modalState = modalSnapshot.val();
+                        const overlay = document.getElementById('logo-overlay');
+                        
+                        if (overlay) {
+                            // Only clear draw text and remove selecting class if modal is closed
+                            if (!modalState || !modalState.isOpen) {
+                                console.log('Modal is closed, clearing draw text and selecting class');
+                                overlay.classList.remove('selecting');
+                                const drawSelection = document.getElementById('draw-selection');
+                                if (drawSelection) {
+                                    drawSelection.textContent = '';
+                                }
+                            } else {
+                                console.log('Modal is still open, keeping draw text and positioning visible');
+                                // Keep the selecting class so logo stays positioned correctly
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function updateDrawDisplay() {
+            const positions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2', 'D3'];
+            
+            positions.forEach(position => {
+                const slot = document.querySelector(`[data-position="${position}"]`);
+                const teamNameElement = slot.querySelector('.team-name');
+                const teamLoadingElement = slot.querySelector('.team-loading');
+                const logoContainer = slot.querySelector('.team-logo-small');
+                const logoImg = slot.querySelector('.logo-img');
+                
+                if (drawAssignments[position] && teams[drawAssignments[position]]) {
+                    const teamName = teams[drawAssignments[position]].teamName;
+                    
+                    // Show team name, hide loading
+                    teamNameElement.textContent = teamName;
+                    teamNameElement.style.display = 'flex';
+                    teamLoadingElement.style.display = 'none';
+                    slot.classList.add('filled');
+                    
+                    // Show team logo
+                    const logoFileName = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+                    logoImg.src = `Team-Logos/${logoFileName}.jpg`;
+                    logoImg.onerror = () => {
+                        logoImg.src = `Team-Logos/${logoFileName}.png`;
+                        logoImg.onerror = () => {
+                            // Hide logo if neither jpg nor png found
+                            logoContainer.style.display = 'none';
+                        };
+                    };
+                    logoImg.onload = () => {
+                        logoContainer.style.display = 'block';
+                    };
+                } else {
+                    // Show loading, hide team name
+                    teamNameElement.style.display = 'none';
+                    teamLoadingElement.style.display = 'flex';
+                    slot.classList.remove('filled');
+                    
+                    // Hide logo for empty slots
+                    logoContainer.style.display = 'none';
+                }
+            });
+        }
+
+        function showTeamLogo(teamId, teamName) {
+            console.log('showTeamLogo called with:', teamId, teamName);
+            console.log('Available teams:', Object.keys(teams));
+            
+            const team = teams[teamId];
+            console.log('Team data:', team);
+            
+            if (!team) {
+                console.log('No team found for ID:', teamId);
+                console.log('Using provided teamName instead:', teamName);
+                // Fallback: create temporary team object with provided name
+                if (teamName) {
+                    showTeamLogoWithName(teamName);
+                }
+                return;
+            }
+
+            const overlay = document.getElementById('logo-overlay');
+            const logo = document.getElementById('team-logo');
+            const teamNameDisplay = document.getElementById('team-name-display');
+            const drawSelection = document.getElementById('draw-selection');
+
+            console.log('Elements found:', {overlay, logo, teamNameDisplay, drawSelection});
+            
+            if (!overlay || !logo || !teamNameDisplay || !drawSelection) {
+                console.error('Logo overlay elements not found! Missing elements:', {
+                    overlay: !overlay,
+                    logo: !logo,
+                    teamNameDisplay: !teamNameDisplay,
+                    drawSelection: !drawSelection
+                });
+                return;
+            }
+
+            // Set team logo source (assuming logos are named like the team names)
+            const logoFileName = team.teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            console.log('Logo filename:', logoFileName);
+            
+            logo.style.display = 'block';
+            logo.src = `Team-Logos/${logoFileName}.jpg`;
+            
+            logo.onerror = () => {
+                console.log('JPG failed, trying PNG');
+                // Fallback to png if jpg doesn't exist
+                logo.src = `Team-Logos/${logoFileName}.png`;
+                logo.onerror = () => {
+                    console.log('Both JPG and PNG failed, hiding logo');
+                    // Show a placeholder or default behavior
+                    logo.style.display = 'none';
+                    // Show team name in large text instead
+                    teamNameDisplay.style.fontSize = '4rem';
+                    teamNameDisplay.style.color = 'var(--primary-color)';
+                };
+            };
+            
+            logo.onload = () => {
+                console.log('Logo loaded successfully');
+            };
+
+            teamNameDisplay.textContent = teamName;
+            teamNameDisplay.style.fontSize = '2rem'; // Reset font size
+            teamNameDisplay.style.color = 'var(--text-color)';
+            currentDisplayTeam = teamId;
+
+            // Reset animation states
+            overlay.classList.remove('closing');
+            overlay.style.opacity = '0';
+
+            // Show overlay with proper animation
+            overlay.style.display = 'flex';
+            console.log('Overlay display set to flex');
+            
+            // Force reflow and then fade in
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            console.log('Logo overlay should now be visible');
+        }
+
+        function showDrawSelection(position) {
+            const overlay = document.getElementById('logo-overlay');
+            const drawSelection = document.getElementById('draw-selection');
+
+            if (!overlay || !drawSelection) {
+                console.error('Missing overlay or drawSelection elements');
+                return;
+            }
+
+            drawSelection.textContent = position;
+            overlay.classList.add('selecting');
+
+            console.log('Draw selection shown:', position, '- staying visible until dialog closes');
+            // Don't auto-hide - wait for modal to close
+        }
+
+        function showTeamLogoWithName(teamName) {
+            console.log('showTeamLogoWithName called with:', teamName);
+            
+            const overlay = document.getElementById('logo-overlay');
+            const logo = document.getElementById('team-logo');
+            const teamNameDisplay = document.getElementById('team-name-display');
+            const drawSelection = document.getElementById('draw-selection');
+
+            // Set team logo source using team name
+            const logoFileName = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            console.log('Logo filename from name:', logoFileName);
+            
+            logo.style.display = 'block';
+            logo.src = `Team-Logos/${logoFileName}.jpg`;
+            
+            logo.onerror = () => {
+                console.log('JPG failed, trying PNG');
+                logo.src = `Team-Logos/${logoFileName}.png`;
+                logo.onerror = () => {
+                    console.log('Both JPG and PNG failed, showing large team name');
+                    logo.style.display = 'none';
+                    teamNameDisplay.style.fontSize = '4rem';
+                    teamNameDisplay.style.color = 'var(--primary-color)';
+                };
+            };
+            
+            logo.onload = () => {
+                console.log('Logo loaded successfully from name');
+            };
+
+            teamNameDisplay.textContent = teamName;
+            currentDisplayTeam = teamName; // Keep as teamName for consistency with logo loading
+
+            // Reset animation states
+            overlay.classList.remove('closing');
+            overlay.style.opacity = '0';
+
+            // Show overlay
+            overlay.style.display = 'flex';
+            overlay.offsetHeight;
+            overlay.style.opacity = '1';
+            
+            console.log('Logo overlay should now be visible with team name');
+        }
+
+        function hideTeamLogo() {
+            console.log('hideTeamLogo called');
+            const overlay = document.getElementById('logo-overlay');
+            
+            if (!overlay) {
+                console.error('Logo overlay element not found in hideTeamLogo');
+                return;
+            }
+            
+            // Clear any pending timeouts
+            clearTimeout(logoDisplayTimeout);
+            
+            if (overlay.style.display === 'flex') {
+                // Add closing class for synchronized animation
+                overlay.classList.add('closing');
+                console.log('Starting synchronized close animation for logo and draw text');
+                
+                // Don't clear text content immediately - let it fade out with opacity
+                const drawSelection = document.getElementById('draw-selection');
+                if (drawSelection && drawSelection.textContent) {
+                    console.log('Draw text will fade out with opacity, not cleared immediately');
+                }
+                
+                // Let CSS handle the fade animation, then hide after animation completes
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    overlay.classList.remove('selecting', 'closing');
+                    
+                    // Clear draw selection text
+                    const drawSelection = document.getElementById('draw-selection');
+                    if (drawSelection) {
+                        drawSelection.textContent = '';
+                    }
+                    
+                    // Reset logo and draw selection positions
+                    const logo = document.getElementById('team-logo');
+                    if (logo) {
+                        logo.style.transform = '';
+                        logo.style.opacity = '';
+                    }
+                    
+                    // Reset overlay opacity for next use
+                    overlay.style.opacity = '';
+                    
+                    currentDisplayTeam = null;
+                    console.log('Logo overlay and draw text hidden together');
+                }, 800); // Match the CSS transition duration
+            }
+        }
+
+
+    </script>
+</body>
+</html>
