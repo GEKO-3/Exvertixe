@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Match Detail</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --success-color: #44ff44;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+            --goal-color: #00ff00;
+            --yellow-color: #ffff00;
+            --red-color: #ff0000;
+            --own-goal-color: #ff6600;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(26, 29, 33, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .match-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .match-info {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .teams-layout {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: start;
+            margin-top: 30px;
+        }
+
+        .team-section {
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .team-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .team-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(3, 189, 237, 0.3);
+        }
+
+        .team-name {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .players-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .player-row:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .player-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .player-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-dropdown {
+            position: relative;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            min-width: 120px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-item.goal {
+            color: var(--goal-color);
+        }
+
+        .dropdown-item.yellow {
+            color: var(--yellow-color);
+        }
+
+        .dropdown-item.red {
+            color: var(--red-color);
+        }
+
+        .dropdown-item.own-goal {
+            color: var(--own-goal-color);
+        }
+
+        .vs-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(3, 189, 237, 0.5);
+        }
+
+        .action-btn.has-events {
+            background: var(--primary-color);
+            color: white;
+            position: relative;
+        }
+
+        .action-btn.has-events::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .match-stats {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .loading-team {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0.6;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .teams-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .vs-separator {
+                order: -1;
+                font-size: 2rem;
+                margin: 10px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .match-title {
+                font-size: 2rem;
+            }
+
+            .player-row {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .player-actions {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .action-btn {
+                min-width: 40px;
+                padding: 6px 8px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="match-management.html" class="back-btn">← Back to Matches</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="match-title" id="match-title">Loading Match...</h1>
+            <div class="match-info" id="match-info"></div>
+        </div>
+
+        <div class="teams-layout" id="teams-layout">
+            <!-- Teams will be populated here -->
+        </div>
+
+        <div class="match-stats">
+            <h3 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">Match Statistics</h3>
+            <div class="stats-grid" id="stats-grid">
+                <!-- Stats will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let teams = {};
+        let drawAssignments = {};
+        let matchEvents = {};
+        let currentMatchId = '';
+
+        // Get match ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        currentMatchId = urlParams.get('match') || '';
+
+        // Sample player data (you can expand this)
+        const samplePlayers = [
+            'Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5',
+            'Player 6', 'Player 7', 'Player 8', 'Player 9', 'Player 10'
+        ];
+
+        // Listen for Firebase data
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            loadMatch();
+        });
+
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            loadMatch();
+        });
+
+        // Listen for match events
+        database.ref(`matchEvents/${currentMatchId}`).on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            updateStats();
+            updatePlayerButtons();
+        });
+
+        function loadMatch() {
+            if (!currentMatchId) {
+                document.getElementById('match-title').textContent = 'Invalid Match';
+                return;
+            }
+
+            // Parse match ID to get match details
+            const matchData = parseMatchId(currentMatchId);
+            if (!matchData) {
+                document.getElementById('match-title').textContent = 'Match Not Found';
+                return;
+            }
+
+            // Update header
+            const team1Data = getTeamData(matchData.teams[0]);
+            const team2Data = getTeamData(matchData.teams[1]);
+            
+            const team1Name = team1Data ? team1Data.name : matchData.teams[0];
+            const team2Name = team2Data ? team2Data.name : matchData.teams[1];
+            
+            document.getElementById('match-title').textContent = `${team1Name} vs ${team2Name}`;
+            document.getElementById('match-info').textContent = `${matchData.date} • ${matchData.time} • ${matchData.type}`;
+
+            // Create team sections
+            createTeamSections(matchData.teams);
+        }
+
+        function parseMatchId(matchId) {
+            // This is a simplified parser - you may need to adjust based on your match ID format
+            try {
+                const parts = matchId.split('-');
+                const dateStr = parts[0];
+                const teamsStr = parts[1];
+                const timeStr = parts[2];
+                
+                // Extract teams from "A1vsA2" format
+                const teamsMatch = teamsStr.match(/^(.+)vs(.+)$/);
+                if (!teamsMatch) return null;
+                
+                return {
+                    date: dateStr.replace(/([a-z])([0-9])/gi, '$1 $2'), // Add space between month and day
+                    teams: [teamsMatch[1], teamsMatch[2]],
+                    time: timeStr.replace(/(\d+)(\d{2})$/, '$1:$2'), // Format time
+                    type: 'Group Stage' // You can determine this from team positions
+                };
+            } catch (e) {
+                console.error('Error parsing match ID:', e);
+                return null;
+            }
+        }
+
+        function getTeamData(position) {
+            if (!drawAssignments[position] || !teams[drawAssignments[position]]) {
+                return null;
+            }
+            const teamId = drawAssignments[position];
+            return {
+                id: teamId,
+                name: teams[teamId].teamName,
+                logo: teams[teamId].teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase()
+            };
+        }
+
+        function createTeamSections(teamPositions) {
+            const layout = document.getElementById('teams-layout');
+            layout.innerHTML = '';
+
+            // Team 1
+            const team1Section = createTeamSection(teamPositions[0], 'team1');
+            layout.appendChild(team1Section);
+
+            // VS Separator
+            const vsSeparator = document.createElement('div');
+            vsSeparator.className = 'vs-separator';
+            vsSeparator.textContent = 'VS';
+            layout.appendChild(vsSeparator);
+
+            // Team 2
+            const team2Section = createTeamSection(teamPositions[1], 'team2');
+            layout.appendChild(team2Section);
+        }
+
+        function createTeamSection(position, teamKey) {
+            const teamData = getTeamData(position);
+            const section = document.createElement('div');
+            section.className = 'team-section';
+
+            if (teamData) {
+                section.innerHTML = `
+                    <div class="team-header">
+                        <img src="Team-Logos/${teamData.logo}.jpg" alt="${teamData.name}" class="team-logo" 
+                             onerror="this.src='Team-Logos/${teamData.logo}.png'; this.onerror=function(){this.style.display='none'}">
+                        <div class="team-name">${teamData.name}</div>
+                    </div>
+                    <div class="players-list">
+                        ${samplePlayers.map((player, index) => createPlayerRow(player, index, teamKey)).join('')}
+                    </div>
+                `;
+            } else {
+                section.innerHTML = `
+                    <div class="team-header">
+                        <div class="loading-team">
+                            <span>Team ${position} - Not Assigned</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return section;
+        }
+
+        function createPlayerRow(playerName, playerIndex, teamKey) {
+            return `
+                <div class="player-row">
+                    <div class="player-name">${playerName}</div>
+                    <div class="player-actions">
+                        ${Array.from({length: 6}, (_, i) => `
+                            <div class="action-dropdown">
+                                <button class="action-btn" data-player="${teamKey}-${playerIndex}" data-slot="${i}" onclick="toggleDropdown(this)">
+                                    ${i + 1}
+                                </button>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item goal" onclick="addEvent('${teamKey}', ${playerIndex}, ${i}, 'goal')">⚽ Goal</div>
+                                    <div class="dropdown-item yellow" onclick="addEvent('${teamKey}', ${playerIndex}, ${i}, 'yellow')">🟨 Yellow</div>
+                                    <div class="dropdown-item red" onclick="addEvent('${teamKey}', ${playerIndex}, ${i}, 'red')">🟥 Red</div>
+                                    <div class="dropdown-item own-goal" onclick="addEvent('${teamKey}', ${playerIndex}, ${i}, 'own-goal')">⚽ Own Goal</div>
+                                    <div class="dropdown-item" onclick="clearEvent('${teamKey}', ${playerIndex}, ${i}')">❌ Clear</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleDropdown(button) {
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu.active').forEach(menu => {
+                if (menu !== button.nextElementSibling) {
+                    menu.classList.remove('active');
+                }
+            });
+
+            // Toggle current dropdown
+            const dropdown = button.nextElementSibling;
+            dropdown.classList.toggle('active');
+        }
+
+        function addEvent(teamKey, playerIndex, slot, eventType) {
+            const eventKey = `${teamKey}-${playerIndex}-${slot}`;
+            const eventData = {
+                teamKey,
+                playerIndex,
+                slot,
+                eventType,
+                timestamp: Date.now()
+            };
+
+            database.ref(`matchEvents/${currentMatchId}/${eventKey}`).set(eventData)
+                .then(() => {
+                    console.log('Event added:', eventData);
+                })
+                .catch(error => {
+                    console.error('Error adding event:', error);
+                });
+
+            // Close dropdown
+            document.querySelectorAll('.dropdown-menu.active').forEach(menu => {
+                menu.classList.remove('active');
+            });
+        }
+
+        function clearEvent(teamKey, playerIndex, slot) {
+            const eventKey = `${teamKey}-${playerIndex}-${slot}`;
+            
+            database.ref(`matchEvents/${currentMatchId}/${eventKey}`).remove()
+                .then(() => {
+                    console.log('Event cleared');
+                })
+                .catch(error => {
+                    console.error('Error clearing event:', error);
+                });
+
+            // Close dropdown
+            document.querySelectorAll('.dropdown-menu.active').forEach(menu => {
+                menu.classList.remove('active');
+            });
+        }
+
+        function updatePlayerButtons() {
+            Object.keys(matchEvents).forEach(eventKey => {
+                const event = matchEvents[eventKey];
+                const button = document.querySelector(`[data-player="${event.teamKey}-${event.playerIndex}"][data-slot="${event.slot}"]`);
+                
+                if (button) {
+                    button.classList.add('has-events');
+                    
+                    // Set button color and text based on event type
+                    switch (event.eventType) {
+                        case 'goal':
+                            button.style.background = 'var(--goal-color)';
+                            button.textContent = '⚽';
+                            break;
+                        case 'yellow':
+                            button.style.background = 'var(--yellow-color)';
+                            button.style.color = 'black';
+                            button.textContent = '🟨';
+                            break;
+                        case 'red':
+                            button.style.background = 'var(--red-color)';
+                            button.textContent = '🟥';
+                            break;
+                        case 'own-goal':
+                            button.style.background = 'var(--own-goal-color)';
+                            button.textContent = '⚽';
+                            break;
+                    }
+                }
+            });
+        }
+
+        function updateStats() {
+            const stats = {
+                team1Goals: 0,
+                team2Goals: 0,
+                team1Yellow: 0,
+                team2Yellow: 0,
+                team1Red: 0,
+                team2Red: 0,
+                totalEvents: 0
+            };
+
+            Object.values(matchEvents).forEach(event => {
+                stats.totalEvents++;
+                
+                const isTeam1 = event.teamKey === 'team1';
+                
+                switch (event.eventType) {
+                    case 'goal':
+                        if (isTeam1) stats.team1Goals++;
+                        else stats.team2Goals++;
+                        break;
+                    case 'own-goal':
+                        if (isTeam1) stats.team2Goals++; // Own goal counts for opponent
+                        else stats.team1Goals++;
+                        break;
+                    case 'yellow':
+                        if (isTeam1) stats.team1Yellow++;
+                        else stats.team2Yellow++;
+                        break;
+                    case 'red':
+                        if (isTeam1) stats.team1Red++;
+                        else stats.team2Red++;
+                        break;
+                }
+            });
+
+            // Update stats display
+            const statsGrid = document.getElementById('stats-grid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stats.team1Goals} - ${stats.team2Goals}</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.team1Yellow + stats.team2Yellow}</div>
+                    <div class="stat-label">Yellow Cards</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.team1Red + stats.team2Red}</div>
+                    <div class="stat-label">Red Cards</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.totalEvents}</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+            `;
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.action-dropdown')) {
+                document.querySelectorAll('.dropdown-menu.active').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+            }
+        });
+
+        // Initialize
+        loadMatch();
+    </script>
+</body>
+</html>
