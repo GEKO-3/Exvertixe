@@ -878,56 +878,30 @@
         function setupRealtimeListeners() {
             const loading = document.getElementById('loading');
             const container = document.getElementById('draw-container');
-            let initialLoad = true;
 
             // Listen for changes in draw assignments
             database.ref('drawAssignments').on('value', (snapshot) => {
-                const newAssignments = snapshot.val() || {};
+                console.log('📥 Draw assignments Firebase update');
+                drawAssignments = snapshot.val() || {};
                 
-                // Check for new assignments to highlight them (skip on initial load)
-                const newPositions = [];
-                if (!initialLoad) {
-                    Object.keys(newAssignments).forEach(position => {
-                        if (!drawAssignments[position] || drawAssignments[position] !== newAssignments[position]) {
-                            newPositions.push(position);
-                        }
-                    });
-                }
+                // Always show container when data arrives
+                if (loading) loading.style.display = 'none';
+                if (container) container.style.display = 'grid';
                 
-                drawAssignments = newAssignments;
                 updateDrawDisplay();
-                
-                // Hide loading and show container on first load
-                if (initialLoad) {
-                    loading.style.display = 'none';
-                    container.style.display = 'grid';
-                }
-                
-                // Highlight new assignments (skip on initial load)
-                if (!initialLoad) {
-                    newPositions.forEach(position => {
-                        const slot = document.querySelector(`[data-position="${position}"]`);
-                        if (slot) {
-                            slot.classList.add('new-assignment');
-                            setTimeout(() => {
-                                slot.classList.remove('new-assignment');
-                            }, 2000);
-                        }
-                    });
-                }
             });
 
             // Listen for changes in team data
             database.ref('applications').on('value', (snapshot) => {
+                console.log('📥 Teams data Firebase update');
                 teams = snapshot.val() || {};
                 console.log('Teams data updated:', Object.keys(teams).length, 'teams loaded');
-                updateDrawDisplay();
                 
-                // Mark initial load as complete
-                if (initialLoad) {
-                    initialLoad = false;
-                    console.log('Initial load complete, teams loaded');
-                }
+                // Always show container when data arrives
+                if (loading) loading.style.display = 'none';
+                if (container) container.style.display = 'grid';
+                
+                updateDrawDisplay();
             });
 
             // Listen for draw modal state changes
@@ -992,47 +966,89 @@
         }
 
         function updateDrawDisplay() {
-            const positions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2', 'D3'];
+            console.log('updateDrawDisplay called - v4.0');
+            console.log('Current drawAssignments:', drawAssignments);
+            console.log('Current teams:', Object.keys(teams).length, 'teams loaded');
+            
+            const positions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+            let successCount = 0;
+            let errorCount = 0;
             
             positions.forEach(position => {
-                const slot = document.querySelector(`[data-position="${position}"]`);
-                const teamNameElement = slot.querySelector('.team-name');
-                const teamLoadingElement = slot.querySelector('.team-loading');
-                const logoContainer = slot.querySelector('.team-logo-small');
-                const logoImg = slot.querySelector('.logo-img');
+                try {
+                    const slot = document.querySelector(`[data-position="${position}"]`);
+                    if (!slot) {
+                        console.error(`❌ Position ${position} slot not found in DOM`);
+                        errorCount++;
+                        return;
+                    }
+                    
+                    const teamNameElement = slot.querySelector('.team-name');
+                    const teamLoadingElement = slot.querySelector('.team-loading');
+                    const logoContainer = slot.querySelector('.team-logo-small');
+                    const logoImg = slot.querySelector('.logo-img');
+                    
+                    if (!teamNameElement || !teamLoadingElement || !logoContainer || !logoImg) {
+                        console.error(`❌ Missing elements for ${position}:`, {
+                            teamNameElement: !!teamNameElement,
+                            teamLoadingElement: !!teamLoadingElement,
+                            logoContainer: !!logoContainer,
+                            logoImg: !!logoImg
+                        });
+                        errorCount++;
+                        return;
+                    }
                 
-                if (drawAssignments[position] && teams[drawAssignments[position]]) {
-                    const teamName = teams[drawAssignments[position]].teamName;
+                    // Check if team is assigned to this position
+                    const teamId = drawAssignments[position];
+                    const teamData = teamId ? teams[teamId] : null;
                     
-                    // Show team name, hide loading
-                    teamNameElement.textContent = teamName;
-                    teamNameElement.style.display = 'flex';
-                    teamLoadingElement.style.display = 'none';
-                    slot.classList.add('filled');
-                    
-                    // Show team logo
-                    const logoFileName = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
-                    logoImg.src = `Team-Logos/${logoFileName}.jpg`;
-                    logoImg.onerror = () => {
-                        logoImg.src = `Team-Logos/${logoFileName}.png`;
+                    if (teamData && teamData.teamName) {
+                        const teamName = teamData.teamName;
+                        console.log(`✅ ${position}: ${teamName}`);
+                        
+                        // Show team name, hide loading
+                        teamNameElement.textContent = teamName;
+                        teamNameElement.style.display = 'flex';
+                        teamLoadingElement.style.display = 'none';
+                        slot.classList.add('filled');
+                        
+                        // Show team logo
+                        const logoFileName = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+                        logoImg.src = `Team-Logos/${logoFileName}.jpg`;
                         logoImg.onerror = () => {
-                            // Hide logo if neither jpg nor png found
-                            logoContainer.style.display = 'none';
+                            logoImg.src = `Team-Logos/${logoFileName}.png`;
+                            logoImg.onerror = () => {
+                                logoContainer.style.display = 'none';
+                            };
                         };
-                    };
-                    logoImg.onload = () => {
-                        logoContainer.style.display = 'block';
-                    };
-                } else {
-                    // Show loading, hide team name
-                    teamNameElement.style.display = 'none';
-                    teamLoadingElement.style.display = 'flex';
-                    slot.classList.remove('filled');
-                    
-                    // Hide logo for empty slots
-                    logoContainer.style.display = 'none';
+                        logoImg.onload = () => {
+                            logoContainer.style.display = 'block';
+                        };
+                        successCount++;
+                    } else {
+                        // Show loading state
+                        console.log(`⏳ ${position}: No team assigned`);
+                        teamNameElement.style.display = 'none';
+                        teamLoadingElement.style.display = 'flex';
+                        slot.classList.remove('filled');
+                        logoContainer.style.display = 'none';
+                        successCount++;
+                    }
+                } catch (error) {
+                    console.error(`❌ Error updating position ${position}:`, error);
+                    errorCount++;
                 }
             });
+            
+            console.log(`📊 Update completed: ${successCount} successful, ${errorCount} errors`);
+            
+            // Force show the container if it's hidden
+            const container = document.getElementById('draw-container');
+            if (container && container.style.display === 'none') {
+                console.log('🔧 Forcing draw container to show');
+                container.style.display = 'grid';
+            }
         }
 
         function showTeamLogo(teamId, teamName) {

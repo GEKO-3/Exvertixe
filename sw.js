@@ -1,12 +1,12 @@
-const CACHE_NAME = 'fmsc-control-v1';
+const CACHE_NAME = 'fmsc-control-v2';
 const urlsToCache = [
   './draw-control.html',
   './draw-display.html',
   './schedule-display.html',
+  './match-management.html',
+  './match-detail.html',
   './manifest.json',
-  './Tounament logo.svg',
-  './icon-192x192.png',
-  './icon-512x512.png'
+  './Tounament logo.svg'
 ];
 
 // Install event - cache resources
@@ -14,11 +14,20 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        console.log('Service Worker: Installing...');
+        console.log('Service Worker: Caching files');
+        return cache.addAll(urlsToCache).catch((error) => {
+          console.log('Service Worker: Some resources failed to cache:', error);
+          // Try to cache individual files
+          return Promise.allSettled(
+            urlsToCache.map(url => cache.add(url).catch(err => {
+              console.log(`Failed to cache ${url}:`, err);
+            }))
+          );
+        });
       })
       .catch((error) => {
-        console.log('Cache failed:', error);
+        console.log('Service Worker: Install failed:', error);
       })
   );
 });
