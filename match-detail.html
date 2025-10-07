@@ -517,11 +517,76 @@
             const team1Name = team1Data ? team1Data.name : matchData.teams[0];
             const team2Name = team2Data ? team2Data.name : matchData.teams[1];
             
-            document.getElementById('match-title').textContent = `${team1Name} vs ${team2Name}`;
-            document.getElementById('match-info').textContent = `${matchData.date} • ${matchData.time} • ${matchData.type}`;
+            document.getElementById('match-title').textContent = `Match ${matchData.matchNumber}`;
+            document.getElementById('match-info').textContent = `${team1Name} vs ${team2Name} • ${matchData.date} • ${matchData.time} • ${matchData.type}`;
 
             // Create team sections
             createTeamSections(matchData.teams);
+        }
+
+        // Match schedule data - Updated tournament structure
+        // Group A: 4 teams, Group B: 4 teams, Group C: 3 teams, Group D: 3 teams
+        const matchSchedule = {
+            'October 23': [
+                { teams: ['A1', 'A2'], type: 'Group A', time: '8:00 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '9:00 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '10:00 PM' }
+            ],
+            'October 24': [
+                { teams: ['D1', 'D2'], type: 'Group D', time: '8:00 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['B3', 'B4'], type: 'Group B', time: '10:00 PM' },
+                { teams: ['C2', 'C3'], type: 'Group C', time: '11:00 PM' }
+            ],
+            'October 25': [
+                { teams: ['A1', 'A3'], type: 'Group A', time: '8:00 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '9:00 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '10:00 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '11:00 PM' }
+            ],
+            'October 26': [
+                { teams: ['B2', 'B4'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['A1', 'A4'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['C1', 'C3'], type: 'Group C', time: '10:00 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '11:00 PM' }
+            ],
+            'October 27': [
+                { teams: ['A2', 'A3'], type: 'Group A', time: '8:00 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '9:00 PM' },
+                { teams: ['B1', 'B4'], type: 'Group B', time: '10:00 PM' }
+            ]
+        };
+
+        function getMatchNumber(matchId) {
+            let matchNumber = 1;
+            
+            // Parse the match ID to get teams and time
+            const parts = matchId.split('-');
+            if (parts.length < 3) return matchNumber;
+            
+            const teamsStr = parts[1];
+            const timeStr = parts[2];
+            const teamsMatch = teamsStr.match(/^(.+)vs(.+)$/);
+            if (!teamsMatch) return matchNumber;
+            
+            const team1 = teamsMatch[1];
+            const team2 = teamsMatch[2];
+            const formattedTime = timeStr.replace(/(\d+)(\d{2})$/, '$1:$2');
+            
+            // Search through the schedule to find this match
+            for (const date of Object.keys(matchSchedule)) {
+                for (const match of matchSchedule[date]) {
+                    if ((match.teams[0] === team1 && match.teams[1] === team2) ||
+                        (match.teams[0] === team2 && match.teams[1] === team1)) {
+                        if (match.time === formattedTime) {
+                            return matchNumber;
+                        }
+                    }
+                    matchNumber++;
+                }
+            }
+            
+            return matchNumber;
         }
 
         function parseMatchId(matchId) {
@@ -540,7 +605,8 @@
                     date: dateStr.replace(/([a-z])([0-9])/gi, '$1 $2'), // Add space between month and day
                     teams: [teamsMatch[1], teamsMatch[2]],
                     time: timeStr.replace(/(\d+)(\d{2})$/, '$1:$2'), // Format time
-                    type: 'Group Stage' // You can determine this from team positions
+                    type: 'Group Stage', // You can determine this from team positions
+                    matchNumber: getMatchNumber(matchId)
                 };
             } catch (e) {
                 console.error('Error parsing match ID:', e);

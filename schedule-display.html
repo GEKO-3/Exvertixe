@@ -497,38 +497,36 @@
             }
         });
 
-        // Schedule data based on your provided tournament structure
+        // Schedule data - Updated tournament structure
+        // Group A: 4 teams, Group B: 4 teams, Group C: 3 teams, Group D: 3 teams
         const scheduleData = {
             oct23: [
                 { teams: ['A1', 'A2'], type: 'Group A', time: '8:00 PM' },
                 { teams: ['B1', 'B2'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['C1', 'C2'], type: 'Group C', time: '10:00 PM' },
-                { teams: ['D1', 'D2'], type: 'Group D', time: '11:00 PM' }
+                { teams: ['C1', 'C2'], type: 'Group C', time: '10:00 PM' }
             ],
             oct24: [
-                { teams: ['B3', 'B4'], type: 'Group B', time: '8:00 PM' },
-                { teams: ['C3', 'C4'], type: 'Group C', time: '9:00 PM' },
-                { teams: ['D2', 'D3'], type: 'Group D', time: '10:00 PM' },
-                { teams: ['A3', 'A4'], type: 'Group A', time: '11:00 PM' }
+                { teams: ['D1', 'D2'], type: 'Group D', time: '8:00 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['B3', 'B4'], type: 'Group B', time: '10:00 PM' },
+                { teams: ['C2', 'C3'], type: 'Group C', time: '11:00 PM' }
             ],
             oct25: [
-                { teams: ['C1', 'C3'], type: 'Group C', time: '8:00 PM' },
-                { teams: ['B1', 'B3'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['A2', 'A3'], type: 'Group A', time: '10:00 PM' },
-                { teams: ['B2', 'B4'], type: 'Group B', time: '11:00 PM' }
-            ],
-            oct26: [
-                { teams: ['D1', 'D3'], type: 'Group D', time: '4:30 PM' },
-                { teams: ['C1', 'C4'], type: 'Group C', time: '8:00 PM' },
-                { teams: ['A1', 'A3'], type: 'Group A', time: '9:00 PM' },
-                { teams: ['C2', 'C3'], type: 'Group C', time: '10:00 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '8:00 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '9:00 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '10:00 PM' },
                 { teams: ['A2', 'A4'], type: 'Group A', time: '11:00 PM' }
             ],
+            oct26: [
+                { teams: ['B2', 'B4'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['A1', 'A4'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['C1', 'C3'], type: 'Group C', time: '10:00 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '11:00 PM' }
+            ],
             oct27: [
-                { teams: ['C2', 'C4'], type: 'Group C', time: '8:00 PM' },
-                { teams: ['B1', 'B4'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['A1', 'A4'], type: 'Group A', time: '10:00 PM' },
-                { teams: ['B2', 'B3'], type: 'Group B', time: '11:00 PM' }
+                { teams: ['A2', 'A3'], type: 'Group A', time: '8:00 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '9:00 PM' },
+                { teams: ['B1', 'B4'], type: 'Group B', time: '10:00 PM' }
             ]
         };
 
