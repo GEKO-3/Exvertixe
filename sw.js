@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fmsc-control-v5';
+const CACHE_NAME = 'fmsc-control-v8';
 const urlsToCache = [
   './index.html',
   './draw-control.html',
@@ -12,7 +12,23 @@ const urlsToCache = [
   './admin.html',
   './manifest.json',
   './Tounament logo.svg',
-  './icon-192x192.png'
+  './icon-192x192.png',
+  // Team logos
+  './Team-Logos/amigos.jpg',
+  './Team-Logos/best.jpg',
+  './Team-Logos/brave_generation_sports_club.jpg',
+  './Team-Logos/foemathi.jpg',
+  './Team-Logos/foemathi_jr.jpg',
+  './Team-Logos/goalhians.jpg',
+  './Team-Logos/goalhi_sports_club.jpg',
+  './Team-Logos/g_star_sports_club.jpg',
+  './Team-Logos/kanmathi_fc.jpg',
+  './Team-Logos/kanmathi_sc.jpg',
+  './Team-Logos/laamu_blues.jpg',
+  './Team-Logos/lecrose_sports_club.jpg',
+  './Team-Logos/maahinna_united.jpg',
+  './Team-Logos/outreef_sports_club.jpg',
+  './Team-Logos/youth_academy.jpg'
 ];
 
 // Install event - cache resources
@@ -65,16 +81,20 @@ self.addEventListener('fetch', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activating v8...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+            console.log('Service Worker: Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      console.log('Service Worker: Activation complete, taking control');
+      return self.clients.claim();
     })
   );
 });

@@ -445,6 +445,35 @@
         let currentTeamId = null;
         let currentDisplayPage = 'groups'; // Track current display page
 
+        // Team name to logo filename mapping
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'LeCrose Sports Club': 'lecrose_sports_club',
+                'Maahinna United': 'maahinna_united',
+                'Outreef Sports Club': 'outreef_sports_club',
+                'Youth Academy': 'youth_academy'
+            };
+            
+            // Check for exact match first
+            if (logoMap[teamName]) {
+                return logoMap[teamName];
+            }
+            
+            // Fallback to generated filename
+            return teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+        }
+
         // Load teams and draw assignments on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadTeamsAndDraws();
@@ -487,8 +516,8 @@
                 const team = teams[teamId];
                 const teamDraw = findTeamDraw(teamId);
                 
-                // Generate logo filename
-                const logoFileName = team.teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+                // Generate logo filename using proper mapping
+                const logoFileName = getTeamLogoFilename(team.teamName);
                 
                 const teamCard = document.createElement('div');
                 teamCard.className = 'team-card';

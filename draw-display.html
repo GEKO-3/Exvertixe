@@ -831,6 +831,35 @@
         let currentDisplayTeam = null;
         let logoDisplayTimeout = null;
 
+        // Team name to logo filename mapping
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'LeCrose Sports Club': 'lecrose_sports_club',
+                'Maahinna United': 'maahinna_united',
+                'Outreef Sports Club': 'outreef_sports_club',
+                'Youth Academy': 'youth_academy'
+            };
+            
+            // Check for exact match first
+            if (logoMap[teamName]) {
+                return logoMap[teamName];
+            }
+            
+            // Fallback to generated filename
+            return teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+        }
+
         // Function to switch between display pages
         function switchToPage(page) {
             if (page === 'schedule') {
@@ -1049,7 +1078,7 @@
                         slot.classList.add('filled');
                         
                         // Show team logo
-                        const logoFileName = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+                        const logoFileName = getTeamLogoFilename(teamName);
                         logoImg.src = `Team-Logos/${logoFileName}.jpg`;
                         logoImg.onerror = () => {
                             logoImg.src = `Team-Logos/${logoFileName}.png`;
@@ -1124,8 +1153,8 @@
                 return;
             }
 
-            // Set team logo source (assuming logos are named like the team names)
-            const logoFileName = team.teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            // Set team logo source using proper mapping
+            const logoFileName = getTeamLogoFilename(team.teamName);
             console.log('Logo filename:', logoFileName);
             
             logo.style.display = 'block';
@@ -1193,8 +1222,8 @@
             const teamNameDisplay = document.getElementById('team-name-display');
             const drawSelection = document.getElementById('draw-selection');
 
-            // Set team logo source using team name
-            const logoFileName = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            // Set team logo source using proper mapping
+            const logoFileName = getTeamLogoFilename(teamName);
             console.log('Logo filename from name:', logoFileName);
             
             logo.style.display = 'block';
