@@ -728,15 +728,15 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Team name to logo filename mapping
+        // Team name to logo filename mapping (using actual GitHub filenames)
         function getTeamLogoFilename(teamName) {
             const logoMap = {
-                'Amigos': 'amigos',
-                'Best': 'best',
+                'Amigos': 'Amigos',
+                'Best': 'BEST',
                 'Brave Generation Sports Club': 'brave_generation_sports_club',
-                'Foemathi': 'foemathi',
+                'Foemathi': 'FOEMATHI',
                 'Foemathi Jr': 'foemathi_jr',
-                'Goalhians': 'goalhians',
+                'Goalhians': 'Goalhians',
                 'Goalhi Sports Club': 'goalhi_sports_club',
                 'G Star Sports Club': 'g_star_sports_club',
                 'Kanmathi FC': 'kanmathi_fc',

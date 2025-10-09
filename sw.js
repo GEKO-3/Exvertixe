@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fmsc-control-v8';
+const CACHE_NAME = 'fmsc-control-v9';
 const urlsToCache = [
   './index.html',
   './draw-control.html',
@@ -13,13 +13,13 @@ const urlsToCache = [
   './manifest.json',
   './Tounament logo.svg',
   './icon-192x192.png',
-  // Team logos
-  './Team-Logos/amigos.jpg',
-  './Team-Logos/best.jpg',
+  // Team logos (using actual GitHub filenames)
+  './Team-Logos/Amigos.jpg',
+  './Team-Logos/BEST.jpg',
   './Team-Logos/brave_generation_sports_club.jpg',
-  './Team-Logos/foemathi.jpg',
+  './Team-Logos/FOEMATHI.jpg',
   './Team-Logos/foemathi_jr.jpg',
-  './Team-Logos/goalhians.jpg',
+  './Team-Logos/Goalhians.jpg',
   './Team-Logos/goalhi_sports_club.jpg',
   './Team-Logos/g_star_sports_club.jpg',
   './Team-Logos/kanmathi_fc.jpg',
