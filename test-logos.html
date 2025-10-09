@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: #fff; 
+            padding: 20px; 
+        }
+        .logo { 
+            width: 60px; 
+            height: 60px; 
+            margin: 10px; 
+            border-radius: 8px; 
+        }
+        .team { 
+            display: inline-block; 
+            margin: 10px; 
+            text-align: center; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Team Logo Test</h1>
+    <div id="logos"></div>
+    
+    <script>
+        const teams = [
+            'Amigos', 'Best', 'Brave Generation Sports Club', 'Foemathi', 
+            'Foemathi Jr', 'Goalhians', 'Goalhi Sports Club', 'G Star Sports Club',
+            'Kanmathi FC', 'Kanmathi SC', 'Laamu Blues', 'LeCrose Sports Club',
+            'Maahinna United', 'Outreef Sports Club', 'Youth Academy'
+        ];
+        
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'LeCrose Sports Club': 'lecrose_sports_club',
+                'Maahinna United': 'maahinna_united',
+                'Outreef Sports Club': 'outreef_sports_club',
+                'Youth Academy': 'youth_academy'
+            };
+            return logoMap[teamName] || teamName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        }
+        
+        const logosDiv = document.getElementById('logos');
+        teams.forEach(team => {
+            const div = document.createElement('div');
+            div.className = 'team';
+            div.innerHTML = `
+                <img src="./logos/${getTeamLogoFilename(team)}.jpg" class="logo" alt="${team}" 
+                     onerror="this.style.border='2px solid red'">
+                <div>${team}</div>
+            `;
+            logosDiv.appendChild(div);
+        });
+    </script>
+</body>
+</html>
