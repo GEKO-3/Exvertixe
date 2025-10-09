@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fmsc-control-v11';
+const CACHE_NAME = 'fmsc-control-v12';
 const urlsToCache = [
   './index.html',
   './draw-control.html',

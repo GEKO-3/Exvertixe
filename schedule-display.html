@@ -728,11 +728,12 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Team name to logo filename mapping (exact repository filenames)
+        // Team name to logo filename mapping (comprehensive matching)
         function getTeamLogoFilename(teamName) {
             console.log('Getting logo for team:', teamName);
             
             const logoMap = {
+                // Exact matches
                 'Amigos': 'amigos',
                 'Best': 'best',
                 'Brave Generation Sports Club': 'brave_generation_sports_club',
@@ -747,13 +748,33 @@
                 'LeCrose Sports Club': 'lecrose_sports_club',
                 'Maahinna United': 'maahinna_united',
                 'Outreef Sports Club': 'outreef_sports_club',
-                'Youth Academy': 'youth_academy'
+                'Youth Academy': 'youth_academy',
+                
+                // Alternative spellings/variations
+                'AMIGOS': 'amigos',
+                'BEST': 'best',
+                'FOEMATHI': 'foemathi',
+                'GOALHIANS': 'goalhians',
+                'Foemathi Junior': 'foemathi_jr',
+                'G-Star Sports Club': 'g_star_sports_club',
+                'G*Star Sports Club': 'g_star_sports_club',
+                'Lecrose Sports Club': 'lecrose_sports_club',
+                'LeCrose': 'lecrose_sports_club'
             };
             
             // Check for exact match first
             if (logoMap[teamName]) {
                 console.log('Found exact match:', logoMap[teamName]);
                 return logoMap[teamName];
+            }
+            
+            // Try partial matching for cases with slight variations
+            const normalizedName = teamName.toLowerCase().trim();
+            for (const [key, value] of Object.entries(logoMap)) {
+                if (key.toLowerCase().includes(normalizedName) || normalizedName.includes(key.toLowerCase())) {
+                    console.log('Found partial match:', key, '->', value);
+                    return value;
+                }
             }
             
             // Fallback to generated filename
