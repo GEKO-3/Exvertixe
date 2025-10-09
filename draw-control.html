@@ -732,7 +732,7 @@
             img.alt = 'Team Logo';
             
             // Try JPG first
-            img.src = `Team-Logos/${logoFileName}.jpg`;
+            img.src = `logos/${logoFileName}.jpg`;
             
             img.onload = () => {
                 logoContainer.innerHTML = '';
@@ -741,7 +741,7 @@
             
             img.onerror = () => {
                 // Try PNG if JPG fails
-                img.src = `Team-Logos/${logoFileName}.png`;
+                img.src = `logos/${logoFileName}.png`;
                 img.onerror = () => {
                     // Keep the placeholder if both fail
                     console.log(`No logo found for team: ${logoFileName}`);

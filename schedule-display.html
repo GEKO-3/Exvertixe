@@ -851,9 +851,9 @@
                 logoElement.alt = teamData.name;
                 
                 // Try JPG first, then PNG
-                logoElement.src = `Team-Logos/${teamData.logo}.jpg`;
+                logoElement.src = `logos/${teamData.logo}.jpg`;
                 logoElement.onerror = () => {
-                    logoElement.src = `Team-Logos/${teamData.logo}.png`;
+                    logoElement.src = `logos/${teamData.logo}.png`;
                     logoElement.onerror = () => {
                         logoElement.style.display = 'none';
                     };

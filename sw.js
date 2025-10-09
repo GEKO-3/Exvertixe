@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fmsc-control-v10';
+const CACHE_NAME = 'fmsc-control-v11';
 const urlsToCache = [
   './index.html',
   './draw-control.html',
@@ -14,21 +14,21 @@ const urlsToCache = [
   './Tounament logo.svg',
   './icon-192x192.png',
   // Team logos (using lowercase filenames)
-  './Team-Logos/amigos.jpg',
-  './Team-Logos/best.jpg',
-  './Team-Logos/brave_generation_sports_club.jpg',
-  './Team-Logos/foemathi.jpg',
-  './Team-Logos/foemathi_jr.jpg',
-  './Team-Logos/goalhians.jpg',
-  './Team-Logos/goalhi_sports_club.jpg',
-  './Team-Logos/g_star_sports_club.jpg',
-  './Team-Logos/kanmathi_fc.jpg',
-  './Team-Logos/kanmathi_sc.jpg',
-  './Team-Logos/laamu_blues.jpg',
-  './Team-Logos/lecrose_sports_club.jpg',
-  './Team-Logos/maahinna_united.jpg',
-  './Team-Logos/outreef_sports_club.jpg',
-  './Team-Logos/youth_academy.jpg'
+  './logos/amigos.jpg',
+  './logos/best.jpg',
+  './logos/brave_generation_sports_club.jpg',
+  './logos/foemathi.jpg',
+  './logos/foemathi_jr.jpg',
+  './logos/goalhians.jpg',
+  './logos/goalhi_sports_club.jpg',
+  './logos/g_star_sports_club.jpg',
+  './logos/kanmathi_fc.jpg',
+  './logos/kanmathi_sc.jpg',
+  './logos/laamu_blues.jpg',
+  './logos/lecrose_sports_club.jpg',
+  './logos/maahinna_united.jpg',
+  './logos/outreef_sports_club.jpg',
+  './logos/youth_academy.jpg'
 ];
 
 // Install event - cache resources

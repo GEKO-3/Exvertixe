@@ -1099,18 +1099,18 @@
                         
                         // Show team logo with enhanced debugging and fallbacks
                         const logoFileName = getTeamLogoFilename(teamName);
-                        const logoPath = `Team-Logos/${logoFileName}.jpg`;
+                        const logoPath = `logos/${logoFileName}.jpg`;
                         console.log(`🖼️ Loading logo for ${teamName}: ${logoPath}`);
                         
                         logoImg.src = logoPath;
                         logoImg.onerror = () => {
                             console.warn(`❌ JPG failed for ${teamName}, trying PNG`);
-                            logoImg.src = `Team-Logos/${logoFileName}.png`;
+                            logoImg.src = `logos/${logoFileName}.png`;
                             logoImg.onerror = () => {
                                 // Try with first letter capitalized as fallback for hosting issues
                                 const capitalizedFilename = logoFileName.charAt(0).toUpperCase() + logoFileName.slice(1);
                                 console.warn(`❌ PNG failed, trying capitalized: ${capitalizedFilename}`);
-                                logoImg.src = `Team-Logos/${capitalizedFilename}.jpg`;
+                                logoImg.src = `logos/${capitalizedFilename}.jpg`;
                                 logoImg.onerror = () => {
                                     console.error(`❌ All attempts failed for ${teamName}`);
                                     logoContainer.style.display = 'none';
@@ -1190,12 +1190,12 @@
             console.log('Logo filename:', logoFileName);
             
             logo.style.display = 'block';
-            logo.src = `Team-Logos/${logoFileName}.jpg`;
+            logo.src = `logos/${logoFileName}.jpg`;
             
             logo.onerror = () => {
                 console.log('JPG failed, trying PNG');
                 // Fallback to png if jpg doesn't exist
-                logo.src = `Team-Logos/${logoFileName}.png`;
+                logo.src = `logos/${logoFileName}.png`;
                 logo.onerror = () => {
                     console.log('Both JPG and PNG failed, hiding logo');
                     // Show a placeholder or default behavior
@@ -1259,11 +1259,11 @@
             console.log('Logo filename from name:', logoFileName);
             
             logo.style.display = 'block';
-            logo.src = `Team-Logos/${logoFileName}.jpg`;
+            logo.src = `logos/${logoFileName}.jpg`;
             
             logo.onerror = () => {
                 console.log('JPG failed, trying PNG');
-                logo.src = `Team-Logos/${logoFileName}.png`;
+                logo.src = `logos/${logoFileName}.png`;
                 logo.onerror = () => {
                     console.log('Both JPG and PNG failed, showing large team name');
                     logo.style.display = 'none';

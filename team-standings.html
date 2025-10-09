@@ -594,10 +594,10 @@
                     else if (teamStats.goalDifference < 0) goalDiffClass = 'goal-diff-negative';
                     
                     const logoHtml = teamData.logo ? 
-                        `<img src="Team-Logos/${teamData.logo}.jpg" 
+                        `<img src="logos/${teamData.logo}.jpg" 
                              alt="${teamData.name}" 
                              class="team-logo-small"
-                             onerror="this.src='Team-Logos/${teamData.logo}.png'; this.onerror=function(){this.style.visibility='hidden'; this.style.width='30px'; this.style.height='30px';}">` :
+                             onerror="this.src='logos/${teamData.logo}.png'; this.onerror=function(){this.style.visibility='hidden'; this.style.width='30px'; this.style.height='30px';}">` :
                         `<div class="team-logo-small" style="width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999;">${teamStats.position}</div>`;
                     
                     row.innerHTML = `

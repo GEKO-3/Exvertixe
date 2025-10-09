@@ -701,10 +701,10 @@
                 cardItem.className = `card-item ${player.paid ? 'paid' : ''}`;
                 
                 const logoHtml = teamData.logo ? 
-                    `<img src="Team-Logos/${teamData.logo}.jpg" 
+                    `<img src="logos/${teamData.logo}.jpg" 
                          alt="${teamData.name}" 
                          class="team-logo-card"
-                         onerror="this.src='Team-Logos/${teamData.logo}.png'; this.onerror=function(){this.style.visibility='hidden';}">` :
+                         onerror="this.src='logos/${teamData.logo}.png'; this.onerror=function(){this.style.visibility='hidden';}">` :
                     `<div class="team-logo-card" style="background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999;">${teamData.position}</div>`;
 
                 let cardIconsHtml = '';
