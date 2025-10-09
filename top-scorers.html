@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Top Scorers</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --success-color: #44ff44;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(26, 29, 33, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .scorers-container {
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-top: 30px;
+        }
+
+        .scorers-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .scorers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .scorer-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scorer-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .scorer-rank {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 20px;
+            border: 2px solid;
+        }
+
+        .scorer-rank.gold {
+            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
+            border-color: var(--gold);
+            color: #333;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .scorer-rank.silver {
+            background: linear-gradient(135deg, var(--silver) 0%, #e8e8e8 100%);
+            border-color: var(--silver);
+            color: #333;
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+        }
+
+        .scorer-rank.bronze {
+            background: linear-gradient(135deg, var(--bronze) 0%, #e6a85c 100%);
+            border-color: var(--bronze);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.5);
+        }
+
+        .scorer-rank.regular {
+            background: rgba(3, 189, 237, 0.2);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .scorer-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .team-logo-scorer {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .scorer-details {
+            flex: 1;
+        }
+
+        .scorer-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .scorer-team {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        .scorer-goals {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .goals-count {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--success-color);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .goals-label {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            color: var(--primary-color);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(3, 189, 237, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--warning-color);
+            font-style: italic;
+        }
+
+        .stats-summary {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-value {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .scorer-item {
+                padding: 15px;
+            }
+            
+            .scorer-rank {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+                margin-right: 15px;
+            }
+            
+            .scorer-name {
+                font-size: 1rem;
+            }
+            
+            .goals-count {
+                font-size: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .stats-summary {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="page-title">TOP SCORERS</h1>
+            <div class="page-subtitle">Leading Goal Scorers</div>
+        </div>
+
+        <div class="scorers-container">
+            <div class="scorers-title">⚽ GOAL SCORERS LEADERBOARD</div>
+            
+            <div class="stats-summary" id="stats-summary">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-goals">0</div>
+                    <div class="stat-label">Total Goals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-scorers">0</div>
+                    <div class="stat-label">Players Scored</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="matches-with-goals">0</div>
+                    <div class="stat-label">Matches with Goals</div>
+                </div>
+            </div>
+
+            <div class="scorers-list" id="scorers-list">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div>Loading top scorers...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data storage
+        let teams = {};
+        let drawAssignments = {};
+        let matchEvents = {};
+        let teamLists = {};
+        let goalScorers = {};
+
+        // Calculate goal scorers from match events
+        function calculateTopScorers() {
+            try {
+                goalScorers = {};
+                let totalGoals = 0;
+                let matchesWithGoals = new Set();
+
+                console.log('Processing match events for goal scorers:', matchEvents);
+
+                // Process each match's events
+                Object.keys(matchEvents).forEach(matchId => {
+                    const matchEventData = matchEvents[matchId];
+                    console.log(`Processing match ${matchId}:`, matchEventData);
+
+                    Object.keys(matchEventData).forEach(eventKey => {
+                        const event = matchEventData[eventKey];
+                        
+                        // Only process goal events
+                        if (event.eventType === 'goal') {
+                            totalGoals++;
+                            matchesWithGoals.add(matchId);
+                            
+                            const playerKey = `${event.teamKey}-${event.personKey}`;
+                            const playerName = event.playerName || 'Unknown Player';
+                            const teamKey = event.teamKey;
+                            
+                            console.log(`Goal found: ${playerName} (${playerKey})`);
+                            
+                            // Initialize player if not exists
+                            if (!goalScorers[playerKey]) {
+                                goalScorers[playerKey] = {
+                                    playerName: playerName,
+                                    teamKey: teamKey,
+                                    goals: 0,
+                                    matchId: matchId
+                                };
+                            }
+                            
+                            goalScorers[playerKey].goals++;
+                        }
+                    });
+                });
+
+                console.log('Final goal scorers:', goalScorers);
+                console.log(`Total goals: ${totalGoals}, Matches with goals: ${matchesWithGoals.size}`);
+
+                // Update stats summary
+                document.getElementById('total-goals').textContent = totalGoals;
+                document.getElementById('total-scorers').textContent = Object.keys(goalScorers).length;
+                document.getElementById('matches-with-goals').textContent = matchesWithGoals.size;
+
+            } catch (error) {
+                console.error('Error calculating top scorers:', error);
+            }
+        }
+
+        // Get team data for a scorer
+        function getScorerTeamData(teamKey, matchId) {
+            // Parse match ID to determine team positions
+            // Match ID format: date-A1vsA2-time
+            const matchParts = matchId.split('-');
+            if (matchParts.length >= 2) {
+                const teamsMatch = matchParts[1].match(/^(.+)vs(.+)$/);
+                if (teamsMatch) {
+                    const team1Position = teamsMatch[1];
+                    const team2Position = teamsMatch[2];
+                    
+                    const position = teamKey === 'team1' ? team1Position : team2Position;
+                    
+                    if (drawAssignments[position] && teams[drawAssignments[position]]) {
+                        const teamId = drawAssignments[position];
+                        const teamData = teams[teamId];
+                        return {
+                            name: teamData.teamName,
+                            logo: teamData.teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase(),
+                            position: position
+                        };
+                    }
+                }
+            }
+            
+            return {
+                name: `Team ${teamKey}`,
+                logo: null,
+                position: teamKey
+            };
+        }
+
+        // Render top scorers list
+        function renderTopScorers() {
+            const container = document.getElementById('scorers-list');
+            
+            // Convert goalScorers object to array and sort by goals (descending)
+            const sortedScorers = Object.keys(goalScorers)
+                .map(key => ({
+                    key: key,
+                    ...goalScorers[key]
+                }))
+                .sort((a, b) => b.goals - a.goals)
+                .slice(0, 20); // Top 20 only
+
+            if (sortedScorers.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        <h3>No Goals Scored Yet</h3>
+                        <p>Goals will appear here once matches are played and goals are recorded.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            sortedScorers.forEach((scorer, index) => {
+                const rank = index + 1;
+                const teamData = getScorerTeamData(scorer.teamKey, scorer.matchId);
+                
+                let rankClass = 'regular';
+                if (rank === 1) rankClass = 'gold';
+                else if (rank === 2) rankClass = 'silver';
+                else if (rank === 3) rankClass = 'bronze';
+
+                const scorerItem = document.createElement('div');
+                scorerItem.className = 'scorer-item';
+                
+                const logoHtml = teamData.logo ? 
+                    `<img src="Team-Logos/${teamData.logo}.jpg" 
+                         alt="${teamData.name}" 
+                         class="team-logo-scorer"
+                         onerror="this.src='Team-Logos/${teamData.logo}.png'; this.onerror=function(){this.style.visibility='hidden';}">` :
+                    `<div class="team-logo-scorer" style="background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999;">${teamData.position}</div>`;
+
+                scorerItem.innerHTML = `
+                    <div class="scorer-rank ${rankClass}">${rank}</div>
+                    <div class="scorer-info">
+                        ${logoHtml}
+                        <div class="scorer-details">
+                            <div class="scorer-name">${scorer.playerName}</div>
+                            <div class="scorer-team">${teamData.name}</div>
+                        </div>
+                        <div class="scorer-goals">
+                            <div class="goals-count">${scorer.goals}</div>
+                            <div class="goals-label">${scorer.goals === 1 ? 'Goal' : 'Goals'}</div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(scorerItem);
+            });
+        }
+
+        // Firebase listeners
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            console.log('Teams loaded:', teams);
+            renderTopScorers();
+        });
+
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            console.log('Draw assignments loaded:', drawAssignments);
+            renderTopScorers();
+        });
+
+        database.ref('matchEvents').on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            console.log('Match events loaded:', matchEvents);
+            calculateTopScorers();
+            renderTopScorers();
+        });
+
+        database.ref('teamLists').on('value', (snapshot) => {
+            teamLists = snapshot.val() || {};
+            console.log('Team lists loaded:', teamLists);
+            renderTopScorers();
+        });
+
+        // Initial render
+        calculateTopScorers();
+        renderTopScorers();
+    </script>
+</body>
+</html>

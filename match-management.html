@@ -121,26 +121,60 @@
             position: relative;
         }
 
-        .match-date-time {
+        .match-header-line {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            width: 100%;
         }
 
-        .match-date {
+        .match-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .match-number {
             font-family: 'Bebas Neue', cursive;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--primary-color);
             letter-spacing: 1px;
+            font-weight: 700;
         }
 
-        .match-time {
+        .match-group {
+            color: var(--accent-color);
+        }
+
+        .match-separator {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .match-separator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateY(-50%);
+        }
+
+        .match-date-time {
             background: rgba(255, 255, 255, 0.1);
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9rem;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.95rem;
             font-weight: 600;
+            color: var(--text-color);
+            white-space: nowrap;
         }
 
         .teams-container {
@@ -384,36 +418,33 @@
         let teams = {};
         let drawAssignments = {};
 
-        // Match schedule data - Updated tournament structure
-        // Group A: 4 teams, Group B: 4 teams, Group C: 3 teams, Group D: 3 teams
+        // Match schedule data - Updated tournament structure after team dropout
+        // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
         const matchSchedule = {
             'October 23': [
-                { teams: ['A1', 'A2'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['B1', 'B2'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['C1', 'C2'], type: 'Group C', time: '10:00 PM' }
+                { teams: ['A1', 'A2'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '10:15 PM' }
             ],
             'October 24': [
-                { teams: ['D1', 'D2'], type: 'Group D', time: '8:00 PM' },
-                { teams: ['A3', 'A4'], type: 'Group A', time: '9:00 PM' },
-                { teams: ['B3', 'B4'], type: 'Group B', time: '10:00 PM' },
-                { teams: ['C2', 'C3'], type: 'Group C', time: '11:00 PM' }
+                { teams: ['D1', 'D2'], type: 'Group D', time: '8:15 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '10:15 PM' }
             ],
             'October 25': [
-                { teams: ['A1', 'A3'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['B2', 'B3'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['D2', 'D3'], type: 'Group D', time: '10:00 PM' },
-                { teams: ['A2', 'A4'], type: 'Group A', time: '11:00 PM' }
+                { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '10:15 PM' }
             ],
             'October 26': [
-                { teams: ['B2', 'B4'], type: 'Group B', time: '8:00 PM' },
-                { teams: ['A1', 'A4'], type: 'Group A', time: '9:00 PM' },
-                { teams: ['C1', 'C3'], type: 'Group C', time: '10:00 PM' },
-                { teams: ['B1', 'B3'], type: 'Group B', time: '11:00 PM' }
+                { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '10:15 PM' }
             ],
             'October 27': [
-                { teams: ['A2', 'A3'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['D1', 'D3'], type: 'Group D', time: '9:00 PM' },
-                { teams: ['B1', 'B4'], type: 'Group B', time: '10:00 PM' }
+                { teams: ['C2', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '10:15 PM' }
             ]
         };
 
@@ -489,6 +520,7 @@
             const container = document.getElementById('matches-grid');
             container.innerHTML = '';
 
+            let matchCounter = 1;
             Object.keys(matchSchedule).forEach(date => {
                 matchSchedule[date].forEach((match, index) => {
                     const matchTile = document.createElement('div');
@@ -500,17 +532,19 @@
 
                     matchTile.innerHTML = `
                         <div class="match-header" onclick="toggleMatch(this)">
-                            <div class="match-date-time">
-                                <span class="match-date">${date}</span>
-                                <span class="match-time">${match.time}</span>
+                            <div class="match-header-line">
+                                <div class="match-info">
+                                    <span class="match-number">MATCH ${matchCounter} - <span class="match-group">${match.type}</span></span>
+                                    <span class="match-separator"></span>
+                                    <span class="match-date-time">${date} ${match.time}</span>
+                                </div>
+                                <div class="expand-icon">▼</div>
                             </div>
                             <div class="teams-container">
                                 ${team1Element.outerHTML}
                                 <span class="vs-separator">VS</span>
                                 ${team2Element.outerHTML}
                             </div>
-                            <div class="match-type">${match.type}</div>
-                            <div class="expand-icon">▼</div>
                         </div>
                         <div class="match-details">
                             <div class="match-details-content">
@@ -525,6 +559,7 @@
                     `;
 
                     container.appendChild(matchTile);
+                    matchCounter++;
                 });
             });
         }

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Team Standings</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --success-color: #44ff44;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(26, 29, 33, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .groups-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .group-section {
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .group-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .standings-table th,
+        .standings-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .standings-table th {
+            background: rgba(3, 189, 237, 0.2);
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(3, 189, 237, 0.3);
+        }
+
+        .standings-table td {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .standings-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .team-name-cell {
+            text-align: left !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-logo-small {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .team-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .points-cell {
+            font-weight: 700;
+            color: var(--success-color);
+            font-size: 1.1rem;
+        }
+
+        .wins-cell {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .draws-cell {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .losses-cell {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        .goal-diff-positive {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .goal-diff-negative {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        .goal-diff-zero {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            color: var(--primary-color);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(3, 189, 237, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--warning-color);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .groups-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .standings-table {
+                font-size: 0.85rem;
+            }
+            
+            .standings-table th,
+            .standings-table td {
+                padding: 8px 4px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="page-title">TEAM STANDINGS</h1>
+            <div class="page-subtitle">Group Stage Statistics</div>
+        </div>
+
+        <div class="groups-container" id="groups-container">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <div>Loading team standings...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data storage
+        let teams = {};
+        let drawAssignments = {};
+        let matchEvents = {};
+        let teamStandings = {};
+
+        // Match schedule data - Updated tournament structure after team dropout
+        // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams  
+        const matchSchedule = {
+            'October 23': [
+                { teams: ['A1', 'A2'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '10:15 PM' }
+            ],
+            'October 24': [
+                { teams: ['D1', 'D2'], type: 'Group D', time: '8:15 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '10:15 PM' }
+            ],
+            'October 25': [
+                { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '10:15 PM' }
+            ],
+            'October 26': [
+                { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '10:15 PM' }
+            ],
+            'October 27': [
+                { teams: ['C2', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '10:15 PM' }
+            ]
+        };
+
+        // Generate match ID (same format as match-management.html)
+        function generateMatchId(date, match) {
+            const dateStr = date.replace(/\s+/g, '').toLowerCase();
+            const team1 = match.teams[0];
+            const team2 = match.teams[1];
+            return `${dateStr}-${team1}vs${team2}-${match.time.replace(/[^0-9]/g, '')}`;
+        }
+
+        // Get all group stage matches with their IDs
+        function getGroupStageMatches() {
+            const matches = [];
+            for (const date of Object.keys(matchSchedule)) {
+                for (const match of matchSchedule[date]) {
+                    matches.push({
+                        id: generateMatchId(date, match),
+                        teams: match.teams,
+                        group: match.teams[0].charAt(0),
+                        date: date,
+                        time: match.time
+                    });
+                }
+            }
+            return matches;
+        }
+
+        // Initialize team standings
+        function initializeStandings() {
+            teamStandings = {};
+            
+            // Initialize all team positions
+            const allPositions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+            
+            allPositions.forEach(position => {
+                teamStandings[position] = {
+                    position: position,
+                    group: position.charAt(0),
+                    matchesPlayed: 0,
+                    wins: 0,
+                    draws: 0,
+                    losses: 0,
+                    points: 0,
+                    goalsScored: 0,
+                    goalsConceded: 0,
+                    goalDifference: 0
+                };
+            });
+        }
+
+        // Calculate standings from match events
+        function calculateStandings() {
+            try {
+                initializeStandings();
+                
+                const groupStageMatches = getGroupStageMatches();
+                console.log('Processing matches:', groupStageMatches);
+            
+            // Process each group stage match
+            groupStageMatches.forEach((match) => {
+                const matchId = match.id;
+                const matchEventsData = matchEvents[matchId] || {};
+                
+                console.log(`Processing match ${matchId}:`, matchEventsData);
+                
+                let team1Goals = 0;
+                let team2Goals = 0;
+                
+                // Count goals for each team
+                Object.values(matchEventsData).forEach(event => {
+                    if (event.eventType === 'goal') {
+                        if (event.teamKey === 'team1') {
+                            team1Goals++;
+                        } else if (event.teamKey === 'team2') {
+                            team2Goals++;
+                        }
+                    } else if (event.eventType === 'own-goal') {
+                        // Own goal counts for the opponent
+                        if (event.teamKey === 'team1') {
+                            team2Goals++;
+                        } else if (event.teamKey === 'team2') {
+                            team1Goals++;
+                        }
+                    }
+                });
+                
+                // Only process matches that have been played (have events or goals)
+                if (team1Goals > 0 || team2Goals > 0 || Object.keys(matchEventsData).length > 0) {
+                    const team1Position = match.teams[0];
+                    const team2Position = match.teams[1];
+                    
+                    console.log(`Match result: ${team1Position} ${team1Goals} - ${team2Goals} ${team2Position}`);
+                    
+                    // Update match statistics
+                    teamStandings[team1Position].matchesPlayed++;
+                    teamStandings[team2Position].matchesPlayed++;
+                    
+                    teamStandings[team1Position].goalsScored += team1Goals;
+                    teamStandings[team1Position].goalsConceded += team2Goals;
+                    
+                    teamStandings[team2Position].goalsScored += team2Goals;
+                    teamStandings[team2Position].goalsConceded += team1Goals;
+                    
+                    // Determine match result
+                    if (team1Goals > team2Goals) {
+                        // Team 1 wins
+                        teamStandings[team1Position].wins++;
+                        teamStandings[team1Position].points += 3;
+                        teamStandings[team2Position].losses++;
+                    } else if (team2Goals > team1Goals) {
+                        // Team 2 wins
+                        teamStandings[team2Position].wins++;
+                        teamStandings[team2Position].points += 3;
+                        teamStandings[team1Position].losses++;
+                    } else {
+                        // Draw
+                        teamStandings[team1Position].draws++;
+                        teamStandings[team1Position].points += 1;
+                        teamStandings[team2Position].draws++;
+                        teamStandings[team2Position].points += 1;
+                    }
+                    
+                    // Calculate goal difference
+                    teamStandings[team1Position].goalDifference = 
+                        teamStandings[team1Position].goalsScored - teamStandings[team1Position].goalsConceded;
+                    teamStandings[team2Position].goalDifference = 
+                        teamStandings[team2Position].goalsScored - teamStandings[team2Position].goalsConceded;
+                }
+            });
+            
+            console.log('Final standings:', teamStandings);
+            } catch (error) {
+                console.error('Error calculating standings:', error);
+                console.error('Error stack:', error.stack);
+            }
+        }
+
+        // Get team data by position
+        function getTeamData(position) {
+            if (!drawAssignments[position] || !teams[drawAssignments[position]]) {
+                return {
+                    name: `${position} - Not Drawn`,
+                    logo: null // No logo for undrawn teams
+                };
+            }
+            
+            const teamId = drawAssignments[position];
+            const teamData = teams[teamId];
+            if (!teamData || !teamData.teamName) {
+                return {
+                    name: `${position} - Team Data Missing`,
+                    logo: null
+                };
+            }
+            
+            const teamName = teamData.teamName;
+            return {
+                name: teamName,
+                logo: teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase()
+            };
+        }
+
+        // Render standings table
+        function renderStandings() {
+            const container = document.getElementById('groups-container');
+            container.innerHTML = '';
+            
+            // Update subtitle with current state
+            const subtitle = document.querySelector('.page-subtitle');
+            const drawnTeams = Object.keys(drawAssignments).length;
+            const totalPositions = 13; // A1-A4, B1-B3, C1-C3, D1-D3 (B4 removed due to dropout)
+            const completedMatches = Object.keys(matchEvents).length;
+            
+            if (subtitle) {
+                subtitle.textContent = `${drawnTeams}/${totalPositions} teams drawn • ${completedMatches} matches completed`;
+            }
+            
+            const groups = ['A', 'B', 'C', 'D'];
+            
+            groups.forEach(groupLetter => {
+                const groupSection = document.createElement('div');
+                groupSection.className = 'group-section';
+                
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'group-title';
+                groupTitle.textContent = `GROUP ${groupLetter}`;
+                
+                const table = document.createElement('table');
+                table.className = 'standings-table';
+                
+                // Table header
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>MP</th>
+                            <th>W</th>
+                            <th>D</th>
+                            <th>L</th>
+                            <th>P</th>
+                            <th>GS</th>
+                            <th>GC</th>
+                            <th>GD</th>
+                        </tr>
+                    </thead>
+                    <tbody id="group-${groupLetter}-body">
+                    </tbody>
+                `;
+                
+                // Get teams in this group and sort by points, then goal difference
+                const groupTeams = Object.values(teamStandings)
+                    .filter(team => team.group === groupLetter)
+                    .sort((a, b) => {
+                        if (b.points !== a.points) return b.points - a.points;
+                        if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+                        return b.goalsScored - a.goalsScored;
+                    });
+                
+                const tbody = table.querySelector(`#group-${groupLetter}-body`);
+                
+                groupTeams.forEach((teamStats, index) => {
+                    const teamData = getTeamData(teamStats.position);
+                    const row = document.createElement('tr');
+                    
+                    let goalDiffClass = 'goal-diff-zero';
+                    if (teamStats.goalDifference > 0) goalDiffClass = 'goal-diff-positive';
+                    else if (teamStats.goalDifference < 0) goalDiffClass = 'goal-diff-negative';
+                    
+                    const logoHtml = teamData.logo ? 
+                        `<img src="Team-Logos/${teamData.logo}.jpg" 
+                             alt="${teamData.name}" 
+                             class="team-logo-small"
+                             onerror="this.src='Team-Logos/${teamData.logo}.png'; this.onerror=function(){this.style.visibility='hidden'; this.style.width='30px'; this.style.height='30px';}">` :
+                        `<div class="team-logo-small" style="width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999;">${teamStats.position}</div>`;
+                    
+                    row.innerHTML = `
+                        <td class="team-name-cell">
+                            ${logoHtml}
+                            <span class="team-name">${teamData.name}</span>
+                        </td>
+                        <td>${teamStats.matchesPlayed}</td>
+                        <td class="wins-cell">${teamStats.wins}</td>
+                        <td class="draws-cell">${teamStats.draws}</td>
+                        <td class="losses-cell">${teamStats.losses}</td>
+                        <td class="points-cell">${teamStats.points}</td>
+                        <td>${teamStats.goalsScored}</td>
+                        <td>${teamStats.goalsConceded}</td>
+                        <td class="${goalDiffClass}">${teamStats.goalDifference > 0 ? '+' : ''}${teamStats.goalDifference}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+                
+                groupSection.appendChild(groupTitle);
+                groupSection.appendChild(table);
+                container.appendChild(groupSection);
+            });
+        }
+
+        // Firebase listeners
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            console.log('Teams loaded:', teams);
+            renderStandings();
+        });
+
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            console.log('Draw assignments loaded:', drawAssignments);
+            renderStandings();
+        });
+
+        database.ref('matchEvents').on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            console.log('Match events loaded:', matchEvents);
+            calculateStandings();
+            renderStandings();
+        });
+
+        // Initialize
+        initializeStandings();
+    </script>
+</body>
+</html>

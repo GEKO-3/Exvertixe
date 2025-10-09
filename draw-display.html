@@ -58,8 +58,12 @@
         }
 
         body {
-            font-family: 'Montserrat', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg-color) 0%, #1a1d21 100%);
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            background-attachment: fixed;
             color: var(--text-color);
             min-height: 100vh;
             padding: 20px;
@@ -114,22 +118,31 @@
         .header {
             text-align: center;
             margin-bottom: 40px;
+            padding: 20px 0;
+            background: rgba(26, 29, 33, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .title {
             font-family: 'Bebas Neue', cursive;
             font-size: 4rem;
-            color: var(--primary-color);
-            font-weight: 700;
-            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(3, 189, 237, 0.5);
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 3px;
         }
 
         .subtitle {
             font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
+            opacity: 0.9;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -144,11 +157,12 @@
         }
 
         .group {
-            background: var(--card-bg);
+            background: rgba(26, 29, 33, 0.4);
+            backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px;
-            border: 3px solid;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -160,7 +174,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
+            height: 3px;
             background: linear-gradient(90deg, transparent, currentColor, transparent);
         }
 
@@ -185,30 +199,35 @@
         }
 
         .group:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .group-title {
             font-family: 'Bebas Neue', cursive;
             font-size: 2.5rem;
-            font-weight: 700;
+            background: linear-gradient(135deg, currentColor, rgba(255, 255, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-align: center;
             margin-bottom: 25px;
             letter-spacing: 2px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
         .team-slot {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
             padding: 15px;
             margin-bottom: 15px;
             min-height: 80px;
             display: flex;
             transition: all 0.3s ease;
             position: relative;
+            backdrop-filter: blur(10px);
         }
 
         .team-slot:last-child {
@@ -216,9 +235,10 @@
         }
 
         .team-slot.filled {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: currentColor;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid currentColor;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
         }
 
         .position-label {
@@ -298,16 +318,22 @@
             color: rgba(255, 255, 255, 0.7);
             font-size: 1.2rem;
             margin: 100px 0;
+            background: rgba(26, 29, 33, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--primary-color);
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary-color);
+            border-right: 3px solid var(--accent-color);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 30px;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
@@ -357,9 +383,34 @@
                 box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
             }
             50% { 
-                transform: scale(1.05); 
+                transform: scale(1.02); 
                 box-shadow: 0 0 25px currentColor;
             }
+        }
+
+        /* Subtle animated outline for selected teams */
+        @keyframes subtleGlow {
+            0% {
+                box-shadow: 0 0 3px rgba(3, 189, 237, 0.3), 0 0 6px rgba(255, 107, 53, 0.2);
+            }
+            25% {
+                box-shadow: 0 0 4px rgba(255, 107, 53, 0.3), 0 0 8px rgba(3, 189, 237, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 3px rgba(3, 189, 237, 0.3), 0 0 6px rgba(255, 107, 53, 0.2);
+            }
+            75% {
+                box-shadow: 0 0 4px rgba(255, 107, 53, 0.3), 0 0 8px rgba(3, 189, 237, 0.2);
+            }
+            100% {
+                box-shadow: 0 0 3px rgba(3, 189, 237, 0.3), 0 0 6px rgba(255, 107, 53, 0.2);
+            }
+        }
+
+        .team-slot.team-selected {
+            border: 1px solid rgba(3, 189, 237, 0.5);
+            animation: subtleGlow 3s ease-in-out infinite;
+            position: relative;
         }
 
         /* Logo overlay styles */
@@ -528,7 +579,7 @@
 
     <div class="main-content">
         <div class="header">
-            <h1 class="title">FMSC 2025</h1>
+            <h1 class="title">FYFC 2025</h1>
             <h2 class="subtitle">Tournament Draw</h2>
         </div>
 
@@ -642,22 +693,6 @@
                 </div>
                 <div class="team-slot" data-position="B3">
                     <div class="position-label">B3</div>
-                    <div class="team-content">
-                        <div class="team-logo-small" style="display: none;">
-                            <img class="logo-img" alt="Team Logo">
-                        </div>
-                        <div class="team-name" style="display: none;"></div>
-                        <div class="team-loading">
-                            <div class="loading-dots">
-                                <div class="dot"></div>
-                                <div class="dot"></div>
-                                <div class="dot"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="team-slot" data-position="B4">
-                    <div class="position-label">B4</div>
                     <div class="team-content">
                         <div class="team-logo-small" style="display: none;">
                             <img class="logo-img" alt="Team Logo">
@@ -970,7 +1005,7 @@
             console.log('Current drawAssignments:', drawAssignments);
             console.log('Current teams:', Object.keys(teams).length, 'teams loaded');
             
-            const positions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+            const positions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
             let successCount = 0;
             let errorCount = 0;
             
@@ -1025,6 +1060,9 @@
                         logoImg.onload = () => {
                             logoContainer.style.display = 'block';
                         };
+                        
+                        // Add subtle animation for selected teams
+                        slot.classList.add('team-selected');
                         successCount++;
                     } else {
                         // Show loading state
@@ -1032,6 +1070,7 @@
                         teamNameElement.style.display = 'none';
                         teamLoadingElement.style.display = 'flex';
                         slot.classList.remove('filled');
+                        slot.classList.remove('team-selected');
                         logoContainer.style.display = 'none';
                         successCount++;
                     }

@@ -199,6 +199,114 @@
             box-shadow: 0 0 10px rgba(3, 189, 237, 0.3);
         }
 
+        .fouls-container {
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .fouls-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .fouls-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #ff8a50 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .fouls-layout {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .team-foul-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .team-foul-section.team1 {
+            justify-content: flex-end;
+        }
+
+        .team-foul-section.team2 {
+            justify-content: flex-start;
+        }
+
+        .foul-team-name {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .foul-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .foul-display {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            font-weight: bold;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-color);
+            padding: 8px 20px;
+            border-radius: 25px;
+            min-width: 60px;
+            text-align: center;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+        }
+
+        .foul-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--accent-color);
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.8rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .foul-btn:hover {
+            background: rgba(255, 107, 53, 0.4);
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+            transform: scale(1.1);
+        }
+
+        .foul-btn:active {
+            transform: scale(0.95);
+        }
+
+        .vs-divider {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            opacity: 0.7;
+        }
+
         .warning-text {
             font-size: 0.7rem;
             color: var(--warning-color);
@@ -434,6 +542,21 @@
             <div class="match-info" id="match-info"></div>
         </div>
 
+        <div class="fouls-container">
+            <div class="fouls-header">
+                <div class="fouls-title">TEAM FOULS</div>
+            </div>
+            <div class="fouls-layout">
+                <div class="team-foul-section team1" id="foul-section-team1">
+                    <!-- Team 1 fouls will be populated here -->
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="team-foul-section team2" id="foul-section-team2">
+                    <!-- Team 2 fouls will be populated here -->
+                </div>
+            </div>
+        </div>
+
         <div class="teams-layout" id="teams-layout">
             <!-- Teams will be populated here -->
         </div>
@@ -461,6 +584,7 @@
         let teams = {};
         let drawAssignments = {};
         let matchEvents = {};
+        let matchFouls = { team1: 0, team2: 0 };
         let teamLists = {};
         let currentMatchId = '';
 
@@ -497,6 +621,12 @@
             updatePlayerButtons();
         });
 
+        // Listen for match fouls
+        database.ref(`matchFouls/${currentMatchId}`).on('value', (snapshot) => {
+            matchFouls = snapshot.val() || { team1: 0, team2: 0 };
+            updateFoulDisplays();
+        });
+
         function loadMatch() {
             if (!currentMatchId) {
                 document.getElementById('match-title').textContent = 'Invalid Match';
@@ -520,40 +650,40 @@
             document.getElementById('match-title').textContent = `Match ${matchData.matchNumber}`;
             document.getElementById('match-info').textContent = `${team1Name} vs ${team2Name} • ${matchData.date} • ${matchData.time} • ${matchData.type}`;
 
+            // Create foul sections
+            createFoulSections(matchData.teams);
+            
             // Create team sections
             createTeamSections(matchData.teams);
         }
 
-        // Match schedule data - Updated tournament structure
-        // Group A: 4 teams, Group B: 4 teams, Group C: 3 teams, Group D: 3 teams
+        // Match schedule data - Updated tournament structure after team dropout
+        // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
         const matchSchedule = {
             'October 23': [
-                { teams: ['A1', 'A2'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['B1', 'B2'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['C1', 'C2'], type: 'Group C', time: '10:00 PM' }
+                { teams: ['A1', 'A2'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '10:15 PM' }
             ],
             'October 24': [
-                { teams: ['D1', 'D2'], type: 'Group D', time: '8:00 PM' },
-                { teams: ['A3', 'A4'], type: 'Group A', time: '9:00 PM' },
-                { teams: ['B3', 'B4'], type: 'Group B', time: '10:00 PM' },
-                { teams: ['C2', 'C3'], type: 'Group C', time: '11:00 PM' }
+                { teams: ['D1', 'D2'], type: 'Group D', time: '8:15 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '10:15 PM' }
             ],
             'October 25': [
-                { teams: ['A1', 'A3'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['B2', 'B3'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['D2', 'D3'], type: 'Group D', time: '10:00 PM' },
-                { teams: ['A2', 'A4'], type: 'Group A', time: '11:00 PM' }
+                { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '10:15 PM' }
             ],
             'October 26': [
-                { teams: ['B2', 'B4'], type: 'Group B', time: '8:00 PM' },
-                { teams: ['A1', 'A4'], type: 'Group A', time: '9:00 PM' },
-                { teams: ['C1', 'C3'], type: 'Group C', time: '10:00 PM' },
-                { teams: ['B1', 'B3'], type: 'Group B', time: '11:00 PM' }
+                { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '10:15 PM' }
             ],
             'October 27': [
-                { teams: ['A2', 'A3'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['D1', 'D3'], type: 'Group D', time: '9:00 PM' },
-                { teams: ['B1', 'B4'], type: 'Group B', time: '10:00 PM' }
+                { teams: ['C2', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '10:15 PM' }
             ]
         };
 
@@ -641,6 +771,41 @@
                 officials: teamList.officials || defaultOfficials,
                 exists: true
             };
+        }
+
+        function createFoulSections(teamPositions) {
+            const team1Section = document.getElementById('foul-section-team1');
+            const team2Section = document.getElementById('foul-section-team2');
+            
+            // Clear existing content
+            team1Section.innerHTML = '';
+            team2Section.innerHTML = '';
+            
+            // Team 1 fouls
+            const team1Data = getTeamData(teamPositions[0]);
+            if (team1Data) {
+                team1Section.innerHTML = `
+                    <div class="foul-team-name">${team1Data.name}</div>
+                    <div class="foul-counter">
+                        <button class="foul-btn" onclick="adjustFouls('team1', -1)">-</button>
+                        <div class="foul-display" id="fouls-team1">0</div>
+                        <button class="foul-btn" onclick="adjustFouls('team1', 1)">+</button>
+                    </div>
+                `;
+            }
+            
+            // Team 2 fouls
+            const team2Data = getTeamData(teamPositions[1]);
+            if (team2Data) {
+                team2Section.innerHTML = `
+                    <div class="foul-counter">
+                        <button class="foul-btn" onclick="adjustFouls('team2', -1)">-</button>
+                        <div class="foul-display" id="fouls-team2">0</div>
+                        <button class="foul-btn" onclick="adjustFouls('team2', 1)">+</button>
+                    </div>
+                    <div class="foul-team-name">${team2Data.name}</div>
+                `;
+            }
         }
 
         function createTeamSections(teamPositions) {
@@ -882,6 +1047,31 @@
             
             if (team1ScoreElement) team1ScoreElement.textContent = team1Goals;
             if (team2ScoreElement) team2ScoreElement.textContent = team2Goals;
+        }
+
+        function adjustFouls(teamKey, change) {
+            const newFoulCount = Math.max(0, matchFouls[teamKey] + change);
+            matchFouls[teamKey] = newFoulCount;
+            
+            // Update display
+            const foulElement = document.getElementById(`fouls-${teamKey}`);
+            if (foulElement) {
+                foulElement.textContent = newFoulCount;
+            }
+            
+            // Save to Firebase
+            database.ref(`matchFouls/${currentMatchId}/${teamKey}`).set(newFoulCount)
+                .catch(error => {
+                    console.error('Error updating fouls:', error);
+                });
+        }
+
+        function updateFoulDisplays() {
+            const team1FoulElement = document.getElementById('fouls-team1');
+            const team2FoulElement = document.getElementById('fouls-team2');
+            
+            if (team1FoulElement) team1FoulElement.textContent = matchFouls.team1 || 0;
+            if (team2FoulElement) team2FoulElement.textContent = matchFouls.team2 || 0;
         }
 
         // Handle dropdown item clicks using event delegation

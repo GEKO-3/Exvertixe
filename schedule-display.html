@@ -45,11 +45,10 @@
                 radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
                 radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
                 linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            background-attachment: fixed;
             color: var(--text-color);
             height: 100vh;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
+            padding: 5px;
             overflow: hidden;
         }
 
@@ -66,23 +65,23 @@
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
-            padding: 15px 0;
+            margin-bottom: 10px;
+            padding: 8px 0;
             background: rgba(26, 29, 33, 0.3);
             backdrop-filter: blur(20px);
-            border-radius: 15px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
         .tournament-title {
             font-family: 'Bebas Neue', cursive;
-            font-size: 3.5rem;
+            font-size: 3rem;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(3, 189, 237, 0.5);
+            text-shadow: 0 0 20px rgba(3, 189, 237, 0.5);
             margin-bottom: 8px;
             letter-spacing: 2px;
         }
@@ -99,24 +98,24 @@
         .schedule-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            flex: 1;
-            overflow: hidden;
-            padding: 0 15px;
-            max-height: calc(100vh - 140px);
+            gap: 10px;
+            padding: 0 10px;
+            height: 55vh;
+            margin-bottom: 15px;
         }
 
         .day-column {
             background: rgba(26, 29, 33, 0.4);
-            border-radius: 15px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 8px;
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             min-height: 0;
+            overflow: hidden;
         }
 
         .day-column:hover {
@@ -190,7 +189,7 @@
         }
 
         .match-type {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -200,12 +199,148 @@
             letter-spacing: 0.5px;
         }
 
-        .match-time {
+        .match-group {
+            color: var(--accent-color);
+            background: none;
+            -webkit-text-fill-color: var(--accent-color);
+        }
+
+        .knockout-section {
+            padding: 0 10px 10px 10px;
+            height: 35vh;
+            overflow: hidden;
+        }
+
+        .knockout-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .knockout-stages-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            height: calc(35vh - 60px);
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .knockout-match-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            align-items: center;
+        }
+
+        .stage-label {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .knockout-match {
+            background: rgba(26, 29, 33, 0.6);
+            border-radius: 8px;
+            padding: 10px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 220px;
+            height: fit-content;
+        }
+
+        .knockout-match:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .knockout-match-header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .knockout-match-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1rem;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+        }
+
+        .knockout-teams {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .knockout-team {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 10px;
+            border-radius: 12px;
             font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            width: 100%;
+        }
+
+        .knockout-vs {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.6rem;
+            font-weight: 700;
+        }
+
+        /* Subtle animated outline for selected teams */
+        @keyframes subtleGlow {
+            0% {
+                box-shadow: 0 0 3px rgba(3, 189, 237, 0.3), 0 0 6px rgba(255, 107, 53, 0.2);
+            }
+            25% {
+                box-shadow: 0 0 4px rgba(255, 107, 53, 0.3), 0 0 8px rgba(3, 189, 237, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 3px rgba(3, 189, 237, 0.3), 0 0 6px rgba(255, 107, 53, 0.2);
+            }
+            75% {
+                box-shadow: 0 0 4px rgba(255, 107, 53, 0.3), 0 0 8px rgba(3, 189, 237, 0.2);
+            }
+            100% {
+                box-shadow: 0 0 3px rgba(3, 189, 237, 0.3), 0 0 6px rgba(255, 107, 53, 0.2);
+            }
+        }
+
+        .team-selected {
+            border: 1px solid rgba(3, 189, 237, 0.5);
+            animation: subtleGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .knockout-team-selected {
+            border: 1px solid rgba(255, 107, 53, 0.5);
+            animation: subtleGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .match-time {
+            font-size: 0.6rem;
             color: rgba(255, 255, 255, 0.6);
             background: rgba(255, 255, 255, 0.05);
-            padding: 3px 8px;
-            border-radius: 15px;
+            padding: 2px 6px;
+            border-radius: 10px;
             font-weight: 500;
         }
 
@@ -422,7 +557,7 @@
 <body>
     <div class="schedule-container">
         <div class="header">
-            <h1 class="tournament-title">FMSC 2025</h1>
+            <h1 class="tournament-title">FYFC 2025</h1>
             <p class="schedule-subtitle">Tournament Schedule</p>
         </div>
         
@@ -462,6 +597,118 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Knockout Stages -->
+        <div class="knockout-section">
+            <h2 class="knockout-title">KNOCKOUT STAGES</h2>
+            
+            <div class="knockout-stages-container">
+                <!-- Quarter Final 1 -->
+                <div class="knockout-match-wrapper">
+                    <div class="stage-label">QUARTER FINAL</div>
+                    <div class="knockout-match">
+                        <div class="knockout-match-header">
+                            <div class="knockout-match-title">QUARTER FINAL 1</div>
+                        </div>
+                        <div class="knockout-teams">
+                            <div class="knockout-team">1st Place (Draw)</div>
+                            <div class="knockout-vs">VS</div>
+                            <div class="knockout-team">2nd Place (Draw)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quarter Final 2 -->
+                <div class="knockout-match-wrapper">
+                    <div class="stage-label">QUARTER FINAL</div>
+                    <div class="knockout-match">
+                        <div class="knockout-match-header">
+                            <div class="knockout-match-title">QUARTER FINAL 2</div>
+                        </div>
+                        <div class="knockout-teams">
+                            <div class="knockout-team">1st Place (Draw)</div>
+                            <div class="knockout-vs">VS</div>
+                            <div class="knockout-team">2nd Place (Draw)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quarter Final 3 -->
+                <div class="knockout-match-wrapper">
+                    <div class="stage-label">QUARTER FINAL</div>
+                    <div class="knockout-match">
+                        <div class="knockout-match-header">
+                            <div class="knockout-match-title">QUARTER FINAL 3</div>
+                        </div>
+                        <div class="knockout-teams">
+                            <div class="knockout-team">1st Place (Draw)</div>
+                            <div class="knockout-vs">VS</div>
+                            <div class="knockout-team">2nd Place (Draw)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quarter Final 4 -->
+                <div class="knockout-match-wrapper">
+                    <div class="stage-label">QUARTER FINAL</div>
+                    <div class="knockout-match">
+                        <div class="knockout-match-header">
+                            <div class="knockout-match-title">QUARTER FINAL 4</div>
+                        </div>
+                        <div class="knockout-teams">
+                            <div class="knockout-team">1st Place (Draw)</div>
+                            <div class="knockout-vs">VS</div>
+                            <div class="knockout-team">2nd Place (Draw)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Semi Final 1 -->
+                <div class="knockout-match-wrapper">
+                    <div class="stage-label">SEMI FINAL</div>
+                    <div class="knockout-match">
+                        <div class="knockout-match-header">
+                            <div class="knockout-match-title">SEMI FINAL 1</div>
+                        </div>
+                        <div class="knockout-teams">
+                            <div class="knockout-team">Winner Quarter Final 1</div>
+                            <div class="knockout-vs">VS</div>
+                            <div class="knockout-team">Winner Quarter Final 2</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Semi Final 2 -->
+                <div class="knockout-match-wrapper">
+                    <div class="stage-label">SEMI FINAL</div>
+                    <div class="knockout-match">
+                        <div class="knockout-match-header">
+                            <div class="knockout-match-title">SEMI FINAL 2</div>
+                        </div>
+                        <div class="knockout-teams">
+                            <div class="knockout-team">Winner Quarter Final 3</div>
+                            <div class="knockout-vs">VS</div>
+                            <div class="knockout-team">Winner Quarter Final 4</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Final -->
+                <div class="knockout-match-wrapper">
+                    <div class="stage-label">FINAL</div>
+                    <div class="knockout-match">
+                        <div class="knockout-match-header">
+                            <div class="knockout-match-title">FINAL</div>
+                        </div>
+                        <div class="knockout-teams">
+                            <div class="knockout-team">Winner Semi Final 1</div>
+                            <div class="knockout-vs">VS</div>
+                            <div class="knockout-team">Winner Semi Final 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -497,36 +744,33 @@
             }
         });
 
-        // Schedule data - Updated tournament structure
-        // Group A: 4 teams, Group B: 4 teams, Group C: 3 teams, Group D: 3 teams
+        // Schedule data - Updated tournament structure after team dropout
+        // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
         const scheduleData = {
             oct23: [
-                { teams: ['A1', 'A2'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['B1', 'B2'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['C1', 'C2'], type: 'Group C', time: '10:00 PM' }
+                { teams: ['A1', 'A2'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '10:15 PM' }
             ],
             oct24: [
-                { teams: ['D1', 'D2'], type: 'Group D', time: '8:00 PM' },
-                { teams: ['A3', 'A4'], type: 'Group A', time: '9:00 PM' },
-                { teams: ['B3', 'B4'], type: 'Group B', time: '10:00 PM' },
-                { teams: ['C2', 'C3'], type: 'Group C', time: '11:00 PM' }
+                { teams: ['D1', 'D2'], type: 'Group D', time: '8:15 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '10:15 PM' }
             ],
             oct25: [
-                { teams: ['A1', 'A3'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['B2', 'B3'], type: 'Group B', time: '9:00 PM' },
-                { teams: ['D2', 'D3'], type: 'Group D', time: '10:00 PM' },
-                { teams: ['A2', 'A4'], type: 'Group A', time: '11:00 PM' }
+                { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '10:15 PM' }
             ],
             oct26: [
-                { teams: ['B2', 'B4'], type: 'Group B', time: '8:00 PM' },
-                { teams: ['A1', 'A4'], type: 'Group A', time: '9:00 PM' },
-                { teams: ['C1', 'C3'], type: 'Group C', time: '10:00 PM' },
-                { teams: ['B1', 'B3'], type: 'Group B', time: '11:00 PM' }
+                { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '9:15 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '10:15 PM' }
             ],
             oct27: [
-                { teams: ['A2', 'A3'], type: 'Group A', time: '8:00 PM' },
-                { teams: ['D1', 'D3'], type: 'Group D', time: '9:00 PM' },
-                { teams: ['B1', 'B4'], type: 'Group B', time: '10:00 PM' }
+                { teams: ['C2', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '10:15 PM' }
             ]
         };
 
@@ -539,6 +783,7 @@
             drawAssignments = snapshot.val() || {};
             console.log('Draw assignments updated:', drawAssignments);
             updateScheduleDisplay();
+            updateKnockoutAnimations();
         });
 
         // Listen for team data changes
@@ -546,6 +791,7 @@
             teams = snapshot.val() || {};
             console.log('Teams data updated:', Object.keys(teams).length, 'teams loaded');
             updateScheduleDisplay();
+            updateKnockoutAnimations();
         });
 
         function getTeamData(position) {
@@ -602,7 +848,7 @@
             return teamElement;
         }
 
-        function createMatchElement(matchData) {
+        function createMatchElement(matchData, matchNumber) {
             const matchElement = document.createElement('div');
             matchElement.className = 'match-card';
             
@@ -623,7 +869,7 @@
             
             matchElement.innerHTML = `
                 <div class="match-header">
-                    <span class="match-type">${matchData.type}</span>
+                    <span class="match-type">MATCH ${matchNumber} - <span class="match-group">${matchData.type}</span></span>
                     <span class="match-time">${matchData.time}</span>
                 </div>
             `;
@@ -634,44 +880,102 @@
         }
 
         function updateScheduleDisplay() {
+            let matchCounter = 1;
+            
             // Update October 23 matches
             const oct23Container = document.getElementById('oct23-matches');
             oct23Container.innerHTML = '';
             scheduleData.oct23.forEach(matchData => {
-                oct23Container.appendChild(createMatchElement(matchData));
+                oct23Container.appendChild(createMatchElement(matchData, matchCounter));
+                matchCounter++;
             });
             
             // Update October 24 matches
             const oct24Container = document.getElementById('oct24-matches');
             oct24Container.innerHTML = '';
             scheduleData.oct24.forEach(matchData => {
-                oct24Container.appendChild(createMatchElement(matchData));
+                oct24Container.appendChild(createMatchElement(matchData, matchCounter));
+                matchCounter++;
             });
             
             // Update October 25 matches
             const oct25Container = document.getElementById('oct25-matches');
             oct25Container.innerHTML = '';
             scheduleData.oct25.forEach(matchData => {
-                oct25Container.appendChild(createMatchElement(matchData));
+                oct25Container.appendChild(createMatchElement(matchData, matchCounter));
+                matchCounter++;
             });
             
             // Update October 26 matches
             const oct26Container = document.getElementById('oct26-matches');
             oct26Container.innerHTML = '';
             scheduleData.oct26.forEach(matchData => {
-                oct26Container.appendChild(createMatchElement(matchData));
+                oct26Container.appendChild(createMatchElement(matchData, matchCounter));
+                matchCounter++;
             });
             
             // Update October 27 matches
             const oct27Container = document.getElementById('oct27-matches');
             oct27Container.innerHTML = '';
             scheduleData.oct27.forEach(matchData => {
-                oct27Container.appendChild(createMatchElement(matchData));
+                oct27Container.appendChild(createMatchElement(matchData, matchCounter));
+                matchCounter++;
             });
         }
 
-        // Initial load
+        // Function to update knockout team animations based on actual team assignments
+        function updateKnockoutAnimations() {
+            const knockoutTeams = document.querySelectorAll('.knockout-team');
+            knockoutTeams.forEach(team => {
+                const teamText = team.textContent.trim();
+                
+                // Check if this is an actual team name (not placeholder)
+                const isActualTeam = !teamText.includes('Draw') && 
+                                   !teamText.includes('Winner') && 
+                                   !teamText.includes('Place') && 
+                                   !teamText.includes('1st') && 
+                                   !teamText.includes('2nd') &&
+                                   teamText.length > 3 &&
+                                   !teamText.includes('Quarter') &&
+                                   !teamText.includes('Semi');
+                
+                if (isActualTeam) {
+                    team.classList.add('knockout-team-selected');
+                } else {
+                    team.classList.remove('knockout-team-selected');
+                }
+            });
+        }
+
+        // Initial load - force schedule display
+        document.addEventListener('DOMContentLoaded', function() {
+            updateScheduleDisplay();
+        });
+        
+        // Also call immediately in case DOM is already loaded
         updateScheduleDisplay();
+        
+        // Update all matches when draw assignments change
+        function updateAllMatches() {
+            updateScheduleDisplay();
+            
+            // Check knockout teams for actual team assignments (not placeholders)
+            const knockoutTeams = document.querySelectorAll('.knockout-team');
+            knockoutTeams.forEach(team => {
+                const teamText = team.textContent.trim();
+                // Only animate if it's an actual team name (not placeholder text)
+                if (!teamText.includes('Draw') && 
+                    !teamText.includes('Winner') && 
+                    !teamText.includes('Place') && 
+                    !teamText.includes('1st') && 
+                    !teamText.includes('2nd') &&
+                    teamText.length > 3) {
+                    team.classList.add('knockout-team-selected');
+                } else {
+                    team.classList.remove('knockout-team-selected');
+                }
+            });
+        }
     </script>
 </body>
 </html>

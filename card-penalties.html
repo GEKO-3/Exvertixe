@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Card Penalties</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --success-color: #44ff44;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+            --yellow-card: #ffff00;
+            --red-card: #ff0000;
+            --paid-color: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(26, 29, 33, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .cards-container {
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .cards-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .card-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .card-item.paid {
+            background: rgba(102, 102, 102, 0.2);
+            opacity: 0.6;
+            border-color: var(--paid-color);
+        }
+
+        .card-item.paid:hover {
+            background: rgba(102, 102, 102, 0.25);
+        }
+
+        .card-icons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 20px;
+            min-width: 80px;
+        }
+
+        .card-icon {
+            width: 25px;
+            height: 35px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #000;
+            position: relative;
+        }
+
+        .card-icon.yellow {
+            background: var(--yellow-card);
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        }
+
+        .card-icon.red {
+            background: var(--red-card);
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .card-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .player-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .team-logo-card {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .player-details {
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .player-team {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .fine-amount {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            color: var(--error-color);
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .fine-amount.paid {
+            color: var(--paid-color);
+            text-decoration: line-through;
+        }
+
+        .pay-btn {
+            background: var(--success-color);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pay-btn:hover {
+            background: #55ff55;
+            transform: scale(1.05);
+        }
+
+        .pay-btn:disabled {
+            background: var(--paid-color);
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .paid-label {
+            background: var(--success-color);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 40px;
+            color: var(--primary-color);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(3, 189, 237, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--warning-color);
+            font-style: italic;
+        }
+
+        /* Payment Confirmation Dialog */
+        .payment-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .dialog-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .dialog-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .dialog-message {
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .dialog-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dialog-btn.confirm {
+            background: var(--success-color);
+            color: #000;
+        }
+
+        .dialog-btn.confirm:hover {
+            background: #55ff55;
+        }
+
+        .dialog-btn.cancel {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .dialog-btn.cancel:hover {
+            background: #ff5555;
+        }
+
+        @media (max-width: 768px) {
+            .card-item {
+                padding: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .card-icons {
+                margin-right: 15px;
+                min-width: 60px;
+            }
+            
+            .card-actions {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .player-name {
+                font-size: 1rem;
+            }
+            
+            .fine-amount {
+                font-size: 1.2rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="page-title">CARD PENALTIES</h1>
+            <div class="page-subtitle">Yellow & Red Card Management</div>
+        </div>
+
+        <div class="cards-container">
+            <div class="cards-title">🟨🟥 CARD PENALTIES & FINES</div>
+            
+            <div class="cards-list" id="cards-list">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div>Loading card penalties...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Confirmation Dialog -->
+    <div class="payment-dialog" id="payment-dialog">
+        <div class="dialog-content">
+            <div class="dialog-title">Confirm Payment</div>
+            <div class="dialog-message" id="dialog-message">
+                Are you sure you want to mark this fine as paid?
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn confirm" onclick="confirmPayment()">Confirm Payment</button>
+                <button class="dialog-btn cancel" onclick="cancelPayment()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data storage
+        let teams = {};
+        let drawAssignments = {};
+        let matchEvents = {};
+        let cardPayments = {};
+        let playerCards = {};
+        let currentPaymentPlayer = null;
+
+        // Fine amounts
+        const FINE_AMOUNTS = {
+            yellow: 10,
+            red: 25
+        };
+
+        // Calculate player cards from match events
+        function calculatePlayerCards() {
+            try {
+                playerCards = {};
+                let totalYellow = 0;
+                let totalRed = 0;
+
+                console.log('Processing match events for cards:', matchEvents);
+
+                // Process each match's events
+                Object.keys(matchEvents).forEach(matchId => {
+                    const matchEventData = matchEvents[matchId];
+
+                    Object.keys(matchEventData).forEach(eventKey => {
+                        const event = matchEventData[eventKey];
+                        
+                        // Only process card events
+                        if (event.eventType === 'yellow' || event.eventType === 'red') {
+                            const playerKey = `${event.teamKey}-${event.personKey}`;
+                            const playerName = event.playerName || 'Unknown Player';
+                            const teamKey = event.teamKey;
+                            const cardType = event.eventType;
+                            
+                            console.log(`Card found: ${cardType} card for ${playerName} (${playerKey})`);
+                            
+                            // Initialize player if not exists
+                            if (!playerCards[playerKey]) {
+                                playerCards[playerKey] = {
+                                    playerName: playerName,
+                                    teamKey: teamKey,
+                                    matchId: matchId,
+                                    yellow: 0,
+                                    red: 0,
+                                    events: []
+                                };
+                            }
+                            
+                            playerCards[playerKey][cardType]++;
+                            playerCards[playerKey].events.push({
+                                type: cardType,
+                                eventKey: eventKey,
+                                matchId: matchId
+                            });
+
+                            if (cardType === 'yellow') totalYellow++;
+                            else if (cardType === 'red') totalRed++;
+                        }
+                    });
+                });
+
+                console.log('Final player cards:', playerCards);
+                console.log(`Total: ${totalYellow} yellow, ${totalRed} red`);
+
+            } catch (error) {
+                console.error('Error calculating player cards:', error);
+            }
+        }
+
+        // Get team data for a player
+        function getPlayerTeamData(teamKey, matchId) {
+            // Parse match ID to determine team positions
+            const matchParts = matchId.split('-');
+            if (matchParts.length >= 2) {
+                const teamsMatch = matchParts[1].match(/^(.+)vs(.+)$/);
+                if (teamsMatch) {
+                    const team1Position = teamsMatch[1];
+                    const team2Position = teamsMatch[2];
+                    
+                    const position = teamKey === 'team1' ? team1Position : team2Position;
+                    
+                    if (drawAssignments[position] && teams[drawAssignments[position]]) {
+                        const teamId = drawAssignments[position];
+                        const teamData = teams[teamId];
+                        return {
+                            name: teamData.teamName,
+                            logo: teamData.teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase(),
+                            position: position
+                        };
+                    }
+                }
+            }
+            
+            return {
+                name: `Team ${teamKey}`,
+                logo: null,
+                position: teamKey
+            };
+        }
+
+        // Show payment dialog
+        function showPaymentDialog(playerKey) {
+            const player = playerCards[playerKey];
+            const fine = (player.yellow * FINE_AMOUNTS.yellow) + (player.red * FINE_AMOUNTS.red);
+            
+            currentPaymentPlayer = playerKey;
+            
+            const message = document.getElementById('dialog-message');
+            message.innerHTML = `
+                <strong>${player.playerName}</strong><br>
+                ${player.yellow} Yellow Card${player.yellow !== 1 ? 's' : ''} ($${player.yellow * FINE_AMOUNTS.yellow})<br>
+                ${player.red} Red Card${player.red !== 1 ? 's' : ''} ($${player.red * FINE_AMOUNTS.red})<br>
+                <strong>Total Fine: $${fine}</strong>
+            `;
+            
+            document.getElementById('payment-dialog').style.display = 'flex';
+        }
+
+        // Confirm payment
+        function confirmPayment() {
+            if (currentPaymentPlayer) {
+                const paymentData = {
+                    paid: true,
+                    paidAt: new Date().toISOString(),
+                    playerName: playerCards[currentPaymentPlayer].playerName,
+                    fine: (playerCards[currentPaymentPlayer].yellow * FINE_AMOUNTS.yellow) + 
+                          (playerCards[currentPaymentPlayer].red * FINE_AMOUNTS.red)
+                };
+
+                database.ref(`cardPayments/${currentPaymentPlayer}`).set(paymentData)
+                    .then(() => {
+                        console.log('Payment recorded successfully');
+                        cancelPayment();
+                    })
+                    .catch(error => {
+                        console.error('Error recording payment:', error);
+                        alert('Error recording payment. Please try again.');
+                    });
+            }
+        }
+
+        // Cancel payment dialog
+        function cancelPayment() {
+            document.getElementById('payment-dialog').style.display = 'none';
+            currentPaymentPlayer = null;
+        }
+
+        // Render cards list
+        function renderCards() {
+            const container = document.getElementById('cards-list');
+            
+            // Convert playerCards to array and sort (unpaid first, then by total fine amount)
+            const sortedPlayers = Object.keys(playerCards)
+                .map(key => ({
+                    key: key,
+                    ...playerCards[key],
+                    paid: cardPayments[key] && cardPayments[key].paid,
+                    fine: (playerCards[key].yellow * FINE_AMOUNTS.yellow) + (playerCards[key].red * FINE_AMOUNTS.red)
+                }))
+                .sort((a, b) => {
+                    // Unpaid first
+                    if (a.paid !== b.paid) return a.paid ? 1 : -1;
+                    // Then by fine amount (highest first)
+                    return b.fine - a.fine;
+                });
+
+            if (sortedPlayers.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        <h3>No Cards Issued Yet</h3>
+                        <p>Yellow and red cards will appear here once they are issued during matches.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            sortedPlayers.forEach(player => {
+                const teamData = getPlayerTeamData(player.teamKey, player.matchId);
+                
+                const cardItem = document.createElement('div');
+                cardItem.className = `card-item ${player.paid ? 'paid' : ''}`;
+                
+                const logoHtml = teamData.logo ? 
+                    `<img src="Team-Logos/${teamData.logo}.jpg" 
+                         alt="${teamData.name}" 
+                         class="team-logo-card"
+                         onerror="this.src='Team-Logos/${teamData.logo}.png'; this.onerror=function(){this.style.visibility='hidden';}">` :
+                    `<div class="team-logo-card" style="background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999;">${teamData.position}</div>`;
+
+                let cardIconsHtml = '';
+                if (player.yellow > 0) {
+                    cardIconsHtml += `<div class="card-icon yellow">${player.yellow > 1 ? `<span class="card-count">${player.yellow}</span>` : ''}</div>`;
+                }
+                if (player.red > 0) {
+                    cardIconsHtml += `<div class="card-icon red">${player.red > 1 ? `<span class="card-count">${player.red}</span>` : ''}</div>`;
+                }
+
+                const actionHtml = player.paid ? 
+                    `<div class="paid-label">Paid</div>` :
+                    `<div class="fine-amount">$${player.fine}</div>
+                     <button class="pay-btn" onclick="showPaymentDialog('${player.key}')">Pay</button>`;
+
+                cardItem.innerHTML = `
+                    <div class="card-icons">
+                        ${cardIconsHtml}
+                    </div>
+                    <div class="player-info">
+                        ${logoHtml}
+                        <div class="player-details">
+                            <div class="player-name">${player.playerName}</div>
+                            <div class="player-team">${teamData.name}</div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        ${actionHtml}
+                    </div>
+                `;
+
+                container.appendChild(cardItem);
+            });
+        }
+
+        // Firebase listeners
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            console.log('Teams loaded:', teams);
+            renderCards();
+        });
+
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            console.log('Draw assignments loaded:', drawAssignments);
+            renderCards();
+        });
+
+        database.ref('matchEvents').on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            console.log('Match events loaded:', matchEvents);
+            calculatePlayerCards();
+            renderCards();
+        });
+
+        database.ref('cardPayments').on('value', (snapshot) => {
+            cardPayments = snapshot.val() || {};
+            console.log('Card payments loaded:', cardPayments);
+            renderCards();
+        });
+
+        // Close dialog when clicking outside
+        document.getElementById('payment-dialog').addEventListener('click', (e) => {
+            if (e.target.id === 'payment-dialog') {
+                cancelPayment();
+            }
+        });
+
+        // Initial render
+        calculatePlayerCards();
+        renderCards();
+    </script>
+</body>
+</html>

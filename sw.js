@@ -1,12 +1,18 @@
-const CACHE_NAME = 'fmsc-control-v2';
+const CACHE_NAME = 'fmsc-control-v5';
 const urlsToCache = [
+  './index.html',
   './draw-control.html',
   './draw-display.html',
   './schedule-display.html',
   './match-management.html',
   './match-detail.html',
+  './team-standings.html',
+  './top-scorers.html',
+  './card-penalties.html',
+  './admin.html',
   './manifest.json',
-  './Tounament logo.svg'
+  './Tounament logo.svg',
+  './icon-192x192.png'
 ];
 
 // Install event - cache resources
