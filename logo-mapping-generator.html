@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Logo Mapping Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .team-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .team-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .logo-preview {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px;
+            margin-right: 15px;
+        }
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .matched { background: #4CAF50; }
+        .unmatched { background: #f44336; }
+        .partial { background: #ff9800; }
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            border-left: 4px solid #03bded;
+        }
+        .recommendation {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-top: 10px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #03bded;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 20px;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        .copy-btn {
+            background: #03bded;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #029ac0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 FMSC 2025 Team Logo Mapping Generator</h1>
+            <p>Analyzing Firebase teams and generating logo mappings</p>
+        </div>
+        
+        <div class="section">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <div>Fetching team data from Firebase...</div>
+            </div>
+        </div>
+
+        <div class="section" id="stats-section" style="display: none;">
+            <h2>📊 Analysis Summary</h2>
+            <div class="stats" id="stats"></div>
+        </div>
+
+        <div class="section" id="teams-section" style="display: none;">
+            <h2>🏅 Team Analysis</h2>
+            <div class="grid" id="teams-grid"></div>
+        </div>
+
+        <div class="section" id="mapping-section" style="display: none;">
+            <h2>🔧 Generated Logo Mapping Code</h2>
+            <p>Copy this code and update your HTML files:</p>
+            <div class="code-block" id="mapping-code"></div>
+            <button class="copy-btn" onclick="copyMapping()">📋 Copy Mapping</button>
+        </div>
+
+        <div class="section" id="files-section" style="display: none;">
+            <h2>📁 Logo Files Status</h2>
+            <div id="files-analysis"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Available logos in the logos directory
+        const availableLogos = [
+            'amigos.jpg',
+            'best.jpg',
+            'brave_generation_sports_club.jpg',
+            'foemathi.jpg',
+            'foemathi_jr.jpg',
+            'goalhians.jpg',
+            'goalhi_sports_club.jpg',
+            'g_star_sports_club.jpg',
+            'kanmathi_fc.jpg',
+            'kanmathi_sc.jpg',
+            'laamu_blues.jpg',
+            'lecrose_sports_club.jpg',
+            'maahinna_united.jpg',
+            'outreef_sports_club.jpg',
+            'youth_academy.jpg'
+        ];
+
+        let firebaseTeams = {};
+        let teamAnalysis = [];
+        let generatedMapping = {};
+
+        // Load teams from Firebase
+        database.ref('applications').once('value')
+            .then((snapshot) => {
+                firebaseTeams = snapshot.val() || {};
+                analyzeTeams();
+                displayResults();
+            })
+            .catch((error) => {
+                console.error('Error loading teams:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #f44336;">
+                        ❌ Error connecting to Firebase: ${error.message}
+                    </div>
+                `;
+            });
+
+        function analyzeTeams() {
+            const teamNames = Object.values(firebaseTeams).map(team => team.teamName).filter(name => name);
+            console.log('Found teams in Firebase:', teamNames);
+            
+            teamNames.forEach(teamName => {
+                const analysis = analyzeTeamName(teamName);
+                teamAnalysis.push(analysis);
+                
+                // Generate mapping entry
+                if (analysis.recommendedFilename) {
+                    generatedMapping[teamName] = analysis.recommendedFilename.replace('.jpg', '');
+                }
+            });
+        }
+
+        function analyzeTeamName(teamName) {
+            // Generate standardized filename
+            const standardFilename = teamName
+                .replace(/[^a-zA-Z0-9\s]/g, '')
+                .replace(/\s+/g, '_')
+                .toLowerCase() + '.jpg';
+            
+            // Check if file exists in available logos
+            const fileExists = availableLogos.includes(standardFilename);
+            
+            // Try to find best match
+            let bestMatch = null;
+            let matchScore = 0;
+            
+            availableLogos.forEach(logoFile => {
+                const logoName = logoFile.replace('.jpg', '').replace(/_/g, ' ');
+                const teamNameNorm = teamName.toLowerCase();
+                const logoNameNorm = logoName.toLowerCase();
+                
+                // Calculate similarity score
+                let score = 0;
+                if (logoNameNorm === teamNameNorm) score = 100;
+                else if (logoNameNorm.includes(teamNameNorm) || teamNameNorm.includes(logoNameNorm)) score = 80;
+                else {
+                    // Check word matches
+                    const teamWords = teamNameNorm.split(' ');
+                    const logoWords = logoNameNorm.split(' ');
+                    const commonWords = teamWords.filter(word => logoWords.includes(word));
+                    score = (commonWords.length / Math.max(teamWords.length, logoWords.length)) * 60;
+                }
+                
+                if (score > matchScore) {
+                    matchScore = score;
+                    bestMatch = logoFile;
+                }
+            });
+
+            let status = 'unmatched';
+            let recommendedFilename = standardFilename;
+            let recommendation = `Create logo file: ${standardFilename}`;
+            
+            if (fileExists) {
+                status = 'matched';
+                recommendation = 'Perfect match - no action needed';
+            } else if (bestMatch && matchScore > 50) {
+                status = 'partial';
+                recommendedFilename = bestMatch;
+                recommendation = `Use existing logo: ${bestMatch} (${matchScore.toFixed(0)}% match)`;
+            }
+
+            return {
+                teamName,
+                status,
+                standardFilename,
+                recommendedFilename,
+                bestMatch,
+                matchScore,
+                recommendation,
+                fileExists
+            };
+        }
+
+        function displayResults() {
+            document.getElementById('loading').style.display = 'none';
+            
+            // Display stats
+            const matched = teamAnalysis.filter(t => t.status === 'matched').length;
+            const partial = teamAnalysis.filter(t => t.status === 'partial').length;
+            const unmatched = teamAnalysis.filter(t => t.status === 'unmatched').length;
+            
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-item">
+                    <span class="stat-number" style="color: #4CAF50;">${matched}</span>
+                    Fully Matched
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" style="color: #ff9800;">${partial}</span>
+                    Partial Match
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" style="color: #f44336;">${unmatched}</span>
+                    Need Logo Files
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" style="color: #03bded;">${teamAnalysis.length}</span>
+                    Total Teams
+                </div>
+            `;
+            document.getElementById('stats-section').style.display = 'block';
+
+            // Display team cards
+            const teamsGrid = document.getElementById('teams-grid');
+            teamsGrid.innerHTML = teamAnalysis.map(team => `
+                <div class="team-card">
+                    <div class="team-name">${team.teamName}</div>
+                    <div class="status-badge ${team.status}">${team.status}</div>
+                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                        <img src="./logos/${team.recommendedFilename}" class="logo-preview" 
+                             alt="${team.teamName}" 
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjM2EzYTNhIi8+Cjx0ZXh0IHg9IjMwIiB5PSIzNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Tm8gTG9nbzwvdGV4dD4KPHN2Zz4K'">
+                        <div>
+                            <strong>File:</strong> ${team.recommendedFilename}<br>
+                            <strong>Match:</strong> ${team.matchScore.toFixed(0)}%
+                        </div>
+                    </div>
+                    <div class="recommendation">
+                        💡 <strong>Recommendation:</strong> ${team.recommendation}
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('teams-section').style.display = 'block';
+
+            // Generate mapping code
+            const mappingEntries = Object.entries(generatedMapping)
+                .map(([teamName, filename]) => `                '${teamName}': '${filename}'`)
+                .join(',\n');
+            
+            const mappingCode = `const logoMap = {
+${mappingEntries}
+            };`;
+
+            document.getElementById('mapping-code').textContent = mappingCode;
+            document.getElementById('mapping-section').style.display = 'block';
+
+            // Files analysis
+            const usedFiles = teamAnalysis.map(t => t.recommendedFilename);
+            const unusedFiles = availableLogos.filter(logo => !usedFiles.includes(logo));
+            const missingFiles = teamAnalysis.filter(t => !t.fileExists).map(t => t.standardFilename);
+
+            document.getElementById('files-analysis').innerHTML = `
+                <div class="grid">
+                    <div class="team-card">
+                        <h3 style="color: #4CAF50;">✅ Used Logo Files (${usedFiles.length})</h3>
+                        ${usedFiles.map(file => `<div>• ${file}</div>`).join('')}
+                    </div>
+                    <div class="team-card">
+                        <h3 style="color: #ff9800;">⚠️ Unused Logo Files (${unusedFiles.length})</h3>
+                        ${unusedFiles.map(file => `<div>• ${file}</div>`).join('')}
+                    </div>
+                    <div class="team-card">
+                        <h3 style="color: #f44336;">❌ Missing Logo Files (${missingFiles.length})</h3>
+                        ${missingFiles.map(file => `<div>• ${file}</div>`).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('files-section').style.display = 'block';
+        }
+
+        function copyMapping() {
+            const mappingCode = document.getElementById('mapping-code').textContent;
+            navigator.clipboard.writeText(mappingCode).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.style.background = '#4CAF50';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#03bded';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

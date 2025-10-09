@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Team Names Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+        }
+        .team-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #3a3a3a;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-left: auto;
+        }
+        .matched { background: #4CAF50; }
+        .unmatched { background: #f44336; }
+        .partial { background: #ff9800; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        th {
+            background: #333;
+        }
+        .logo-preview {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-right: 10px;
+        }
+        .error { color: #f44336; }
+        .success { color: #4CAF50; }
+        .warning { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase Team Names vs Logo Mapping Analysis</h1>
+        
+        <div class="section">
+            <h2>Loading Firebase Data...</h2>
+            <div id="loading">Connecting to Firebase...</div>
+        </div>
+
+        <div class="section" id="teams-section" style="display: none;">
+            <h2>Teams from Firebase Applications</h2>
+            <div id="teams-list"></div>
+        </div>
+
+        <div class="section" id="mapping-section" style="display: none;">
+            <h2>Team Name to Logo Mapping Analysis</h2>
+            <div id="mapping-analysis"></div>
+        </div>
+
+        <div class="section" id="recommendations-section" style="display: none;">
+            <h2>Recommendations</h2>
+            <div id="recommendations"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Available logos in the logos directory
+        const availableLogos = [
+            'amigos.jpg',
+            'best.jpg',
+            'brave_generation_sports_club.jpg',
+            'foemathi.jpg',
+            'foemathi_jr.jpg',
+            'goalhians.jpg',
+            'goalhi_sports_club.jpg',
+            'g_star_sports_club.jpg',
+            'kanmathi_fc.jpg',
+            'kanmathi_sc.jpg',
+            'laamu_blues.jpg',
+            'lecrose_sports_club.jpg',
+            'maahinna_united.jpg',
+            'outreef_sports_club.jpg',
+            'youth_academy.jpg'
+        ];
+
+        // Current logo mapping from your files
+        const currentLogoMap = {
+            'Amigos': 'amigos',
+            'Best': 'best',
+            'Brave Generation Sports Club': 'brave_generation_sports_club',
+            'Foemathi': 'foemathi',
+            'Foemathi Jr': 'foemathi_jr',
+            'Goalhians': 'goalhians',
+            'Goalhi Sports Club': 'goalhi_sports_club',
+            'G Star Sports Club': 'g_star_sports_club',
+            'Kanmathi FC': 'kanmathi_fc',
+            'Kanmathi SC': 'kanmathi_sc',
+            'Laamu Blues': 'laamu_blues',
+            'LeCrose Sports Club': 'lecrose_sports_club',
+            'Maahinna United': 'maahinna_united',
+            'Outreef Sports Club': 'outreef_sports_club',
+            'Youth Academy': 'youth_academy'
+        };
+
+        let firebaseTeams = {};
+        let analysis = [];
+
+        // Load teams from Firebase
+        database.ref('applications').once('value')
+            .then((snapshot) => {
+                firebaseTeams = snapshot.val() || {};
+                document.getElementById('loading').innerHTML = '<span class="success">✓ Connected to Firebase successfully!</span>';
+                
+                analyzeTeams();
+                displayResults();
+            })
+            .catch((error) => {
+                console.error('Error loading teams:', error);
+                document.getElementById('loading').innerHTML = '<span class="error">✗ Error connecting to Firebase: ' + error.message + '</span>';
+            });
+
+        function analyzeTeams() {
+            const teamNames = Object.values(firebaseTeams).map(team => team.teamName).filter(name => name);
+            
+            console.log('Firebase team names:', teamNames);
+            console.log('Current logo map keys:', Object.keys(currentLogoMap));
+            
+            teamNames.forEach(teamName => {
+                let status = 'unmatched';
+                let logoFile = null;
+                let recommendation = null;
+                
+                // Check for exact match
+                if (currentLogoMap[teamName]) {
+                    const mappedFile = currentLogoMap[teamName] + '.jpg';
+                    if (availableLogos.includes(mappedFile)) {
+                        status = 'matched';
+                        logoFile = mappedFile;
+                    } else {
+                        status = 'partial';
+                        recommendation = `Logo mapping exists but file ${mappedFile} not found`;
+                    }
+                } else {
+                    // Check for partial matches
+                    const normalizedName = teamName.toLowerCase();
+                    const possibleMatches = Object.keys(currentLogoMap).filter(key => 
+                        key.toLowerCase().includes(normalizedName) || normalizedName.includes(key.toLowerCase())
+                    );
+                    
+                    if (possibleMatches.length > 0) {
+                        status = 'partial';
+                        recommendation = `Possible matches: ${possibleMatches.join(', ')}`;
+                    } else {
+                        // Generate fallback filename
+                        const fallbackFilename = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase() + '.jpg';
+                        recommendation = `Add mapping: '${teamName}': '${fallbackFilename.replace('.jpg', '')}'`;
+                    }
+                }
+                
+                analysis.push({
+                    teamName,
+                    status,
+                    logoFile,
+                    recommendation
+                });
+            });
+        }
+
+        function displayResults() {
+            // Display teams
+            const teamsSection = document.getElementById('teams-section');
+            const teamsList = document.getElementById('teams-list');
+            
+            let teamsHtml = '<table><tr><th>Team Name</th><th>Status</th><th>Logo Preview</th></tr>';
+            
+            analysis.forEach(item => {
+                const statusClass = item.status;
+                const logoPreview = item.logoFile ? 
+                    `<img src="./logos/${item.logoFile}" class="logo-preview" alt="${item.teamName}" onerror="this.style.display='none'">` : 
+                    '<span class="error">No logo</span>';
+                
+                teamsHtml += `
+                    <tr>
+                        <td>${item.teamName}</td>
+                        <td><span class="status ${statusClass}">${item.status.toUpperCase()}</span></td>
+                        <td>${logoPreview}</td>
+                    </tr>
+                `;
+            });
+            
+            teamsHtml += '</table>';
+            teamsList.innerHTML = teamsHtml;
+            teamsSection.style.display = 'block';
+
+            // Display mapping analysis
+            const mappingSection = document.getElementById('mapping-section');
+            const mappingAnalysis = document.getElementById('mapping-analysis');
+            
+            const matched = analysis.filter(item => item.status === 'matched').length;
+            const unmatched = analysis.filter(item => item.status === 'unmatched').length;
+            const partial = analysis.filter(item => item.status === 'partial').length;
+            
+            mappingAnalysis.innerHTML = `
+                <div class="team-item">
+                    <strong>Total Teams in Firebase:</strong> ${analysis.length}
+                </div>
+                <div class="team-item">
+                    <span class="success">✓ Fully Matched:</span> ${matched}
+                </div>
+                <div class="team-item">
+                    <span class="warning">⚠ Partially Matched:</span> ${partial}
+                </div>
+                <div class="team-item">
+                    <span class="error">✗ Unmatched:</span> ${unmatched}
+                </div>
+            `;
+            mappingSection.style.display = 'block';
+
+            // Display recommendations
+            const recommendationsSection = document.getElementById('recommendations-section');
+            const recommendations = document.getElementById('recommendations');
+            
+            let recommendationsHtml = '<h3>Required Logo Mapping Updates:</h3>';
+            
+            analysis.filter(item => item.recommendation).forEach(item => {
+                recommendationsHtml += `
+                    <div class="team-item">
+                        <strong>${item.teamName}:</strong> ${item.recommendation}
+                    </div>
+                `;
+            });
+            
+            // Show available logos not being used
+            const usedLogos = analysis.filter(item => item.logoFile).map(item => item.logoFile);
+            const unusedLogos = availableLogos.filter(logo => !usedLogos.includes(logo));
+            
+            if (unusedLogos.length > 0) {
+                recommendationsHtml += '<h3>Unused Logo Files:</h3>';
+                unusedLogos.forEach(logo => {
+                    recommendationsHtml += `<div class="team-item warning">📁 ${logo}</div>`;
+                });
+            }
+            
+            recommendations.innerHTML = recommendationsHtml;
+            recommendationsSection.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
