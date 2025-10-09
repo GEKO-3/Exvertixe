@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1d21; color: white; }
+        .logo-test { display: flex; flex-wrap: wrap; gap: 20px; }
+        .logo-item { text-align: center; border: 1px solid #333; padding: 10px; border-radius: 5px; }
+        .logo-item img { width: 80px; height: 80px; object-fit: contain; border: 1px solid #555; }
+        .logo-item h3 { margin: 10px 0 5px 0; font-size: 14px; }
+        .filename { font-size: 12px; color: #999; word-break: break-all; }
+        .error { color: #ff5555; }
+        .success { color: #55ff55; }
+    </style>
+</head>
+<body>
+    <h1>Team Logo Test</h1>
+    <div class="logo-test" id="logoTest"></div>
+
+    <script>
+        const teams = [
+            'Amigos',
+            'Best', 
+            'Brave Generation Sports Club',
+            'Foemathi',
+            'Foemathi Jr',
+            'Goalhians',
+            'Goalhi Sports Club',
+            'G Star Sports Club',
+            'Kanmathi FC',
+            'Kanmathi SC',
+            'Laamu Blues',
+            'LeCrose Sports Club',
+            'Maahinna United',
+            'Outreef Sports Club',
+            'Youth Academy'
+        ];
+
+        // Team name to logo filename mapping
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'LeCrose Sports Club': 'lecrose_sports_club',
+                'Maahinna United': 'maahinna_united',
+                'Outreef Sports Club': 'outreef_sports_club',
+                'Youth Academy': 'youth_academy'
+            };
+            
+            return logoMap[teamName] || teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+        }
+
+        const container = document.getElementById('logoTest');
+
+        teams.forEach(teamName => {
+            const logoFileName = getTeamLogoFilename(teamName);
+            const logoPath = `Team-Logos/${logoFileName}.jpg`;
+            
+            const item = document.createElement('div');
+            item.className = 'logo-item';
+            
+            const img = document.createElement('img');
+            const title = document.createElement('h3');
+            const filename = document.createElement('div');
+            const status = document.createElement('div');
+            
+            title.textContent = teamName;
+            filename.textContent = logoPath;
+            filename.className = 'filename';
+            
+            img.src = logoPath;
+            img.onerror = () => {
+                status.textContent = 'FAILED';
+                status.className = 'error';
+                img.style.display = 'none';
+            };
+            img.onload = () => {
+                status.textContent = 'SUCCESS';
+                status.className = 'success';
+            };
+            
+            item.appendChild(title);
+            item.appendChild(img);
+            item.appendChild(filename);
+            item.appendChild(status);
+            
+            container.appendChild(item);
+        });
+    </script>
+</body>
+</html>

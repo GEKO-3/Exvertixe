@@ -445,8 +445,10 @@
         let currentTeamId = null;
         let currentDisplayPage = 'groups'; // Track current display page
 
-        // Team name to logo filename mapping (using lowercase filenames)
+        // Team name to logo filename mapping (exact repository filenames)
         function getTeamLogoFilename(teamName) {
+            console.log('Getting logo for team:', teamName);
+            
             const logoMap = {
                 'Amigos': 'amigos',
                 'Best': 'best',
@@ -467,11 +469,14 @@
             
             // Check for exact match first
             if (logoMap[teamName]) {
+                console.log('Found exact match:', logoMap[teamName]);
                 return logoMap[teamName];
             }
             
             // Fallback to generated filename
-            return teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            const fallback = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            console.log('Using fallback filename:', fallback);
+            return fallback;
         }
 
         // Load teams and draw assignments on page load

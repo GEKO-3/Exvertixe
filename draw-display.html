@@ -70,6 +70,21 @@
             overflow-x: auto;
         }
 
+        /* Hide scrollbars for all browsers */
+        *::-webkit-scrollbar {
+            display: none;
+        }
+        
+        * {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        html, body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         /* Force landscape orientation message */
         .rotate-message {
             display: none;
@@ -831,8 +846,10 @@
         let currentDisplayTeam = null;
         let logoDisplayTimeout = null;
 
-        // Team name to logo filename mapping (using lowercase filenames)
+        // Team name to logo filename mapping (exact repository filenames)
         function getTeamLogoFilename(teamName) {
+            console.log('Getting logo for team:', teamName);
+            
             const logoMap = {
                 'Amigos': 'amigos',
                 'Best': 'best',
@@ -853,11 +870,14 @@
             
             // Check for exact match first
             if (logoMap[teamName]) {
+                console.log('Found exact match:', logoMap[teamName]);
                 return logoMap[teamName];
             }
             
             // Fallback to generated filename
-            return teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            const fallback = teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+            console.log('Using fallback filename:', fallback);
+            return fallback;
         }
 
         // Function to switch between display pages
@@ -1077,16 +1097,28 @@
                         teamLoadingElement.style.display = 'none';
                         slot.classList.add('filled');
                         
-                        // Show team logo
+                        // Show team logo with enhanced debugging and fallbacks
                         const logoFileName = getTeamLogoFilename(teamName);
-                        logoImg.src = `Team-Logos/${logoFileName}.jpg`;
+                        const logoPath = `Team-Logos/${logoFileName}.jpg`;
+                        console.log(`🖼️ Loading logo for ${teamName}: ${logoPath}`);
+                        
+                        logoImg.src = logoPath;
                         logoImg.onerror = () => {
+                            console.warn(`❌ JPG failed for ${teamName}, trying PNG`);
                             logoImg.src = `Team-Logos/${logoFileName}.png`;
                             logoImg.onerror = () => {
-                                logoContainer.style.display = 'none';
+                                // Try with first letter capitalized as fallback for hosting issues
+                                const capitalizedFilename = logoFileName.charAt(0).toUpperCase() + logoFileName.slice(1);
+                                console.warn(`❌ PNG failed, trying capitalized: ${capitalizedFilename}`);
+                                logoImg.src = `Team-Logos/${capitalizedFilename}.jpg`;
+                                logoImg.onerror = () => {
+                                    console.error(`❌ All attempts failed for ${teamName}`);
+                                    logoContainer.style.display = 'none';
+                                };
                             };
                         };
                         logoImg.onload = () => {
+                            console.log(`✅ Logo loaded successfully for ${teamName}`);
                             logoContainer.style.display = 'block';
                         };
                         
