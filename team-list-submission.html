@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Team List Submission</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <!-- Cloudinary Upload Widget -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+    </script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --error-color: #ff4757;
+            --success-color: #2ed573;
+            --warning-color: #ffa502;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            background-attachment: fixed;
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Hide scrollbars */
+        *::-webkit-scrollbar {
+            display: none;
+        }
+        
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+            text-decoration: none;
+            background: rgba(26, 29, 33, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            font-weight: 500;
+            width: fit-content;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            background: rgba(26, 29, 33, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .tournament-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(3, 189, 237, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-container {
+            background: rgba(26, 29, 33, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), rgba(255, 255, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-select {
+            background: rgba(26, 29, 33, 0.8) !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 45px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            color: #ffffff !important;
+        }
+
+        .form-select option {
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 10px;
+        }
+
+        .form-select:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(26, 29, 33, 0.9) !important;
+            color: #ffffff !important;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(26, 29, 33, 0.95) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 15px rgba(3, 189, 237, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .form-select:focus {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2303bded' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-select {
+            background-image: none !important;
+            padding-right: 50px !important;
+        }
+
+        .select-icon {
+            position: absolute;
+            right: 15px;
+            pointer-events: none;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            transform: rotate(0deg);
+        }
+
+        .custom-select:focus + .select-icon {
+            color: var(--primary-color);
+            transform: rotate(180deg);
+        }
+
+        .custom-select:hover + .select-icon {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Enhanced dropdown options */
+        .custom-select option {
+            background: #1a1d21 !important;
+            color: #ffffff !important;
+            padding: 15px 20px;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .custom-select option:hover {
+            background: #2a2f35 !important;
+            color: #03bded !important;
+        }
+
+        .custom-select option:checked,
+        .custom-select option:selected {
+            background: #03bded !important;
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .custom-select option:disabled {
+            background: #0a0b0c !important;
+            color: rgba(255, 255, 255, 0.4) !important;
+            font-style: italic;
+        }
+
+        /* Fix for different browsers */
+        .form-select option {
+            background-color: #1a1d21 !important;
+            color: #ffffff !important;
+        }
+
+        .form-select option:checked {
+            background-color: #03bded !important;
+            color: #ffffff !important;
+        }
+
+        /* Dropdown loading state */
+        .custom-select.loading {
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.6);
+            position: relative;
+        }
+
+        .custom-select.loading::after {
+            content: '';
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .custom-select.loaded {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Team count badge */
+        .team-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+            min-width: 24px;
+            height: 20px;
+            box-shadow: 0 2px 8px rgba(3, 189, 237, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .verify-btn {
+            background: linear-gradient(135deg, var(--warning-color), #ff7f00);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-left: 15px;
+            box-shadow: 0 4px 15px rgba(255, 165, 2, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 165, 2, 0.4);
+        }
+
+        .verify-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .team-list-section {
+            display: none;
+        }
+
+        .team-list-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .player-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 120px;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .player-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .player-row.goalkeeper {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid #ffc107;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+        }
+
+        .player-row.goalkeeper:hover {
+            background: rgba(255, 193, 7, 0.15);
+            border-color: #ffc107;
+            box-shadow: 0 0 25px rgba(255, 193, 7, 0.3);
+        }
+
+        .jersey-input {
+            max-width: 80px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+        }
+
+        .goalkeeper .jersey-input {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+        }
+
+        .jersey-input:focus {
+            box-shadow: 0 6px 20px rgba(3, 189, 237, 0.5);
+        }
+
+        .goalkeeper .jersey-input:focus {
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.6);
+        }
+
+        .player-name-input {
+            flex: 1;
+        }
+
+        .goalkeeper-badge {
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.4);
+        }
+
+        .official-row {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .official-row:hover {
+            background: rgba(255, 165, 0, 0.05);
+            border-color: var(--warning-color);
+            transform: translateY(-1px);
+        }
+
+        .image-upload-wrapper {
+            position: relative;
+        }
+
+        .image-input {
+            display: none;
+        }
+
+        .image-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 40px;
+        }
+
+        .image-upload-label:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .image-upload-label svg {
+            opacity: 0.7;
+        }
+
+        .image-input:checked + .image-upload-label,
+        .image-upload-label.has-file {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .image-upload-label.uploading {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #3b82f6;
+            pointer-events: none;
+        }
+
+        .image-upload-label.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .upload-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 48px rgba(3, 189, 237, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .message.success {
+            background: rgba(46, 213, 115, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.2);
+        }
+
+        .message.error {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+        }
+
+        .message.warning {
+            background: rgba(255, 165, 2, 0.1);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+            box-shadow: 0 0 15px rgba(255, 165, 2, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary-color);
+            border-right: 3px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .verification-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .verification-status.verified {
+            background: rgba(46, 213, 115, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .verification-status.failed {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        @media (max-width: 1200px) {
+            .tournament-title {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .tournament-title {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .player-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .official-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .image-upload-label {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            ← Back to Home
+        </a>
+
+        <div class="header">
+            <h1 class="tournament-title">FMSC 2025</h1>
+            <p class="subtitle">Team List Submission</p>
+        </div>
+
+        <div class="form-container">
+            <!-- Team Verification Section -->
+            <div class="form-section">
+                <h2 class="section-title">Team Verification</h2>
+                
+                <div id="message-container"></div>
+
+                <div class="form-group">
+                    <label class="form-label" for="team-select">Select Your Team</label>
+                    <div class="custom-select-wrapper">
+                        <select class="form-select custom-select" id="team-select" required>
+                            <option value="">Loading teams from database...</option>
+                        </select>
+                        <div class="select-icon">
+                            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="manager-contact">Manager Contact Number</label>
+                    <div style="display: flex; align-items: center;">
+                        <input type="tel" class="form-input" id="manager-contact" 
+                               placeholder="Enter manager's contact number" required>
+                        <button type="button" class="verify-btn" id="verify-btn">Verify</button>
+                        <div id="verification-status"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team List Section (Hidden initially) -->
+            <div class="form-section team-list-section" id="team-list-section">
+                <h2 class="section-title">Team List</h2>
+
+                <div class="form-group">
+                    <h3 style="color: var(--primary-color); margin-bottom: 20px;">Players (12 Maximum)</h3>
+                    <div id="players-container">
+                        <!-- Players will be generated here -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h3 style="color: var(--warning-color); margin-bottom: 20px;">Officials (5 Maximum)</h3>
+                    <div id="officials-container">
+                        <!-- Officials will be generated here -->
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" id="submit-team-list" disabled>
+                    Submit Team List
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let teams = {};
+        let selectedTeam = null;
+        let isVerified = false;
+
+        // Device verification management
+        function saveDeviceVerification(teamName, teamId, contactNumber) {
+            const verifiedDevices = JSON.parse(localStorage.getItem('verifiedDevices') || '{}');
+            const deviceId = getDeviceId();
+            verifiedDevices[deviceId] = {
+                teamName: teamName,
+                teamId: teamId,
+                contactNumber: contactNumber,
+                timestamp: Date.now(),
+                verified: true
+            };
+            localStorage.setItem('verifiedDevices', JSON.stringify(verifiedDevices));
+            
+            // Also save current verification state
+            localStorage.setItem('currentVerification', JSON.stringify({
+                teamName: teamName,
+                teamId: teamId,
+                contactNumber: contactNumber,
+                isVerified: true,
+                timestamp: Date.now()
+            }));
+        }
+        
+        function isDeviceVerified(teamName) {
+            const verifiedDevices = JSON.parse(localStorage.getItem('verifiedDevices') || '{}');
+            const deviceId = getDeviceId();
+            const verification = verifiedDevices[deviceId];
+            
+            if (verification && verification.teamName === teamName && verification.verified) {
+                // Check if verification is still valid (e.g., within 30 days)
+                const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+                return (Date.now() - verification.timestamp) < thirtyDaysInMs;
+            }
+            return false;
+        }
+        
+        function getDeviceId() {
+            let deviceId = localStorage.getItem('deviceId');
+            if (!deviceId) {
+                deviceId = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+                localStorage.setItem('deviceId', deviceId);
+            }
+            return deviceId;
+        }
+
+        // Page state management
+        function savePageState() {
+            const pageState = {
+                selectedTeam: selectedTeam,
+                isVerified: isVerified,
+                timestamp: Date.now(),
+                scrollPosition: window.scrollY,
+                activeSection: getActiveSection(),
+                formVisibility: {
+                    verificationStep: document.getElementById('verification-step').style.display,
+                    formStep: document.getElementById('form-step').style.display,
+                    teamListSection: document.getElementById('team-list-section').classList.contains('show')
+                }
+            };
+            
+            localStorage.setItem('pageState_teamSubmission', JSON.stringify(pageState));
+        }
+
+        function loadPageState() {
+            const savedState = localStorage.getItem('pageState_teamSubmission');
+            if (savedState) {
+                const pageState = JSON.parse(savedState);
+                
+                // Check if state is recent (within 24 hours)
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+                if ((Date.now() - pageState.timestamp) < twentyFourHours) {
+                    return pageState;
+                }
+            }
+            return null;
+        }
+
+        function getActiveSection() {
+            if (document.getElementById('team-list-section').classList.contains('show')) {
+                return 'team-list';
+            } else if (document.getElementById('verification-step').style.display !== 'none') {
+                return 'verification';
+            } else if (document.getElementById('form-step').style.display !== 'none') {
+                return 'form';
+            }
+            return 'selection';
+        }
+
+        function restorePageState(pageState) {
+            if (pageState) {
+                // Restore global variables
+                selectedTeam = pageState.selectedTeam;
+                isVerified = pageState.isVerified;
+                
+                // Restore UI state
+                setTimeout(() => {
+                    if (pageState.formVisibility.verificationStep !== 'none') {
+                        document.getElementById('verification-step').style.display = pageState.formVisibility.verificationStep || 'block';
+                    }
+                    if (pageState.formVisibility.formStep !== 'none') {
+                        document.getElementById('form-step').style.display = pageState.formVisibility.formStep || 'block';
+                    }
+                    if (pageState.formVisibility.teamListSection) {
+                        document.getElementById('team-list-section').classList.add('show');
+                    }
+                    
+                    // Restore scroll position
+                    if (pageState.scrollPosition) {
+                        window.scrollTo(0, pageState.scrollPosition);
+                    }
+                    
+                    // Update submit button state
+                    if (isVerified) {
+                        document.getElementById('submit-team-list').disabled = false;
+                    }
+                }, 100);
+            }
+        }
+
+        // Enhanced form data with progress tracking
+        function saveFormDataWithProgress() {
+            const formData = getCompleteFormData();
+            const progress = calculateFormProgress(formData);
+            
+            formData.progress = progress;
+            formData.completionPercentage = Math.round((progress.completed / progress.total) * 100);
+            
+            // Save with multiple keys for redundancy
+            const storageKey = formData.teamId || 'currentForm';
+            localStorage.setItem(`formData_${storageKey}`, JSON.stringify(formData));
+            localStorage.setItem('latestFormData', JSON.stringify(formData));
+            localStorage.setItem('formProgress', JSON.stringify({
+                teamId: formData.teamId,
+                percentage: formData.completionPercentage,
+                lastSaved: Date.now()
+            }));
+            
+            return formData;
+        }
+
+        function getCompleteFormData() {
+            const teamSelectValue = document.getElementById('team-select').value;
+            const contactNumber = document.getElementById('manager-contact').value.trim();
+            
+            return {
+                teamId: teamSelectValue,
+                contactNumber: contactNumber,
+                players: getPlayersData(),
+                officials: getOfficialsData(),
+                lastSaved: Date.now(),
+                pageUrl: window.location.href
+            };
+        }
+
+        function getPlayersData() {
+            const players = [];
+            for (let i = 1; i <= 12; i++) {
+                const nameInput = document.querySelector(`input[name="player-${i}"]`);
+                const jerseyInput = document.querySelector(`input[name="player-${i}-jersey"]`);
+                const imageInput = document.querySelector(`input[name="player-${i}-image"]`);
+                
+                if (nameInput && jerseyInput) {
+                    const cloudinaryUrl = imageInput ? imageInput.getAttribute('data-cloudinary-url') : null;
+                    players.push({
+                        position: i,
+                        name: nameInput.value.trim(),
+                        jersey: jerseyInput.value.trim(),
+                        idCardUrl: cloudinaryUrl,
+                        hasIdCard: !!cloudinaryUrl,
+                        isGoalkeeper: i === 1
+                    });
+                }
+            }
+            return players;
+        }
+
+        function getOfficialsData() {
+            const officials = [];
+            const officialTitles = ['Manager', 'Coach', 'First Aid', 'Official', 'Official'];
+            
+            for (let i = 0; i < 5; i++) {
+                const nameInput = document.querySelector(`input[name="official-${i}"]`);
+                const imageInput = document.querySelector(`input[name="official-${i}-image"]`);
+                
+                if (nameInput) {
+                    const cloudinaryUrl = imageInput ? imageInput.getAttribute('data-cloudinary-url') : null;
+                    officials.push({
+                        position: officialTitles[i],
+                        name: nameInput.value.trim(),
+                        idCardUrl: cloudinaryUrl,
+                        hasIdCard: !!cloudinaryUrl
+                    });
+                }
+            }
+            return officials;
+        }
+
+        function calculateFormProgress(formData) {
+            let completed = 0;
+            let total = 0;
+            
+            // Team selection and contact
+            total += 2;
+            if (formData.teamId) completed++;
+            if (formData.contactNumber) completed++;
+            
+            // Players (minimum 7 required)
+            total += 7; // Required players
+            const filledPlayers = formData.players.filter(p => p.name).length;
+            completed += Math.min(filledPlayers, 7);
+            
+            // Manager (required)
+            total += 1;
+            if (formData.officials[0] && formData.officials[0].name) completed++;
+            
+            return { completed, total };
+        }
+
+        // Cloudinary upload functionality
+        function uploadToCloudinary(file, type, id) {
+            return new Promise((resolve, reject) => {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', 'fmsc-uploads');
+                formData.append('folder', `fmsc-2025/id-cards/${type}s`);
+                formData.append('public_id', `${selectedTeam}_${type}_${id}_${Date.now()}`);
+
+                const label = document.querySelector(`label[for="${id}"]`);
+                if (label) {
+                    label.classList.add('uploading');
+                    label.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Uploading...
+                    `;
+                    
+                    // Add progress bar
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'upload-progress';
+                    progressBar.style.width = '0%';
+                    label.appendChild(progressBar);
+
+                    // Simulate progress animation
+                    let progress = 0;
+                    const progressInterval = setInterval(() => {
+                        progress += Math.random() * 20;
+                        if (progress > 90) progress = 90;
+                        progressBar.style.width = progress + '%';
+                    }, 200);
+                }
+
+                fetch('https://api.cloudinary.com/v1_1/dgvde8x6e/image/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Upload failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear progress interval
+                    clearInterval(progressInterval);
+                    
+                    if (data.secure_url) {
+                        if (label) {
+                            // Complete the progress bar
+                            const progressBar = label.querySelector('.upload-progress');
+                            if (progressBar) {
+                                progressBar.style.width = '100%';
+                                setTimeout(() => {
+                                    progressBar.remove();
+                                }, 500);
+                            }
+                            
+                            label.classList.remove('uploading');
+                            label.classList.add('has-file');
+                            const fileName = file.name;
+                            label.innerHTML = `
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <circle cx="12" cy="12" r="10"/>
+                                </svg>
+                                ${fileName.length > 12 ? fileName.substring(0, 12) + '...' : fileName}
+                            `;
+                        }
+                        resolve(data.secure_url);
+                    } else {
+                        throw new Error('No secure URL returned');
+                    }
+                })
+                .catch(error => {
+                    // Clear progress interval
+                    clearInterval(progressInterval);
+                    
+                    console.error('Cloudinary upload error:', error);
+                    if (label) {
+                        label.classList.remove('uploading');
+                        label.classList.add('error');
+                        label.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                            Upload Failed
+                        `;
+                        
+                        // Remove progress bar
+                        const progressBar = label.querySelector('.upload-progress');
+                        if (progressBar) {
+                            progressBar.remove();
+                        }
+                        
+                        // Reset to default after 3 seconds
+                        setTimeout(() => {
+                            label.classList.remove('error');
+                            label.innerHTML = `
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21,15 16,10 5,21"/>
+                                </svg>
+                                ID Card
+                            `;
+                        }, 3000);
+                    }
+                    reject(error);
+                });
+            });
+        }
+
+        // Form data management
+        function saveFormData() {
+            // Show save indicator
+            showSaveIndicator();
+            
+            // Use enhanced saving with progress tracking
+            const formData = saveFormDataWithProgress();
+            
+            // Show progress if significant
+            if (formData.completionPercentage > 0) {
+                updateProgressIndicator(formData.completionPercentage);
+            }
+        }
+        
+        function loadFormData(teamId) {
+            const savedData = localStorage.getItem(`formData_${teamId}`);
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                
+                // Load team selection and contact number
+                if (formData.teamId) {
+                    const teamSelect = document.getElementById('team-select');
+                    if (teamSelect) {
+                        teamSelect.value = formData.teamId;
+                    }
+                }
+                
+                if (formData.contactNumber) {
+                    const contactInput = document.getElementById('manager-contact');
+                    if (contactInput) {
+                        contactInput.value = formData.contactNumber;
+                    }
+                }
+                
+                // Load players
+                if (formData.players) {
+                    formData.players.forEach((player, index) => {
+                        const nameInput = document.querySelector(`input[name="player-${index + 1}"]`);
+                        const jerseyInput = document.querySelector(`input[name="player-${index + 1}-jersey"]`);
+                        const imageInput = document.querySelector(`input[name="player-${index + 1}-image"]`);
+                        
+                        if (nameInput) nameInput.value = player.name || '';
+                        if (jerseyInput) jerseyInput.value = player.jersey || '';
+                        
+                        // Restore Cloudinary URL and update UI
+                        if (player.idCardUrl && imageInput) {
+                            imageInput.setAttribute('data-cloudinary-url', player.idCardUrl);
+                            const label = document.querySelector(`label[for="player-${index + 1}-image"]`);
+                            if (label) {
+                                label.classList.add('has-file');
+                                const fileName = `ID_Card_${index + 1}`;
+                                label.innerHTML = `
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 12l2 2 4-4"/>
+                                        <circle cx="12" cy="12" r="10"/>
+                                    </svg>
+                                    ${fileName}
+                                `;
+                            }
+                        }
+                    });
+                }
+                
+                // Load officials
+                if (formData.officials) {
+                    formData.officials.forEach((official, index) => {
+                        const nameInput = document.querySelector(`input[name="official-${index}"]`);
+                        const imageInput = document.querySelector(`input[name="official-${index}-image"]`);
+                        
+                        if (nameInput) nameInput.value = official.name || '';
+                        
+                        // Restore Cloudinary URL and update UI
+                        if (official.idCardUrl && imageInput) {
+                            imageInput.setAttribute('data-cloudinary-url', official.idCardUrl);
+                            const label = document.querySelector(`label[for="official-${index}-image"]`);
+                            if (label) {
+                                label.classList.add('has-file');
+                                const officialTitles = ['Manager', 'Coach', 'First Aid', 'Official', 'Official'];
+                                const fileName = `${officialTitles[index]}_ID`;
+                                label.innerHTML = `
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 12l2 2 4-4"/>
+                                        <circle cx="12" cy="12" r="10"/>
+                                    </svg>
+                                    ${fileName}
+                                `;
+                            }
+                        }
+                    });
+                }
+                
+                const lastSaved = formData.lastSaved ? new Date(formData.lastSaved).toLocaleString() : 'Unknown';
+                showMessage(`Form data restored (last saved: ${lastSaved})`, 'success');
+            }
+        }
+        
+        // Load saved verification state on page load
+        function loadSavedVerification() {
+            const savedVerification = localStorage.getItem('currentVerification');
+            if (savedVerification) {
+                const verification = JSON.parse(savedVerification);
+                
+                // Check if verification is still valid (within 30 days)
+                const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+                if ((Date.now() - verification.timestamp) < thirtyDaysInMs) {
+                    // Restore verification state
+                    selectedTeam = verification.teamName;
+                    isVerified = true;
+                    
+                    // Set form fields
+                    setTimeout(() => {
+                        const teamSelect = document.getElementById('team-select');
+                        const contactInput = document.getElementById('manager-contact');
+                        
+                        if (teamSelect && verification.teamId) {
+                            teamSelect.value = verification.teamId;
+                        }
+                        if (contactInput && verification.contactNumber) {
+                            contactInput.value = verification.contactNumber;
+                        }
+                        
+                        // Show verification status
+                        showVerificationStatus('verified', `Device verified for ${verification.teamName}`);
+                        
+                        // Hide verification step and show form
+                        document.getElementById('verification-step').style.display = 'none';
+                        document.getElementById('form-step').style.display = 'block';
+                        document.getElementById('team-list-section').classList.add('show');
+                        
+                        // Generate form and load data
+                        generateTeamListForm();
+                        loadFormData(verification.teamId);
+                        
+                        document.getElementById('submit-team-list').disabled = false;
+                    }, 500);
+                    
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Save indicator
+        function showSaveIndicator() {
+            const indicator = document.getElementById('save-indicator') || createSaveIndicator();
+            indicator.textContent = '💾 Saving...';
+            indicator.style.opacity = '1';
+            
+            setTimeout(() => {
+                indicator.textContent = '✅ Saved';
+                setTimeout(() => {
+                    indicator.style.opacity = '0';
+                }, 1000);
+            }, 500);
+        }
+        
+        function createSaveIndicator() {
+            const indicator = document.createElement('div');
+            indicator.id = 'save-indicator';
+            indicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 14px;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                pointer-events: none;
+            `;
+            document.body.appendChild(indicator);
+            return indicator;
+        }
+
+        function updateProgressIndicator(percentage) {
+            let progressIndicator = document.getElementById('progress-indicator');
+            if (!progressIndicator) {
+                progressIndicator = document.createElement('div');
+                progressIndicator.id = 'progress-indicator';
+                progressIndicator.style.cssText = `
+                    position: fixed;
+                    top: 70px;
+                    right: 20px;
+                    background: rgba(3, 189, 237, 0.9);
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    z-index: 999;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(progressIndicator);
+            }
+            
+            if (percentage > 0) {
+                progressIndicator.textContent = `📊 ${percentage}% Complete`;
+                progressIndicator.style.opacity = '0.8';
+                
+                setTimeout(() => {
+                    progressIndicator.style.opacity = '0';
+                }, 3000);
+            }
+        }
+
+        // Load teams from Firebase
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            console.log('Teams loaded:', Object.keys(teams).length);
+            populateTeamDropdown();
+        }, (error) => {
+            console.error('Firebase error:', error);
+            if (error.code === 'PERMISSION_DENIED') {
+                showMessage('PERMISSION DENIED - Update Firebase rules!', 'error');
+            }
+        });
+
+        function populateTeamDropdown() {
+            const teamSelect = document.getElementById('team-select');
+            const teamLabel = document.querySelector('label[for="team-select"]');
+            
+            // Add loading class initially
+            teamSelect.classList.add('loading');
+            
+            setTimeout(() => {
+                teamSelect.classList.remove('loading');
+                
+                if (Object.keys(teams).length === 0) {
+                    teamSelect.innerHTML = '<option value="" disabled>No teams found in database</option>';
+                    teamSelect.style.color = 'rgba(255, 255, 255, 0.5)';
+                    return;
+                }
+                
+                // Clear and populate dropdown
+                teamSelect.innerHTML = '<option value="">Choose your registered team...</option>';
+                
+                Object.keys(teams).forEach(teamId => {
+                    const team = teams[teamId];
+                    const teamName = team.teamName || team.name || 'Unnamed Team';
+                    const option = document.createElement('option');
+                    option.value = teamId;
+                    option.textContent = teamName;
+                    teamSelect.appendChild(option);
+                });
+                
+                // Add team count badge to label
+                const existingBadge = teamLabel.querySelector('.team-count-badge');
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+                
+                const badge = document.createElement('span');
+                badge.className = 'team-count-badge';
+                badge.textContent = Object.keys(teams).length;
+                teamLabel.appendChild(badge);
+                
+                // Add loaded animation
+                teamSelect.classList.add('loaded');
+                
+                console.log(`Dropdown populated with ${Object.keys(teams).length} teams`);
+            }, 500); // Small delay to show loading state
+        }
+
+        // Page initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load page state first
+            const pageState = loadPageState();
+            
+            // Try to load saved verification
+            const wasVerificationLoaded = loadSavedVerification();
+            
+            // Restore page state if available
+            if (pageState) {
+                restorePageState(pageState);
+            }
+            
+            // If no saved verification, try to load the latest form data
+            if (!wasVerificationLoaded) {
+                const latestForm = localStorage.getItem('latestFormData');
+                if (latestForm) {
+                    const formData = JSON.parse(latestForm);
+                    if (formData.teamId) {
+                        setTimeout(() => {
+                            const teamSelect = document.getElementById('team-select');
+                            const contactInput = document.getElementById('manager-contact');
+                            
+                            if (teamSelect) teamSelect.value = formData.teamId;
+                            if (contactInput) contactInput.value = formData.contactNumber || '';
+                            
+                            // Show progress if available
+                            if (formData.completionPercentage) {
+                                updateProgressIndicator(formData.completionPercentage);
+                                showMessage(`Previous session restored (${formData.completionPercentage}% complete)`, 'info');
+                            } else {
+                                showMessage('Previous session restored', 'info');
+                            }
+                        }, 500);
+                    }
+                } else {
+                    // Check for partial progress
+                    const progress = localStorage.getItem('formProgress');
+                    if (progress) {
+                        const progressData = JSON.parse(progress);
+                        if (progressData.percentage > 0) {
+                            showMessage(`Form partially completed (${progressData.percentage}%)`, 'info');
+                        }
+                    }
+                }
+            }
+            
+            // Team selection handler
+            const teamSelect = document.getElementById('team-select');
+            teamSelect.addEventListener('change', (e) => {
+                const teamId = e.target.value;
+                if (teamId && teams[teamId]) {
+                    const teamName = teams[teamId].teamName || teams[teamId].name || 'Unnamed Team';
+                    selectedTeam = teamName;
+                    
+                    // Check if device is already verified for this team
+                    if (isDeviceVerified(teamName)) {
+                        isVerified = true;
+                        showVerificationStatus('verified', `Device already verified for ${teamName}`);
+                        document.getElementById('verification-step').style.display = 'none';
+                        document.getElementById('form-step').style.display = 'block';
+                        document.getElementById('team-list-section').classList.add('show');
+                        generateTeamListForm();
+                        loadFormData(teamId);
+                        document.getElementById('submit-team-list').disabled = false;
+                    } else {
+                        isVerified = false;
+                        document.getElementById('verification-step').style.display = 'block';
+                        document.getElementById('form-step').style.display = 'none';
+                        document.getElementById('team-list-section').classList.remove('show');
+                        showVerificationStatus('', '');
+                        
+                        // Load any saved form data for this team
+                        loadFormData(teamId);
+                    }
+                } else {
+                    selectedTeam = null;
+                    isVerified = false;
+                    document.getElementById('verification-step').style.display = 'none';
+                    document.getElementById('form-step').style.display = 'none';
+                    document.getElementById('team-list-section').classList.remove('show');
+                }
+                
+                // Auto-save when team selection changes
+                setTimeout(saveFormData, 100);
+            });
+
+            // Auto-save form data on input with debouncing
+            let saveTimeout;
+            document.addEventListener('input', (e) => {
+                if (e.target.type === 'text' || e.target.type === 'number' || e.target.type === 'tel') {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(saveFormData, 300); // Reduced debounce time
+                }
+            });
+            
+            // Also save on focus out for more reliable saving
+            document.addEventListener('blur', (e) => {
+                if (e.target.type === 'text' || e.target.type === 'number' || e.target.type === 'tel') {
+                    setTimeout(saveFormData, 100);
+                }
+            }, true);
+
+            // Save before page unload
+            window.addEventListener('beforeunload', (e) => {
+                saveFormData();
+                savePageState();
+            });
+
+            // Save when visibility changes (tab switching, minimizing)
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    saveFormData();
+                    savePageState();
+                }
+            });
+
+            // Periodic auto-save every 30 seconds if there's activity
+            let lastActivity = Date.now();
+            let autoSaveInterval;
+
+            function updateActivity() {
+                lastActivity = Date.now();
+                if (!autoSaveInterval) {
+                    autoSaveInterval = setInterval(() => {
+                        // Save if there's been recent activity and form has content
+                        if (Date.now() - lastActivity < 60000) { // Within last minute
+                            const teamSelect = document.getElementById('team-select');
+                            if (teamSelect && teamSelect.value) {
+                                saveFormData();
+                            }
+                        } else {
+                            // Clear interval if no activity
+                            clearInterval(autoSaveInterval);
+                            autoSaveInterval = null;
+                        }
+                    }, 30000); // Every 30 seconds
+                }
+            }
+
+            // Track user activity
+            document.addEventListener('input', updateActivity);
+            document.addEventListener('change', updateActivity);
+            document.addEventListener('click', updateActivity);
+
+            // Handle file input changes and upload to Cloudinary
+            document.addEventListener('change', (e) => {
+                if (e.target.type === 'file' && e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    const inputId = e.target.id;
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        showMessage('Please select a valid image file', 'error');
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showMessage('File size must be less than 5MB', 'error');
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    // Determine type (player or official)
+                    const type = inputId.includes('player') ? 'player' : 'official';
+                    
+                    // Upload to Cloudinary
+                    uploadToCloudinary(file, type, inputId)
+                        .then(url => {
+                            console.log(`${type} ID card uploaded:`, url);
+                            // Store the URL in a data attribute for later use
+                            e.target.setAttribute('data-cloudinary-url', url);
+                            showMessage(`${type} ID card uploaded successfully!`, 'success');
+                        })
+                        .catch(error => {
+                            console.error('Upload failed:', error);
+                            showMessage(`Failed to upload ${type} ID card. Please try again.`, 'error');
+                            e.target.value = '';
+                        });
+                }
+            });
+        });
+
+        function showMessage(text, type = 'info') {
+            const container = document.getElementById('message-container');
+            container.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function updateVerificationStatus(status, message) {
+            const statusDiv = document.getElementById('verification-status');
+            if (status === 'verified') {
+                statusDiv.innerHTML = `<div class="verification-status verified">✓ ${message}</div>`;
+            } else if (status === 'failed') {
+                statusDiv.innerHTML = `<div class="verification-status failed">✗ ${message}</div>`;
+            } else {
+                statusDiv.innerHTML = '';
+            }
+        }
+
+        // Verify team and contact
+        document.getElementById('verify-btn').addEventListener('click', () => {
+            const teamId = document.getElementById('team-select').value;
+            const contactNumber = document.getElementById('manager-contact').value.trim();
+
+            if (!teamId || !contactNumber) {
+                showMessage('Please select a team and enter contact number', 'error');
+                return;
+            }
+
+            const team = teams[teamId];
+            if (!team) {
+                showMessage('Selected team not found', 'error');
+                return;
+            }
+
+            // Verify contact number matches
+            if (team.contactNumber !== contactNumber) {
+                showMessage('Contact number does not match the registered manager contact', 'error');
+                updateVerificationStatus('failed', 'Contact mismatch');
+                isVerified = false;
+                return;
+            }
+
+            // Verification successful
+            const teamName = team.teamName || team.name || 'Unnamed Team';
+            selectedTeam = teamName;
+            isVerified = true;
+            
+            // Save device verification with complete data
+            saveDeviceVerification(teamName, teamId, contactNumber);
+            
+            showMessage('Team verification successful! You can now submit your team list.', 'success');
+            updateVerificationStatus('verified', 'Verified');
+            
+            // Show team list section
+            document.getElementById('team-list-section').classList.add('show');
+            generateTeamListForm();
+            loadFormData(teamId);
+            document.getElementById('submit-team-list').disabled = false;
+        });
+
+        function generateTeamListForm() {
+            const playersContainer = document.getElementById('players-container');
+            const officialsContainer = document.getElementById('officials-container');
+
+            // Generate 12 player fields
+            playersContainer.innerHTML = '';
+            for (let i = 1; i <= 12; i++) {
+                const playerRow = document.createElement('div');
+                playerRow.className = i === 1 ? 'player-row goalkeeper' : 'player-row';
+                const isGoalkeeper = i === 1;
+                
+                playerRow.innerHTML = `
+                    <input type="number" class="form-input jersey-input" name="player-${i}-jersey" 
+                           placeholder="${isGoalkeeper ? 'GK' : 'No.'}" min="1" max="99" 
+                           ${i <= 7 ? 'required' : ''}>
+                    <input type="text" class="form-input player-name-input" name="player-${i}" 
+                           placeholder="${isGoalkeeper ? 'Goalkeeper Name' : `Player ${i} Name`}" 
+                           ${i <= 7 ? 'required' : ''}>
+                    <div class="image-upload-wrapper">
+                        <input type="file" class="form-input image-input" name="player-${i}-image" 
+                               accept="image/*" id="player-${i}-image">
+                        <label for="player-${i}-image" class="image-upload-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21,15 16,10 5,21"/>
+                            </svg>
+                            ID Card
+                        </label>
+                    </div>
+                    ${isGoalkeeper ? '<div class="goalkeeper-badge">GOALKEEPER</div>' : ''}
+                `;
+                playersContainer.appendChild(playerRow);
+            }
+
+            // Generate 5 official fields (no contact numbers)
+            officialsContainer.innerHTML = '';
+            const officialTitles = ['Manager', 'Coach', 'First Aid', 'Official', 'Official'];
+            for (let i = 0; i < 5; i++) {
+                const officialRow = document.createElement('div');
+                officialRow.className = 'official-row';
+                officialRow.innerHTML = `
+                    <input type="text" class="form-input" name="official-${i}" 
+                           placeholder="${officialTitles[i]} Name" ${i === 0 ? 'required' : ''}>
+                    <div class="image-upload-wrapper">
+                        <input type="file" class="form-input image-input" name="official-${i}-image" 
+                               accept="image/*" id="official-${i}-image">
+                        <label for="official-${i}-image" class="image-upload-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21,15 16,10 5,21"/>
+                            </svg>
+                            ID Card
+                        </label>
+                    </div>
+                `;
+                officialsContainer.appendChild(officialRow);
+            }
+        }
+
+        // Submit team list
+        document.getElementById('submit-team-list').addEventListener('click', () => {
+            if (!isVerified || !selectedTeam) {
+                showMessage('Please verify your team first', 'error');
+                return;
+            }
+
+            // Check if any uploads are in progress
+            const uploadingLabels = document.querySelectorAll('.image-upload-label.uploading');
+            if (uploadingLabels.length > 0) {
+                showMessage('Please wait for all image uploads to complete', 'error');
+                return;
+            }
+
+            // Collect form data
+            const formData = {
+                teamName: selectedTeam,
+                players: [],
+                officials: [],
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                submissionDate: new Date().toISOString()
+            };
+
+            // Collect players
+            for (let i = 1; i <= 12; i++) {
+                const nameInput = document.querySelector(`input[name="player-${i}"]`);
+                const jerseyInput = document.querySelector(`input[name="player-${i}-jersey"]`);
+                const imageInput = document.querySelector(`input[name="player-${i}-image"]`);
+                
+                if (nameInput.value.trim()) {
+                    const jerseyNumber = jerseyInput.value.trim();
+                    if (jerseyNumber && (jerseyNumber < 1 || jerseyNumber > 99)) {
+                        showMessage('Jersey numbers must be between 1 and 99', 'error');
+                        return;
+                    }
+                    
+                    const idCardUrl = imageInput ? imageInput.getAttribute('data-cloudinary-url') : null;
+                    
+                    formData.players.push({
+                        position: i,
+                        name: nameInput.value.trim(),
+                        jerseyNumber: jerseyNumber || null,
+                        isGoalkeeper: i === 1,
+                        idCardUrl: idCardUrl,
+                        hasIdCard: !!idCardUrl
+                    });
+                }
+            }
+
+            // Check for duplicate jersey numbers
+            const usedNumbers = formData.players.map(p => p.jerseyNumber).filter(n => n);
+            const duplicates = usedNumbers.filter((num, index) => usedNumbers.indexOf(num) !== index);
+            if (duplicates.length > 0) {
+                showMessage(`Duplicate jersey numbers found: ${duplicates.join(', ')}`, 'error');
+                return;
+            }
+
+            // Collect officials
+            const officialTitles = ['Manager', 'Coach', 'First Aid', 'Official', 'Official'];
+            for (let i = 0; i < 5; i++) {
+                const nameInput = document.querySelector(`input[name="official-${i}"]`);
+                const imageInput = document.querySelector(`input[name="official-${i}-image"]`);
+                
+                if (nameInput.value.trim()) {
+                    const idCardUrl = imageInput ? imageInput.getAttribute('data-cloudinary-url') : null;
+                    
+                    formData.officials.push({
+                        position: officialTitles[i],
+                        name: nameInput.value.trim(),
+                        idCardUrl: idCardUrl,
+                        hasIdCard: !!idCardUrl
+                    });
+                }
+            }
+
+            // Validate minimum requirements
+            if (formData.players.length < 7) {
+                showMessage('Minimum 7 players required', 'error');
+                return;
+            }
+
+            if (formData.officials.length < 1) {
+                showMessage('At least one official (Manager) is required', 'error');
+                return;
+            }
+
+            // Submit to Firebase
+            const submissionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            document.getElementById('submit-team-list').innerHTML = 
+                '<div class="loading-spinner"></div> Submitting...';
+            document.getElementById('submit-team-list').disabled = true;
+
+            database.ref('teamLists/' + submissionId).set(formData)
+                .then(() => {
+                    showMessage('Team list submitted successfully!', 'success');
+                    document.getElementById('submit-team-list').innerHTML = '✓ Submitted Successfully';
+                    
+                    // Reset form after 3 seconds
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                })
+                .catch((error) => {
+                    console.error('Error submitting team list:', error);
+                    showMessage('Error submitting team list. Please try again.', 'error');
+                    document.getElementById('submit-team-list').innerHTML = 'Submit Team List';
+                    document.getElementById('submit-team-list').disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>
