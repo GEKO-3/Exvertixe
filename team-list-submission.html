@@ -612,6 +612,15 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
+        .submit-btn.update-mode {
+            background: linear-gradient(135deg, var(--warning-color), #ff8c42);
+        }
+
+        .submit-btn.update-mode:hover {
+            background: linear-gradient(135deg, #ff8c42, var(--warning-color));
+            box-shadow: 0 12px 48px rgba(255, 165, 0, 0.4);
+        }
+
         .message.success {
             background: rgba(46, 213, 115, 0.1);
             border: 1px solid var(--success-color);
@@ -841,6 +850,10 @@
 
         // Page state management
         function savePageState() {
+            const verificationStep = document.getElementById('verification-step');
+            const formStep = document.getElementById('form-step');
+            const teamListSection = document.getElementById('team-list-section');
+            
             const pageState = {
                 selectedTeam: selectedTeam,
                 isVerified: isVerified,
@@ -848,9 +861,9 @@
                 scrollPosition: window.scrollY,
                 activeSection: getActiveSection(),
                 formVisibility: {
-                    verificationStep: document.getElementById('verification-step').style.display,
-                    formStep: document.getElementById('form-step').style.display,
-                    teamListSection: document.getElementById('team-list-section').classList.contains('show')
+                    verificationStep: verificationStep ? verificationStep.style.display : 'none',
+                    formStep: formStep ? formStep.style.display : 'none',
+                    teamListSection: teamListSection ? teamListSection.classList.contains('show') : false
                 }
             };
             
@@ -872,11 +885,15 @@
         }
 
         function getActiveSection() {
-            if (document.getElementById('team-list-section').classList.contains('show')) {
+            const teamListSection = document.getElementById('team-list-section');
+            const verificationStep = document.getElementById('verification-step');
+            const formStep = document.getElementById('form-step');
+            
+            if (teamListSection && teamListSection.classList.contains('show')) {
                 return 'team-list';
-            } else if (document.getElementById('verification-step').style.display !== 'none') {
+            } else if (verificationStep && verificationStep.style.display !== 'none') {
                 return 'verification';
-            } else if (document.getElementById('form-step').style.display !== 'none') {
+            } else if (formStep && formStep.style.display !== 'none') {
                 return 'form';
             }
             return 'selection';
@@ -890,14 +907,19 @@
                 
                 // Restore UI state
                 setTimeout(() => {
-                    if (pageState.formVisibility.verificationStep !== 'none') {
-                        document.getElementById('verification-step').style.display = pageState.formVisibility.verificationStep || 'block';
+                    const verificationStep = document.getElementById('verification-step');
+                    const formStep = document.getElementById('form-step');
+                    const teamListSection = document.getElementById('team-list-section');
+                    const submitBtn = document.getElementById('submit-team-list');
+                    
+                    if (pageState.formVisibility.verificationStep !== 'none' && verificationStep) {
+                        verificationStep.style.display = pageState.formVisibility.verificationStep || 'block';
                     }
-                    if (pageState.formVisibility.formStep !== 'none') {
-                        document.getElementById('form-step').style.display = pageState.formVisibility.formStep || 'block';
+                    if (pageState.formVisibility.formStep !== 'none' && formStep) {
+                        formStep.style.display = pageState.formVisibility.formStep || 'block';
                     }
-                    if (pageState.formVisibility.teamListSection) {
-                        document.getElementById('team-list-section').classList.add('show');
+                    if (pageState.formVisibility.teamListSection && teamListSection) {
+                        teamListSection.classList.add('show');
                     }
                     
                     // Restore scroll position
@@ -906,8 +928,8 @@
                     }
                     
                     // Update submit button state
-                    if (isVerified) {
-                        document.getElementById('submit-team-list').disabled = false;
+                    if (isVerified && submitBtn) {
+                        submitBtn.disabled = false;
                     }
                 }, 100);
             }
@@ -1143,8 +1165,158 @@
                 updateProgressIndicator(formData.completionPercentage);
             }
         }
+
+        // Load existing team list from database
+        function loadExistingTeamList(teamName) {
+            return new Promise((resolve, reject) => {
+                // Check if team list already exists in database
+                database.ref('teamLists').orderByChild('teamName').equalTo(teamName).once('value')
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            const existingData = Object.values(data)[0]; // Get the first match
+                            console.log('Found existing team list for:', teamName);
+                            resolve(existingData);
+                        } else {
+                            console.log('No existing team list found for:', teamName);
+                            resolve(null);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error loading existing team list:', error);
+                        reject(error);
+                    });
+            });
+        }
+
+        // Populate form with existing team list data
+        function populateFormWithExistingData(existingData) {
+            if (!existingData) return;
+
+            // Show message that existing data is being loaded
+            showMessage('Loading existing team list data...', 'info');
+
+            // Load players
+            if (existingData.players && Array.isArray(existingData.players)) {
+                existingData.players.forEach((player, index) => {
+                    const position = player.position || (index + 1);
+                    const nameInput = document.querySelector(`input[name="player-${position}"]`);
+                    const jerseyInput = document.querySelector(`input[name="player-${position}-jersey"]`);
+                    const imageInput = document.querySelector(`input[name="player-${position}-image"]`);
+
+                    if (nameInput && player.name) {
+                        nameInput.value = player.name;
+                    }
+                    if (jerseyInput && player.jerseyNumber) {
+                        jerseyInput.value = player.jerseyNumber;
+                    }
+
+                    // Handle existing ID card URL
+                    if (player.idCardUrl && imageInput) {
+                        imageInput.setAttribute('data-cloudinary-url', player.idCardUrl);
+                        const label = document.querySelector(`label[for="player-${position}-image"]`);
+                        if (label) {
+                            label.classList.add('has-file');
+                            label.innerHTML = `
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                    <circle cx="12" cy="12" r="10"/>
+                                </svg>
+                                ID Card Uploaded
+                            `;
+                        }
+                    }
+                });
+            }
+
+            // Load officials
+            if (existingData.officials && Array.isArray(existingData.officials)) {
+                const officialTitles = ['Manager', 'Coach', 'First Aid', 'Official', 'Official'];
+                existingData.officials.forEach((official, index) => {
+                    if (index < 5) {
+                        const nameInput = document.querySelector(`input[name="official-${index}"]`);
+                        const imageInput = document.querySelector(`input[name="official-${index}-image"]`);
+
+                        if (nameInput && official.name) {
+                            nameInput.value = official.name;
+                        }
+
+                        // Handle existing ID card URL
+                        if (official.idCardUrl && imageInput) {
+                            imageInput.setAttribute('data-cloudinary-url', official.idCardUrl);
+                            const label = document.querySelector(`label[for="official-${index}-image"]`);
+                            if (label) {
+                                label.classList.add('has-file');
+                                label.innerHTML = `
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 12l2 2 4-4"/>
+                                        <circle cx="12" cy="12" r="10"/>
+                                    </svg>
+                                    ${officialTitles[index]} ID
+                                `;
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Show success message
+            const submissionDate = existingData.submissionDate ? 
+                new Date(existingData.submissionDate).toLocaleDateString() : 
+                'Unknown date';
+            showMessage(`Existing team list loaded (submitted: ${submissionDate}). You can edit and resubmit.`, 'success');
+            
+            // Update submit button to show this is an update
+            updateSubmitButtonForEdit();
+            
+            // Save the loaded data to local storage for consistency
+            setTimeout(saveFormData, 100);
+        }
+
+        function updateSubmitButtonForEdit() {
+            const submitBtn = document.getElementById('submit-team-list');
+            if (submitBtn) {
+                submitBtn.innerHTML = 'Update Team List';
+                submitBtn.classList.add('update-mode');
+            }
+        }
+
+        function resetSubmitButtonForNew() {
+            const submitBtn = document.getElementById('submit-team-list');
+            if (submitBtn) {
+                submitBtn.innerHTML = 'Submit Team List';
+                submitBtn.classList.remove('update-mode');
+            }
+        }
         
         function loadFormData(teamId) {
+            // First try to load from database if we have a team selected
+            if (selectedTeam) {
+                loadExistingTeamList(selectedTeam)
+                    .then((existingData) => {
+                        if (existingData) {
+                            // Populate form with existing database data
+                            populateFormWithExistingData(existingData);
+                        } else {
+                            // Fall back to local storage if no database data
+                            resetSubmitButtonForNew();
+                            loadLocalFormData(teamId);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error loading existing team list:', error);
+                        // Fall back to local storage on error
+                        resetSubmitButtonForNew();
+                        loadLocalFormData(teamId);
+                    });
+            } else {
+                // No team selected, just load local data
+                resetSubmitButtonForNew();
+                loadLocalFormData(teamId);
+            }
+        }
+
+        function loadLocalFormData(teamId) {
             const savedData = localStorage.getItem(`formData_${teamId}`);
             if (savedData) {
                 const formData = JSON.parse(savedData);
@@ -1252,18 +1424,22 @@
                         }
                         
                         // Show verification status
-                        showVerificationStatus('verified', `Device verified for ${verification.teamName}`);
+                        updateVerificationStatus('verified', `Device verified for ${verification.teamName}`);
                         
                         // Hide verification step and show form
-                        document.getElementById('verification-step').style.display = 'none';
-                        document.getElementById('form-step').style.display = 'block';
-                        document.getElementById('team-list-section').classList.add('show');
+                        const verificationStep = document.getElementById('verification-step');
+                        const formStep = document.getElementById('form-step');
+                        const teamListSection = document.getElementById('team-list-section');
+                        const submitBtn = document.getElementById('submit-team-list');
+                        
+                        if (verificationStep) verificationStep.style.display = 'none';
+                        if (formStep) formStep.style.display = 'block';
+                        if (teamListSection) teamListSection.classList.add('show');
+                        if (submitBtn) submitBtn.disabled = false;
                         
                         // Generate form and load data
                         generateTeamListForm();
                         loadFormData(verification.teamId);
-                        
-                        document.getElementById('submit-team-list').disabled = false;
                     }, 500);
                     
                     return true;
@@ -1399,6 +1575,27 @@
 
         // Page initialization
         document.addEventListener('DOMContentLoaded', () => {
+            // Wait a bit for all elements to be ready
+            setTimeout(() => {
+                initializePage();
+            }, 100);
+        });
+
+        function initializePage() {
+            // Ensure all required elements exist
+            const requiredElements = [
+                'team-select', 'manager-contact', 'submit-team-list',
+                'verification-step', 'form-step', 'team-list-section'
+            ];
+            
+            const missingElements = requiredElements.filter(id => !document.getElementById(id));
+            if (missingElements.length > 0) {
+                console.warn('Missing elements:', missingElements);
+                // Retry after a short delay
+                setTimeout(initializePage, 200);
+                return;
+            }
+            
             // Load page state first
             const pageState = loadPageState();
             
@@ -1444,45 +1641,70 @@
                 }
             }
             
+            // Setup event listeners
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
             // Team selection handler
             const teamSelect = document.getElementById('team-select');
-            teamSelect.addEventListener('change', (e) => {
-                const teamId = e.target.value;
-                if (teamId && teams[teamId]) {
-                    const teamName = teams[teamId].teamName || teams[teamId].name || 'Unnamed Team';
-                    selectedTeam = teamName;
-                    
-                    // Check if device is already verified for this team
-                    if (isDeviceVerified(teamName)) {
-                        isVerified = true;
-                        showVerificationStatus('verified', `Device already verified for ${teamName}`);
-                        document.getElementById('verification-step').style.display = 'none';
-                        document.getElementById('form-step').style.display = 'block';
-                        document.getElementById('team-list-section').classList.add('show');
-                        generateTeamListForm();
-                        loadFormData(teamId);
-                        document.getElementById('submit-team-list').disabled = false;
-                    } else {
-                        isVerified = false;
-                        document.getElementById('verification-step').style.display = 'block';
-                        document.getElementById('form-step').style.display = 'none';
-                        document.getElementById('team-list-section').classList.remove('show');
-                        showVerificationStatus('', '');
+            if (teamSelect) {
+                teamSelect.addEventListener('change', (e) => {
+                    const teamId = e.target.value;
+                    if (teamId && teams[teamId]) {
+                        const teamName = teams[teamId].teamName || teams[teamId].name || 'Unnamed Team';
+                        selectedTeam = teamName;
                         
-                        // Load any saved form data for this team
-                        loadFormData(teamId);
+                        // Check if device is already verified for this team
+                        if (isDeviceVerified(teamName)) {
+                            isVerified = true;
+                            updateVerificationStatus('verified', `Device already verified for ${teamName}`);
+                            
+                            const verificationStep = document.getElementById('verification-step');
+                            const formStep = document.getElementById('form-step');
+                            const teamListSection = document.getElementById('team-list-section');
+                            const submitBtn = document.getElementById('submit-team-list');
+                            
+                            if (verificationStep) verificationStep.style.display = 'none';
+                            if (formStep) formStep.style.display = 'block';
+                            if (teamListSection) teamListSection.classList.add('show');
+                            if (submitBtn) submitBtn.disabled = false;
+                            
+                            generateTeamListForm();
+                            loadFormData(teamId);
+                        } else {
+                            isVerified = false;
+                            
+                            const verificationStep = document.getElementById('verification-step');
+                            const formStep = document.getElementById('form-step');
+                            const teamListSection = document.getElementById('team-list-section');
+                            
+                            if (verificationStep) verificationStep.style.display = 'block';
+                            if (formStep) formStep.style.display = 'none';
+                            if (teamListSection) teamListSection.classList.remove('show');
+                            
+                            updateVerificationStatus('', '');
+                            
+                            // Load any saved form data for this team
+                            loadFormData(teamId);
+                        }
+                    } else {
+                        selectedTeam = null;
+                        isVerified = false;
+                        
+                        const verificationStep = document.getElementById('verification-step');
+                        const formStep = document.getElementById('form-step');
+                        const teamListSection = document.getElementById('team-list-section');
+                        
+                        if (verificationStep) verificationStep.style.display = 'none';
+                        if (formStep) formStep.style.display = 'none';
+                        if (teamListSection) teamListSection.classList.remove('show');
                     }
-                } else {
-                    selectedTeam = null;
-                    isVerified = false;
-                    document.getElementById('verification-step').style.display = 'none';
-                    document.getElementById('form-step').style.display = 'none';
-                    document.getElementById('team-list-section').classList.remove('show');
-                }
-                
-                // Auto-save when team selection changes
-                setTimeout(saveFormData, 100);
-            });
+                    
+                    // Auto-save when team selection changes
+                    setTimeout(saveFormData, 100);
+                });
+            }
 
             // Auto-save form data on input with debouncing
             let saveTimeout;
@@ -1580,7 +1802,7 @@
                         });
                 }
             });
-        });
+        }
 
         function showMessage(text, type = 'info') {
             const container = document.getElementById('message-container');
@@ -1637,10 +1859,14 @@
             updateVerificationStatus('verified', 'Verified');
             
             // Show team list section
-            document.getElementById('team-list-section').classList.add('show');
+            const teamListSection = document.getElementById('team-list-section');
+            const submitBtn = document.getElementById('submit-team-list');
+            
+            if (teamListSection) teamListSection.classList.add('show');
+            if (submitBtn) submitBtn.disabled = false;
+            
             generateTeamListForm();
             loadFormData(teamId);
-            document.getElementById('submit-team-list').disabled = false;
         });
 
         function generateTeamListForm() {
@@ -1790,30 +2016,65 @@
                 return;
             }
 
-            // Submit to Firebase
-            const submissionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            document.getElementById('submit-team-list').innerHTML = 
-                '<div class="loading-spinner"></div> Submitting...';
-            document.getElementById('submit-team-list').disabled = true;
+            // Check if updating existing team list or creating new one
+            checkAndSubmitTeamList(formData);
+        });
 
-            database.ref('teamLists/' + submissionId).set(formData)
-                .then(() => {
-                    showMessage('Team list submitted successfully!', 'success');
-                    document.getElementById('submit-team-list').innerHTML = '✓ Submitted Successfully';
+        function checkAndSubmitTeamList(formData) {
+            // First check if this team already has a submission
+            database.ref('teamLists').orderByChild('teamName').equalTo(selectedTeam).once('value')
+                .then((snapshot) => {
+                    let existingKey = null;
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        existingKey = Object.keys(data)[0]; // Get the first existing key
+                        console.log('Found existing team list, updating:', existingKey);
+                    }
+
+                    // Generate submission ID (use existing key or create new one)
+                    const submissionId = existingKey || (Date.now() + '_' + Math.random().toString(36).substr(2, 9));
                     
-                    // Reset form after 3 seconds
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
+                    // Add or update metadata
+                    if (existingKey) {
+                        formData.updatedDate = new Date().toISOString();
+                        formData.isUpdate = true;
+                    } else {
+                        formData.submissionDate = new Date().toISOString();
+                        formData.isUpdate = false;
+                    }
+                    
+                    // Show appropriate loading message
+                    const actionText = existingKey ? 'Updating' : 'Submitting';
+                    document.getElementById('submit-team-list').innerHTML = 
+                        `<div class="loading-spinner"></div> ${actionText}...`;
+                    document.getElementById('submit-team-list').disabled = true;
+
+                    // Submit to database
+                    database.ref('teamLists/' + submissionId).set(formData)
+                        .then(() => {
+                            const successText = existingKey ? 'Team list updated successfully!' : 'Team list submitted successfully!';
+                            showMessage(successText, 'success');
+                            document.getElementById('submit-team-list').innerHTML = existingKey ? '✓ Updated Successfully' : '✓ Submitted Successfully';
+                            
+                            // Reset form after 3 seconds
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3000);
+                        })
+                        .catch((error) => {
+                            console.error('Error submitting team list:', error);
+                            showMessage('Error submitting team list. Please try again.', 'error');
+                            document.getElementById('submit-team-list').innerHTML = 'Submit Team List';
+                            document.getElementById('submit-team-list').disabled = false;
+                        });
                 })
                 .catch((error) => {
-                    console.error('Error submitting team list:', error);
-                    showMessage('Error submitting team list. Please try again.', 'error');
+                    console.error('Error checking existing team list:', error);
+                    showMessage('Error checking existing data. Please try again.', 'error');
                     document.getElementById('submit-team-list').innerHTML = 'Submit Team List';
                     document.getElementById('submit-team-list').disabled = false;
                 });
-        });
+        }
     </script>
 </body>
 </html>
