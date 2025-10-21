@@ -364,6 +364,32 @@
             flex: 1;
             font-weight: 600;
             font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-name .name {
+            font-size: 1rem;
+        }
+
+        .player-name .jersey {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            background: rgba(3, 189, 237, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--primary-color);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .player-name .position {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            font-weight: 500;
+            font-style: italic;
         }
 
         .player-actions {
@@ -494,18 +520,33 @@
         /* Responsive Design */
         @media (max-width: 1200px) {
             .teams-layout {
-                grid-template-columns: 1fr;
-                gap: 20px;
+                grid-template-columns: 1fr auto 1fr;
+                gap: 15px;
+            }
+            
+            .team-section {
+                padding: 15px;
             }
             
             .vs-separator {
-                order: -1;
                 font-size: 2rem;
-                margin: 10px 0;
             }
         }
 
         @media (max-width: 768px) {
+            .teams-layout {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 10px;
+            }
+            
+            .team-section {
+                padding: 10px;
+            }
+            
+            .vs-separator {
+                font-size: 1.5rem;
+            }
+            
             body {
                 padding: 10px;
             }
@@ -529,6 +570,263 @@
                 min-width: 40px;
                 padding: 6px 8px;
                 font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .teams-layout {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 5px;
+            }
+            
+            .team-section {
+                padding: 8px;
+            }
+            
+            .vs-separator {
+                font-size: 1.2rem;
+                padding: 5px;
+            }
+            
+            .player-name {
+                font-size: 0.85rem;
+            }
+            
+            .player-name .jersey {
+                font-size: 1rem;
+                padding: 1px 4px;
+                min-width: 25px;
+            }
+        }
+
+        /* Signature Styles */
+        .signatures-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .signatures-toggle-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+        }
+
+        .signatures-toggle-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(3, 189, 237, 0.4);
+        }
+
+        /* Modal Styles */
+        .signature-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: var(--error-color);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-body p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .signature-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .signature-box h4 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .signature-canvas {
+            width: 100%;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            border: 2px solid var(--primary-color);
+            cursor: crosshair;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .clear-btn {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #cc3333;
+            transform: translateY(-1px);
+        }
+
+        .signatures-actions {
+            text-align: center;
+        }
+
+        .save-signatures-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(68, 255, 68, 0.3);
+        }
+
+        .save-signatures-btn:hover {
+            background: #33dd33;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(68, 255, 68, 0.4);
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+            
+            .signatures-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .signature-canvas {
+                height: 120px;
+            }
+            
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 20px;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .modal-footer button {
+                width: 100%;
             }
         }
     </style>
@@ -650,6 +948,10 @@
             document.getElementById('match-title').textContent = `Match ${matchData.matchNumber}`;
             document.getElementById('match-info').textContent = `${team1Name} vs ${team2Name} • ${matchData.date} • ${matchData.time} • ${matchData.type}`;
 
+            // Update signature titles
+            document.getElementById('team1-signature-title').textContent = `${team1Name} Signature`;
+            document.getElementById('team2-signature-title').textContent = `${team2Name} Signature`;
+
             // Create foul sections
             createFoulSections(matchData.teams);
             
@@ -757,7 +1059,9 @@
         }
 
         function getTeamList(teamId) {
-            if (!teamLists[teamId]) {
+            // Get team name from the teams data
+            const teamName = teams[teamId]?.teamName;
+            if (!teamName) {
                 return {
                     players: defaultPlayers,
                     officials: defaultOfficials,
@@ -765,7 +1069,24 @@
                 };
             }
             
-            const teamList = teamLists[teamId];
+            // Search through all team lists to find one matching this team name
+            const teamListEntries = Object.entries(teamLists);
+            const matchingEntry = teamListEntries.find(([key, teamList]) => 
+                teamList.teamName === teamName
+            );
+            
+            if (!matchingEntry) {
+                console.log(`No team list found for team: ${teamName}`);
+                return {
+                    players: defaultPlayers,
+                    officials: defaultOfficials,
+                    exists: false
+                };
+            }
+            
+            const [submissionId, teamList] = matchingEntry;
+            console.log(`Found team list for ${teamName} with submission ID: ${submissionId}`);
+            
             return {
                 players: teamList.players || defaultPlayers,
                 officials: teamList.officials || defaultOfficials,
@@ -837,8 +1158,8 @@
                 
                 section.innerHTML = `
                     <div class="team-header ${teamKey}">
-                        <img src="Team-Logos/${teamData.logo}.jpg" alt="${teamData.name}" class="team-logo" 
-                             onerror="this.src='Team-Logos/${teamData.logo}.png'; this.onerror=function(){this.style.display='none'}">
+                        <img src="logos/${teamData.logo}.jpg" alt="${teamData.name}" class="team-logo" 
+                             onerror="this.src='logos/${teamData.logo}.png'; this.onerror=function(){this.style.display='none'}">
                         <div class="team-info">
                             <div class="team-name">${teamData.name}</div>
                             <div class="team-score" id="score-${teamKey}">0</div>
@@ -865,11 +1186,26 @@
             return section;
         }
 
-        function createPlayerRow(playerName, playerIndex, teamKey, personType) {
+        function createPlayerRow(player, playerIndex, teamKey, personType) {
             const personKey = `${personType}-${playerIndex}`;
+            
+            // Handle both object and string formats for backwards compatibility
+            let playerName, jerseyNumber;
+            if (typeof player === 'object' && player !== null) {
+                playerName = player.name || 'Unknown Player';
+                // Check for both possible property names for jersey number
+                jerseyNumber = player.jerseyNumber || player.jersey || 'N/A';
+            } else {
+                playerName = player || 'Unknown Player';
+                jerseyNumber = 'N/A';
+            }
+            
             return `
                 <div class="player-row">
-                    <div class="player-name">${playerName}</div>
+                    <div class="player-name">
+                        <span class="name">${playerName}</span>
+                        <span class="jersey">${jerseyNumber}</span>
+                    </div>
                     <div class="player-actions">
                         ${Array.from({length: 6}, (_, i) => `
                             <div class="action-dropdown">
@@ -890,11 +1226,25 @@
             `;
         }
 
-        function createOfficialRow(officialName, officialIndex, teamKey) {
+        function createOfficialRow(official, officialIndex, teamKey) {
             const personKey = `official-${officialIndex}`;
+            
+            // Handle both object and string formats for backwards compatibility
+            let officialName, position;
+            if (typeof official === 'object' && official !== null) {
+                officialName = official.name || 'Unknown Official';
+                position = official.position || '';
+            } else {
+                officialName = official || 'Unknown Official';
+                position = '';
+            }
+            
             return `
                 <div class="player-row official-row">
-                    <div class="player-name">${officialName}</div>
+                    <div class="player-name">
+                        <span class="name">${officialName}</span>
+                        ${position ? `<span class="position">(${position})</span>` : ''}
+                    </div>
                     <div class="player-actions">
                         ${Array.from({length: 6}, (_, i) => `
                             <div class="action-dropdown">
@@ -1103,6 +1453,158 @@
 
         // Initialize
         loadMatch();
+
+        // Signature functionality
+        function toggleSignatures() {
+            const modal = document.getElementById('signature-modal');
+            modal.style.display = 'flex';
+            initializeCanvases();
+        }
+
+        function closeSignatureModal() {
+            const modal = document.getElementById('signature-modal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('signature-modal');
+            if (event.target === modal) {
+                closeSignatureModal();
+            }
+        }
+
+        function initializeCanvases() {
+            const canvas1 = document.getElementById('signature-canvas-1');
+            const canvas2 = document.getElementById('signature-canvas-2');
+            
+            setupCanvas(canvas1);
+            setupCanvas(canvas2);
+        }
+
+        function setupCanvas(canvas) {
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            
+            // Set canvas size
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Set drawing styles
+            ctx.strokeStyle = '#03bded';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                startDrawing({offsetX: x, offsetY: y});
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                draw({offsetX: x, offsetY: y});
+            });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                stopDrawing();
+            });
+            
+            function startDrawing(e) {
+                isDrawing = true;
+                ctx.beginPath();
+                ctx.moveTo(e.offsetX, e.offsetY);
+            }
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }
+            
+            function stopDrawing() {
+                isDrawing = false;
+            }
+        }
+
+        function clearSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function saveSignatures() {
+            const canvas1 = document.getElementById('signature-canvas-1');
+            const canvas2 = document.getElementById('signature-canvas-2');
+            
+            const signature1 = canvas1.toDataURL();
+            const signature2 = canvas2.toDataURL();
+            
+            // Here you could save to Firebase or local storage
+            console.log('Team 1 Signature:', signature1);
+            console.log('Team 2 Signature:', signature2);
+            
+            // Close the modal
+            closeSignatureModal();
+            
+            // Show success message
+            alert('Signatures saved successfully!');
+        }
     </script>
+
+    <!-- Signatures Button -->
+    <div class="signatures-container">
+        <button id="show-signatures-btn" class="signatures-toggle-btn" onclick="toggleSignatures()">
+            Add Signatures
+        </button>
+    </div>
+
+    <!-- Signature Modal -->
+    <div id="signature-modal" class="signature-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Team Signatures</h3>
+                <button class="close-btn" onclick="closeSignatureModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <p>Captains or managers can sign below to confirm match details</p>
+                
+                <div class="signatures-grid">
+                    <div class="signature-box">
+                        <h4 id="team1-signature-title">Team 1 Signature</h4>
+                        <canvas id="signature-canvas-1" class="signature-canvas"></canvas>
+                        <button onclick="clearSignature('signature-canvas-1')" class="clear-btn">Clear</button>
+                    </div>
+                    
+                    <div class="signature-box">
+                        <h4 id="team2-signature-title">Team 2 Signature</h4>
+                        <canvas id="signature-canvas-2" class="signature-canvas"></canvas>
+                        <button onclick="clearSignature('signature-canvas-2')" class="clear-btn">Clear</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeSignatureModal()" class="cancel-btn">Cancel</button>
+                <button onclick="saveSignatures()" class="save-signatures-btn">Save Signatures</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -393,6 +393,147 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* ID Card View Styles */
+        .player-item, .official-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .player-item:last-child, .official-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-info, .official-info {
+            flex: 1;
+        }
+
+        .view-id-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .view-id-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        /* ID Card Modal Styles */
+        .id-card-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .id-card-modal .modal-content {
+            background: var(--card-bg);
+            border-radius: 15px;
+            max-width: 90%;
+            max-height: 90%;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .id-card-modal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .id-card-modal .modal-header h3 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: var(--error-color);
+        }
+
+        .id-card-modal .modal-body {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .id-card-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .player-item, .official-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .view-id-btn {
+                margin-left: 0;
+                align-self: flex-end;
+            }
+
+            .id-card-modal .modal-content {
+                max-width: 95%;
+                margin: 10px;
+            }
+
+            .id-card-modal .modal-header {
+                padding: 15px;
+            }
+
+            .id-card-modal .modal-body {
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -660,20 +801,30 @@
                     // Format players list
                     let playersHtml = '';
                     if (teamList.players && Array.isArray(teamList.players)) {
-                        playersHtml = teamList.players.map(player => {
+                        playersHtml = teamList.players.map((player, index) => {
                             const jerseyNumber = player.jerseyNumber ? `#${player.jerseyNumber}` : '';
                             const isGoalkeeper = player.isGoalkeeper ? ' (GK)' : '';
                             const hasIdCard = player.hasIdCard ? ' ✓' : ' ⚠️';
-                            return `<div class="player-item">${jerseyNumber} ${player.name}${isGoalkeeper}${hasIdCard}</div>`;
+                            const viewButton = player.hasIdCard && player.idCardUrl ? 
+                                `<button class="view-id-btn" onclick="viewIdCard('${player.idCardUrl}', '${player.name}')">View ID</button>` : '';
+                            return `<div class="player-item">
+                                <span class="player-info">${jerseyNumber} ${player.name}${isGoalkeeper}${hasIdCard}</span>
+                                ${viewButton}
+                            </div>`;
                         }).join('');
                     }
                     
                     // Format officials list
                     let officialsHtml = '';
                     if (teamList.officials && Array.isArray(teamList.officials)) {
-                        officialsHtml = teamList.officials.map(official => {
+                        officialsHtml = teamList.officials.map((official, index) => {
                             const hasIdCard = official.hasIdCard ? ' ✓' : ' ⚠️';
-                            return `<div class="official-item">${official.position}: ${official.name}${hasIdCard}</div>`;
+                            const viewButton = official.hasIdCard && official.idCardUrl ? 
+                                `<button class="view-id-btn" onclick="viewIdCard('${official.idCardUrl}', '${official.name}')">View ID</button>` : '';
+                            return `<div class="official-item">
+                                <span class="official-info">${official.position}: ${official.name}${hasIdCard}</span>
+                                ${viewButton}
+                            </div>`;
                         }).join('');
                     }
 
@@ -946,6 +1097,45 @@
             const date = new Date(dateString);
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
         }
+
+        // View ID card function
+        function viewIdCard(imageUrl, playerName) {
+            const modal = document.getElementById('id-card-modal');
+            const modalImg = document.getElementById('id-card-image');
+            const modalTitle = document.getElementById('id-card-title');
+            
+            modalTitle.textContent = `${playerName} - ID Card`;
+            modalImg.src = imageUrl;
+            modalImg.alt = `${playerName} ID Card`;
+            modal.style.display = 'flex';
+        }
+
+        // Close ID card modal
+        function closeIdCardModal() {
+            const modal = document.getElementById('id-card-modal');
+            modal.style.display = 'none';
+        }
+
+        // Close modal when clicking outside the image
+        window.onclick = function(event) {
+            const modal = document.getElementById('id-card-modal');
+            if (event.target === modal) {
+                closeIdCardModal();
+            }
+        }
     </script>
+
+    <!-- ID Card Modal -->
+    <div id="id-card-modal" class="id-card-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="id-card-title">ID Card</h3>
+                <button class="close-btn" onclick="closeIdCardModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="id-card-image" class="id-card-image" src="" alt="ID Card">
+            </div>
+        </div>
+    </div>
 </body>
 </html>
