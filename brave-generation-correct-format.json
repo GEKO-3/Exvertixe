@@ -1,0 +1,137 @@
+{
+  "isUpdate": true,
+  "submissionDate": "2025-10-21T10:52:41.853Z",
+  "teamName": "Brave Generation Sports Club",
+  "timestamp": 1761043963151,
+  "updatedDate": "2025-10-24T00:00:00.000Z",
+  "players": [
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976020/fmsc-2025/ids/players/jvsihfb4rohv9qqmmann.jpg",
+      "isGoalkeeper": true,
+      "jerseyNumber": "25",
+      "name": "Ifu",
+      "position": 1
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976070/fmsc-2025/ids/players/aekiousu1s3rrebuq9im.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "11",
+      "name": "Naaphew",
+      "position": 2
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976105/fmsc-2025/ids/players/eeqarc3bzgjwq72oqppc.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "47",
+      "name": "vishah",
+      "position": 3
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976333/fmsc-2025/ids/players/zqxklft486kckbx5ukhn.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "17",
+      "name": "Althaf",
+      "position": 4
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976696/fmsc-2025/ids/players/g0rf3tjav7nxbpglsjvk.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "12",
+      "name": "Ayaaz",
+      "position": 5
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976737/fmsc-2025/ids/players/q5gcf05vhle8qqp8leei.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "10",
+      "name": "Sisaan",
+      "position": 6
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976782/fmsc-2025/ids/players/gxroohkz3ekwxunek44u.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "7",
+      "name": "santtey",
+      "position": 7
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976818/fmsc-2025/ids/players/bvi99h3frc3uvmeruapv.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "88",
+      "name": "HUSSAIN",
+      "position": 8
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976867/fmsc-2025/ids/players/iiakrq2lxdjpxhzit7mv.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "9",
+      "name": "SAAIDH",
+      "position": 9
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760976898/fmsc-2025/ids/players/ygnixh5b0sdrfrgusdcp.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "30",
+      "name": "HASSAN DHY",
+      "position": 10
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760977113/fmsc-2025/ids/players/xnmcvks0rdzipfwl780t.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "5",
+      "name": "REDAY",
+      "position": 11
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1761043929/fmsc-2025/ids/players/qo4otuml60lnwsmh6rvz.jpg",
+      "isGoalkeeper": false,
+      "jerseyNumber": "15",
+      "name": "MATA",
+      "position": 12
+    }
+  ],
+  "officials": [
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760977212/fmsc-2025/ids/officials/gpk71v3pbbqhmf3jpbdu.jpg",
+      "name": "Ali Jawax",
+      "position": "Manager"
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760977228/fmsc-2025/ids/officials/oxrc8e9imbzfwar9p7uj.jpg",
+      "name": "Ali thalfaah",
+      "position": "Coach"
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760977275/fmsc-2025/ids/officials/lxwbxxvxgerdzozpknbe.jpg",
+      "name": "Hussain  nafiu",
+      "position": "Official"
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760979360/fmsc-2025/ids/officials/erjeir8cwcdv4m3i8krc.jpg",
+      "name": "Abdulla  maumoon",
+      "position": "Official"
+    },
+    {
+      "hasIdCard": true,
+      "idCardUrl": "https://res.cloudinary.com/dgvde8x6e/image/upload/v1760977631/fmsc-2025/ids/officials/iljki5ahfvx8rovtrn3d.jpg",
+      "name": "Ali Rasheedh",
+      "position": "First Aid"
+    }
+  ]
+}

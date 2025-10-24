@@ -603,6 +603,10 @@
         .signatures-container {
             margin-top: 40px;
             text-align: center;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .signatures-toggle-btn {
@@ -616,6 +620,9 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+            flex: 1;
+            max-width: 200px;
+            min-width: 160px;
         }
 
         .signatures-toggle-btn:hover {
@@ -643,12 +650,13 @@
             background: linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
             border-radius: 20px;
             width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
+            max-width: 900px;
+            max-height: 95vh;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             animation: modalSlideIn 0.3s ease;
+            position: relative;
         }
 
         @keyframes modalSlideIn {
@@ -666,90 +674,175 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 25px 30px;
+            padding: 30px 40px 25px 40px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px 20px 0 0;
         }
 
         .modal-header h3 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: var(--primary-color);
             margin: 0;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .close-btn {
-            background: none;
-            border: none;
-            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1.5rem;
             color: rgba(255, 255, 255, 0.7);
             cursor: pointer;
-            transition: color 0.3s ease;
-            width: 40px;
-            height: 40px;
+            transition: all 0.3s ease;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
         }
 
         .close-btn:hover {
             color: var(--error-color);
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1);
+            border-color: var(--error-color);
         }
 
         .modal-body {
-            padding: 30px;
+            padding: 40px 50px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .modal-body p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 1rem;
-            margin-bottom: 25px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin-bottom: 35px;
             text-align: center;
+            line-height: 1.6;
+            font-weight: 400;
         }
 
         .signatures-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 40px;
+            margin-bottom: 40px;
+            align-items: start;
+        }
+
+        .signatures-grid .signature-box:only-child {
+            grid-column: 1 / -1;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .signature-box {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 30px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .signature-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .signature-box h4 {
             color: var(--accent-color);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .signature-canvas {
             width: 100%;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
+            height: 280px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 12px;
             border: 2px solid var(--primary-color);
             cursor: crosshair;
             display: block;
-            margin-bottom: 15px;
-        }
-
-        .clear-btn {
-            background: var(--error-color);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
-        .clear-btn:hover {
-            background: #cc3333;
+        .signature-canvas:hover {
+            border-color: var(--secondary-color);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(3, 189, 237, 0.1);
+        }
+
+        .signature-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .save-individual-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 140px;
+        }
+
+        .save-individual-btn:hover {
+            background: var(--secondary-color);
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(3, 189, 237, 0.4);
+        }
+
+        .save-individual-btn:disabled {
+            background: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, var(--error-color), #cc3333);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 100px;
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #cc3333, #aa2222);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.3);
         }
 
         .signatures-actions {
@@ -757,41 +850,49 @@
         }
 
         .save-signatures-btn {
-            background: var(--success-color);
+            background: linear-gradient(135deg, var(--success-color), #33dd33);
             color: white;
             border: none;
-            padding: 15px 40px;
-            border-radius: 10px;
+            padding: 16px 45px;
+            border-radius: 12px;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(68, 255, 68, 0.3);
+            box-shadow: 0 6px 20px rgba(68, 255, 68, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .save-signatures-btn:hover {
-            background: #33dd33;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(68, 255, 68, 0.4);
+            background: linear-gradient(135deg, #33dd33, #22cc22);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(68, 255, 68, 0.4);
         }
 
         .modal-footer {
-            padding: 20px 30px;
+            padding: 25px 40px 30px 40px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
-            justify-content: flex-end;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 0 0 20px 20px;
         }
 
         .cancel-btn {
             background: rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 14px 28px;
+            border-radius: 10px;
             font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .cancel-btn:hover {
@@ -803,30 +904,63 @@
             .modal-content {
                 width: 95%;
                 margin: 10px;
+                max-height: 90vh;
+            }
+            
+            .modal-header {
+                padding: 25px 25px 20px 25px;
+            }
+            
+            .modal-header h3 {
+                font-size: 1.6rem;
+            }
+            
+            .modal-body {
+                padding: 30px 25px;
+                min-height: 300px;
+            }
+            
+            .modal-body p {
+                font-size: 1rem;
+                margin-bottom: 25px;
             }
             
             .signatures-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 25px;
+                margin-bottom: 30px;
+            }
+            
+            .signature-box {
+                padding: 25px 20px;
             }
             
             .signature-canvas {
-                height: 120px;
+                height: 220px;
             }
             
-            .modal-header,
-            .modal-body,
-            .modal-footer {
-                padding: 20px;
-            }
-            
-            .modal-footer {
+            .signature-actions {
+                gap: 12px;
                 flex-direction: column;
-                gap: 10px;
             }
             
-            .modal-footer button {
+            .save-individual-btn,
+            .clear-btn {
                 width: 100%;
+                max-width: 200px;
+            }
+            
+            .modal-footer {
+                padding: 20px 25px 25px 25px;
+                flex-direction: column-reverse;
+                gap: 15px;
+            }
+            
+            .save-signatures-btn,
+            .cancel-btn {
+                width: 100%;
+                max-width: 250px;
+                margin: 0 auto;
             }
         }
     </style>
@@ -957,6 +1091,9 @@
             
             // Create team sections
             createTeamSections(matchData.teams);
+            
+            // Load existing signatures for this match
+            loadExistingSignatures();
         }
 
         // Match schedule data - Updated tournament structure after team dropout
@@ -1455,10 +1592,40 @@
         loadMatch();
 
         // Signature functionality
-        function toggleSignatures() {
+        function toggleSignatures(teamFocus = null) {
             const modal = document.getElementById('signature-modal');
+            const signaturesGrid = document.querySelector('.signatures-grid');
+            const team1Box = signaturesGrid.querySelector('.signature-box:first-child');
+            const team2Box = signaturesGrid.querySelector('.signature-box:last-child');
+            
             modal.style.display = 'flex';
+            
+            if (teamFocus) {
+                // Show only the specific team's signature
+                if (teamFocus === 'team1') {
+                    team1Box.style.display = 'block';
+                    team2Box.style.display = 'none';
+                    document.querySelector('.modal-header h3').textContent = 'Team A Signature';
+                } else if (teamFocus === 'team2') {
+                    team1Box.style.display = 'none';
+                    team2Box.style.display = 'block';
+                    document.querySelector('.modal-header h3').textContent = 'Team B Signature';
+                }
+                // Hide the general save button when focusing on one team
+                document.querySelector('.save-signatures-btn').style.display = 'none';
+            } else {
+                // Show both teams' signatures
+                team1Box.style.display = 'block';
+                team2Box.style.display = 'block';
+                document.querySelector('.modal-header h3').textContent = 'Team Signatures';
+                document.querySelector('.save-signatures-btn').style.display = 'block';
+            }
+            
             initializeCanvases();
+            // Load existing signatures into canvas after a short delay to ensure canvas is ready
+            setTimeout(() => {
+                loadSignaturesIntoCanvas();
+            }, 100);
         }
 
         function closeSignatureModal() {
@@ -1471,6 +1638,67 @@
             const modal = document.getElementById('signature-modal');
             if (event.target === modal) {
                 closeSignatureModal();
+            }
+        }
+
+        // Load existing signatures for the match
+        function loadExistingSignatures() {
+            if (!currentMatchId) return;
+            
+            database.ref('matchSignatures/' + currentMatchId).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const signatureData = snapshot.val();
+                        console.log('Found existing signatures for match:', currentMatchId);
+                        
+                        // Update button text to indicate signatures exist
+                        const signatureBtn = document.getElementById('show-signatures-btn');
+                        signatureBtn.textContent = 'View/Edit Signatures';
+                        signatureBtn.style.background = 'var(--success-color)';
+                        
+                        // Store signature data for loading into canvas when modal opens
+                        window.existingSignatures = signatureData;
+                    } else {
+                        console.log('No existing signatures found for match:', currentMatchId);
+                        // Reset button to default state
+                        const signatureBtn = document.getElementById('show-signatures-btn');
+                        signatureBtn.textContent = 'Add Signatures';
+                        signatureBtn.style.background = 'var(--primary-color)';
+                        window.existingSignatures = null;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading signatures:', error);
+                });
+        }
+
+        // Load existing signatures into canvas when modal opens
+        function loadSignaturesIntoCanvas() {
+            if (!window.existingSignatures) return;
+            
+            const canvas1 = document.getElementById('signature-canvas-1');
+            const canvas2 = document.getElementById('signature-canvas-2');
+            const ctx1 = canvas1.getContext('2d');
+            const ctx2 = canvas2.getContext('2d');
+            
+            // Load team 1 signature
+            if (window.existingSignatures.team1.signature) {
+                const img1 = new Image();
+                img1.onload = function() {
+                    ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+                    ctx1.drawImage(img1, 0, 0);
+                };
+                img1.src = window.existingSignatures.team1.signature;
+            }
+            
+            // Load team 2 signature
+            if (window.existingSignatures.team2.signature) {
+                const img2 = new Image();
+                img2.onload = function() {
+                    ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+                    ctx2.drawImage(img2, 0, 0);
+                };
+                img2.src = window.existingSignatures.team2.signature;
             }
         }
 
@@ -1552,25 +1780,175 @@
             const canvas1 = document.getElementById('signature-canvas-1');
             const canvas2 = document.getElementById('signature-canvas-2');
             
+            // Get current match data
+            const matchData = parseMatchId(currentMatchId);
+            if (!matchData) {
+                alert('Error: Could not identify match for signature saving');
+                return;
+            }
+            
+            const team1Data = getTeamData(matchData.teams[0]);
+            const team2Data = getTeamData(matchData.teams[1]);
+            
             const signature1 = canvas1.toDataURL();
             const signature2 = canvas2.toDataURL();
             
-            // Here you could save to Firebase or local storage
-            console.log('Team 1 Signature:', signature1);
-            console.log('Team 2 Signature:', signature2);
+            // Check if signatures are empty (just blank canvas)
+            const blankCanvas = document.createElement('canvas');
+            blankCanvas.width = canvas1.width;
+            blankCanvas.height = canvas1.height;
+            const blankDataURL = blankCanvas.toDataURL();
             
-            // Close the modal
-            closeSignatureModal();
+            if (signature1 === blankDataURL && signature2 === blankDataURL) {
+                alert('Please draw signatures before saving');
+                return;
+            }
             
-            // Show success message
-            alert('Signatures saved successfully!');
+            // Prepare signature data
+            const signatureData = {
+                matchId: currentMatchId,
+                team1: {
+                    name: team1Data ? team1Data.name : matchData.teams[0],
+                    signature: signature1 !== blankDataURL ? signature1 : null
+                },
+                team2: {
+                    name: team2Data ? team2Data.name : matchData.teams[1],
+                    signature: signature2 !== blankDataURL ? signature2 : null
+                },
+                timestamp: new Date().toISOString(),
+                matchDate: matchData.date,
+                matchTime: matchData.time,
+                matchNumber: matchData.matchNumber
+            };
+            
+            // Show loading state
+            const saveBtn = document.querySelector('.save-signatures-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+            
+            // Save to Firebase
+            database.ref('matchSignatures/' + currentMatchId).set(signatureData)
+                .then(() => {
+                    console.log('Signatures saved successfully to Firebase');
+                    
+                    // Close the modal
+                    closeSignatureModal();
+                    
+                    // Show success message
+                    alert('Signatures saved successfully!');
+                })
+                .catch((error) => {
+                    console.error('Error saving signatures:', error);
+                    alert('Failed to save signatures. Please try again.');
+                })
+                .finally(() => {
+                    // Reset button state
+                    saveBtn.textContent = originalText;
+                    saveBtn.disabled = false;
+                });
+        }
+
+        // Save individual signature
+        function saveIndividualSignature(canvasId, teamKey) {
+            const canvas = document.getElementById(canvasId);
+            const signature = canvas.toDataURL();
+            
+            // Get current match data
+            const matchData = parseMatchId(currentMatchId);
+            if (!matchData) {
+                alert('Error: Could not identify match for signature saving');
+                return;
+            }
+            
+            const team1Data = getTeamData(matchData.teams[0]);
+            const team2Data = getTeamData(matchData.teams[1]);
+            
+            // Check if signature is empty
+            const blankCanvas = document.createElement('canvas');
+            blankCanvas.width = canvas.width;
+            blankCanvas.height = canvas.height;
+            const blankDataURL = blankCanvas.toDataURL();
+            
+            if (signature === blankDataURL) {
+                alert('Please draw a signature before saving');
+                return;
+            }
+            
+            // Get button for loading state
+            const saveBtn = document.querySelector(`button[onclick="saveIndividualSignature('${canvasId}', '${teamKey}')"]`);
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+            
+            // Get existing signature data or create new
+            database.ref('matchSignatures/' + currentMatchId).once('value')
+                .then((snapshot) => {
+                    let signatureData;
+                    
+                    if (snapshot.exists()) {
+                        // Update existing signature data
+                        signatureData = snapshot.val();
+                    } else {
+                        // Create new signature data
+                        signatureData = {
+                            matchId: currentMatchId,
+                            team1: {
+                                name: team1Data ? team1Data.name : matchData.teams[0],
+                                signature: null
+                            },
+                            team2: {
+                                name: team2Data ? team2Data.name : matchData.teams[1],
+                                signature: null
+                            },
+                            matchDate: matchData.date,
+                            matchTime: matchData.time,
+                            matchNumber: matchData.matchNumber
+                        };
+                    }
+                    
+                    // Update the specific team's signature
+                    signatureData[teamKey].signature = signature;
+                    signatureData.timestamp = new Date().toISOString();
+                    
+                    // Save to Firebase
+                    return database.ref('matchSignatures/' + currentMatchId).set(signatureData);
+                })
+                .then(() => {
+                    console.log(`${teamKey} signature saved successfully`);
+                    
+                    // Update button to show success
+                    saveBtn.textContent = '✓ Saved';
+                    saveBtn.style.background = 'var(--success-color)';
+                    
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        saveBtn.textContent = originalText;
+                        saveBtn.style.background = 'var(--primary-color)';
+                        saveBtn.disabled = false;
+                    }, 2000);
+                    
+                    // Update the main button indicator
+                    loadExistingSignatures();
+                })
+                .catch((error) => {
+                    console.error('Error saving individual signature:', error);
+                    alert('Failed to save signature. Please try again.');
+                    
+                    // Reset button state
+                    saveBtn.textContent = originalText;
+                    saveBtn.disabled = false;
+                });
         }
     </script>
 
-    <!-- Signatures Button -->
+    <!-- Signatures Buttons -->
     <div class="signatures-container">
-        <button id="show-signatures-btn" class="signatures-toggle-btn" onclick="toggleSignatures()">
-            Add Signatures
+        <button id="show-team-a-signature-btn" class="signatures-toggle-btn" onclick="toggleSignatures('team1')">
+            Add Team A Signature
+        </button>
+        <button id="show-team-b-signature-btn" class="signatures-toggle-btn" onclick="toggleSignatures('team2')">
+            Add Team B Signature
         </button>
     </div>
 
@@ -1589,13 +1967,19 @@
                     <div class="signature-box">
                         <h4 id="team1-signature-title">Team 1 Signature</h4>
                         <canvas id="signature-canvas-1" class="signature-canvas"></canvas>
-                        <button onclick="clearSignature('signature-canvas-1')" class="clear-btn">Clear</button>
+                        <div class="signature-actions">
+                            <button onclick="clearSignature('signature-canvas-1')" class="clear-btn">Clear</button>
+                            <button onclick="saveIndividualSignature('signature-canvas-1', 'team1')" class="save-individual-btn">Save Team 1</button>
+                        </div>
                     </div>
                     
                     <div class="signature-box">
                         <h4 id="team2-signature-title">Team 2 Signature</h4>
                         <canvas id="signature-canvas-2" class="signature-canvas"></canvas>
-                        <button onclick="clearSignature('signature-canvas-2')" class="clear-btn">Clear</button>
+                        <div class="signature-actions">
+                            <button onclick="clearSignature('signature-canvas-2')" class="clear-btn">Clear</button>
+                            <button onclick="saveIndividualSignature('signature-canvas-2', 'team2')" class="save-individual-btn">Save Team 2</button>
+                        </div>
                     </div>
                 </div>
             </div>
