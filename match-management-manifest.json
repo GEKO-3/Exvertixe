@@ -2,7 +2,7 @@
   "name": "FMSC 2025 - Match Management",
   "short_name": "Match Manager",
   "description": "Live match management and scoring system for FMSC 2025",
-  "start_url": "./match-management.html",
+  "start_url": "./match-management.html?pwa=true",
   "display": "standalone",
   "background_color": "#0a0b0c",
   "theme_color": "#03bded",

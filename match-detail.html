@@ -38,7 +38,6 @@
             --yellow-color: #ffff00;
             --red-color: #ff0000;
             --own-goal-color: #ff6600;
-            --assist-color: #00d2d3;
             --substitution-color: #7b68ee;
             --save-color: #32cd32;
             --foul-color: #ff8c00;
@@ -361,6 +360,74 @@
             transform: scale(0.95);
         }
 
+        /* First Half Fouls Styles */
+        .first-half-fouls-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            opacity: 0.8;
+        }
+
+        .first-half-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .first-half-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .first-half-subtitle {
+            color: var(--text-color);
+            font-size: 0.7rem;
+            opacity: 0.6;
+            font-style: italic;
+            margin-top: 0.25rem;
+        }
+
+        .first-half-layout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .first-half-team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .first-half-team-name {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .first-half-foul-count {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--foul-color);
+            background: rgba(255, 140, 0, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .first-half-divider {
+            color: var(--border-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
         .vs-divider {
             font-family: 'Bebas Neue', cursive;
             font-size: 1.5rem;
@@ -623,10 +690,7 @@
             color: white;
         }
 
-        .primary-action-btn.active.assist {
-            background: var(--primary-color);
-            color: white;
-        }
+
 
         .primary-action-btn.active::after {
             content: '●';
@@ -1375,7 +1439,7 @@
 
         <div class="fouls-container">
             <div class="fouls-header">
-                <div class="fouls-title">TEAM FOULS</div>
+                <div class="fouls-title" id="current-fouls-title">TEAM FOULS (CURRENT HALF)</div>
             </div>
             <div class="fouls-layout">
                 <div class="team-foul-section team1" id="foul-section-team1">
@@ -1415,7 +1479,11 @@
         let teams = {};
         let drawAssignments = {};
         let matchEvents = {};
-        let matchFouls = { team1: 0, team2: 0 };
+        let matchFouls = { 
+            current: { team1: 0, team2: 0 }, // Current half fouls
+            firstHalf: { team1: 0, team2: 0 }, // First half fouls (saved)
+            secondHalf: { team1: 0, team2: 0 } // Second half fouls (saved)
+        };
         let teamLists = {};
         let playerSlotCounts = {};
         let currentMatchId = '';
@@ -1455,7 +1523,12 @@
 
         // Listen for match fouls
         database.ref(`matchFouls/${currentMatchId}`).on('value', (snapshot) => {
-            matchFouls = snapshot.val() || { team1: 0, team2: 0 };
+            const foulData = snapshot.val() || { 
+                current: { team1: 0, team2: 0 }, 
+                firstHalf: { team1: 0, team2: 0 }, 
+                secondHalf: { team1: 0, team2: 0 } 
+            };
+            matchFouls = foulData;
             updateFoulDisplays();
         });
 
@@ -1471,6 +1544,18 @@
             database.ref(`matchState/${currentMatchId}`).on('value', (snapshot) => {
                 const matchState = snapshot.val();
                 updateMatchControlButton(matchState);
+                
+                // Check if we need to show first half fouls
+                if (matchState && (matchState.state === 'half-time' || matchState.state === 'second-half' || matchState.state === 'finished')) {
+                    // Check if first half fouls exist and show them
+                    database.ref(`matchFouls/${currentMatchId}/firstHalf`).once('value')
+                        .then(foulSnapshot => {
+                            const firstHalfFouls = foulSnapshot.val();
+                            if (firstHalfFouls && (firstHalfFouls.team1 > 0 || firstHalfFouls.team2 > 0)) {
+                                showFirstHalfFouls();
+                            }
+                        });
+                }
             });
         }, 1000);
 
@@ -1785,7 +1870,6 @@
                                     <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
                                     <div class="dropdown-item Red" data-action="red">🟥 Red</div>
                                     <div class="dropdown-item own-goal" data-action="own-goal">⚽ Own Goal</div>
-                                    <div class="dropdown-item assist" data-action="assist">🅰️ Assist</div>
                                     <div class="dropdown-item" data-action="clear">❌ Clear</div>
                                 </div>
                             </div>
@@ -1930,7 +2014,7 @@
                     <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
                     <div class="dropdown-item Red" data-action="red">� Red</div>
                     <div class="dropdown-item own-goal" data-action="own-goal">⚽ Own Goal</div>
-                    <div class="dropdown-item assist" data-action="assist">🅰️ Assist</div>
+
                     <div class="dropdown-item" data-action="clear">❌ Clear</div>
                 </div>
             `;
@@ -1955,7 +2039,6 @@
                 'yellow': '🟨',
                 'red': '🟥',
                 'own-goal': '⚽🔄',
-                'assist': '🅰️',
                 'substitution': '🔄',
                 'save': '🥅',
                 'foul': '⚠️'
@@ -1996,10 +2079,7 @@
                                 button.style.background = 'var(--own-goal-color)';
                                 button.style.color = 'white';
                                 break;
-                            case 'assist':
-                                button.style.background = 'var(--assist-color)';
-                                button.style.color = 'white';
-                                break;
+
                             case 'substitution':
                                 button.style.background = 'var(--substitution-color)';
                                 button.style.color = 'white';
@@ -2050,8 +2130,8 @@
         }
 
         function adjustFouls(teamKey, change) {
-            const newFoulCount = Math.max(0, matchFouls[teamKey] + change);
-            matchFouls[teamKey] = newFoulCount;
+            const newFoulCount = Math.max(0, matchFouls.current[teamKey] + change);
+            matchFouls.current[teamKey] = newFoulCount;
             
             // Update display
             const foulElement = document.getElementById(`fouls-${teamKey}`);
@@ -2060,7 +2140,7 @@
             }
             
             // Save to Firebase
-            database.ref(`matchFouls/${currentMatchId}/${teamKey}`).set(newFoulCount)
+            database.ref(`matchFouls/${currentMatchId}/current/${teamKey}`).set(newFoulCount)
                 .catch(error => {
                     console.error('Error updating fouls:', error);
                 });
@@ -2070,8 +2150,15 @@
             const team1FoulElement = document.getElementById('fouls-team1');
             const team2FoulElement = document.getElementById('fouls-team2');
             
-            if (team1FoulElement) team1FoulElement.textContent = matchFouls.team1 || 0;
-            if (team2FoulElement) team2FoulElement.textContent = matchFouls.team2 || 0;
+            if (team1FoulElement) team1FoulElement.textContent = matchFouls.current.team1 || 0;
+            if (team2FoulElement) team2FoulElement.textContent = matchFouls.current.team2 || 0;
+            
+            // Update first half fouls display if they exist
+            const team1FirstHalfElement = document.getElementById('first-half-fouls-team1');
+            const team2FirstHalfElement = document.getElementById('first-half-fouls-team2');
+            
+            if (team1FirstHalfElement) team1FirstHalfElement.textContent = matchFouls.firstHalf.team1 || 0;
+            if (team2FirstHalfElement) team2FirstHalfElement.textContent = matchFouls.firstHalf.team2 || 0;
         }
 
         // Handle dropdown item clicks using event delegation
@@ -3085,6 +3172,11 @@
                 timestamp: Date.now()
             };
 
+            // Handle special logic for half-time transition
+            if (newState === 'half-time') {
+                saveFirstHalfFoulsAndReset();
+            }
+
             database.ref(`matchState/${currentMatchId}`).set(stateData)
                 .then(() => {
                     console.log(`Match state updated to: ${newState}`);
@@ -3096,6 +3188,111 @@
                 });
         }
 
+        function saveFirstHalfFoulsAndReset() {
+            // Save current fouls as first half fouls (FINAL - no longer active)
+            matchFouls.firstHalf = { 
+                team1: matchFouls.current.team1, 
+                team2: matchFouls.current.team2 
+            };
+
+            // IMPORTANT: Reset current fouls to 0 for second half (fresh start)
+            // Second half fouls are counted completely separately and never added to first half
+            matchFouls.current = { team1: 0, team2: 0 };
+
+            // Save to Firebase
+            const updates = {};
+            updates[`matchFouls/${currentMatchId}/firstHalf`] = matchFouls.firstHalf;
+            updates[`matchFouls/${currentMatchId}/current`] = matchFouls.current;
+
+            database.ref().update(updates)
+                .then(() => {
+                    console.log('First half fouls saved and current fouls reset');
+                    updateFoulDisplays();
+                    showFirstHalfFouls(); // Show the first half fouls section
+                })
+                .catch(error => {
+                    console.error('Error saving first half fouls:', error);
+                });
+        }
+
+        function showFirstHalfFouls() {
+            // Show first half fouls in the interface
+            const foulContainer = document.querySelector('.fouls-container');
+            
+            // Check if first half display already exists
+            if (!document.getElementById('first-half-fouls-section')) {
+                const firstHalfSection = document.createElement('div');
+                firstHalfSection.id = 'first-half-fouls-section';
+                firstHalfSection.className = 'first-half-fouls-section';
+                firstHalfSection.innerHTML = `
+                    <div class="first-half-header">
+                        <div class="first-half-title">FIRST HALF FOULS (FINAL)</div>
+                        <div class="first-half-subtitle">These do not carry over to second half</div>
+                    </div>
+                    <div class="first-half-layout">
+                        <div class="first-half-team team1">
+                            <span class="first-half-team-name" id="first-half-team1-name">Team 1</span>
+                            <span class="first-half-foul-count" id="first-half-fouls-team1">0</span>
+                        </div>
+                        <div class="first-half-divider">|</div>
+                        <div class="first-half-team team2">
+                            <span class="first-half-team-name" id="first-half-team2-name">Team 2</span>
+                            <span class="first-half-foul-count" id="first-half-fouls-team2">0</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert after the main fouls container
+                foulContainer.parentNode.insertBefore(firstHalfSection, foulContainer.nextSibling);
+                
+                // Update team names
+                updateFirstHalfTeamNames();
+            }
+            
+            // Update the display
+            updateFoulDisplays();
+        }
+
+        function updateFirstHalfTeamNames() {
+            const matchData = parseMatchId(currentMatchId);
+            const team1Data = getTeamData(matchData.teams[0]);
+            const team2Data = getTeamData(matchData.teams[1]);
+
+            const team1Name = team1Data ? team1Data.name : matchData.teams[0];
+            const team2Name = team2Data ? team2Data.name : matchData.teams[1];
+
+            const team1NameElement = document.getElementById('first-half-team1-name');
+            const team2NameElement = document.getElementById('first-half-team2-name');
+
+            if (team1NameElement) team1NameElement.textContent = team1Name;
+            if (team2NameElement) team2NameElement.textContent = team2Name;
+        }
+
+        function updateCurrentFoulsTitle(matchState) {
+            const titleElement = document.getElementById('current-fouls-title');
+            if (!titleElement) return;
+
+            switch(matchState) {
+                case 'not-started':
+                    titleElement.textContent = 'TEAM FOULS';
+                    break;
+                case 'first-half':
+                    titleElement.textContent = 'TEAM FOULS (FIRST HALF)';
+                    break;
+                case 'half-time':
+                    titleElement.textContent = 'TEAM FOULS (SECOND HALF STARTING)';
+                    break;
+                case 'second-half':
+                    titleElement.textContent = 'TEAM FOULS (SECOND HALF)';
+                    break;
+                case 'finished':
+                    titleElement.textContent = 'TEAM FOULS (SECOND HALF - FINAL)';
+                    break;
+                default:
+                    titleElement.textContent = 'TEAM FOULS (CURRENT HALF)';
+            }
+        }
+
         function updateMatchControlButton(matchStateData) {
             const button = document.getElementById('match-control-btn');
             if (!button) {
@@ -3105,6 +3302,9 @@
 
             const state = matchStateData ? matchStateData.state : 'not-started';
             currentMatchState = state;
+            
+            // Update the current fouls title based on match state
+            updateCurrentFoulsTitle(state);
 
             // Reset all classes
             button.className = 'match-control-btn';

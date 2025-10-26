@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Match Management PWA</title>
+    
+    <!-- PWA Manifest - ONLY for Match Management -->
+    <link rel="manifest" href="match-management-manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        p {
+            margin-bottom: 2rem;
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .install-btn {
+            background: linear-gradient(135deg, var(--primary-color), #029ac0);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(3, 189, 237, 0.3);
+        }
+
+        .launch-btn {
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .launch-btn:hover {
+            background: #5a5a5a;
+        }
+
+        .instructions {
+            text-align: left;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(3, 189, 237, 0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Match Management</h1>
+        <p>Install the dedicated Match Management PWA for tournament organization and match tracking.</p>
+        
+        <button id="install-btn" class="install-btn" style="display: none;">
+            🔽 Install App
+        </button>
+        
+        <button onclick="window.location.href='match-management.html'" class="launch-btn">
+            🚀 Launch in Browser
+        </button>
+
+        <div class="instructions">
+            <h3>📱 Installation Guide:</h3>
+            <ul>
+                <li><strong>Chrome/Edge:</strong> Look for install button in address bar</li>
+                <li><strong>Mobile:</strong> Use "Add to Home Screen" from browser menu</li>
+                <li><strong>Safari:</strong> Share button → Add to Home Screen</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            const installBtn = document.getElementById('install-btn');
+            installBtn.style.display = 'inline-block';
+            
+            installBtn.addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        // Redirect to the app after installation
+                        setTimeout(() => {
+                            window.location.href = 'match-management.html';
+                        }, 1000);
+                    }
+                    deferredPrompt = null;
+                });
+            });
+        });
+
+        // Register service worker for this installer page too
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./match-management-sw.js')
+                .then(registration => {
+                    console.log('SW registered for installer:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('SW registration failed:', error);
+                });
+        }
+    </script>
+</body>
+</html>
