@@ -219,6 +219,12 @@
             margin-bottom: 5px;
         }
 
+        .scorer-name .jersey-number {
+            color: var(--accent-color);
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
         .scorer-team {
             font-size: 0.9rem;
             color: var(--primary-color);
@@ -425,12 +431,143 @@
         let teamLists = {};
         let goalScorers = {};
 
+        // Get team data (similar to match-detail.html)
+        function getTeamData(position) {
+            console.log(`Getting team data for position: ${position}`);
+            console.log('Draw assignments:', drawAssignments);
+            console.log('Available teams:', Object.keys(teams));
+            
+            if (!drawAssignments[position]) {
+                console.log(`No draw assignment found for position: ${position}`);
+                return null;
+            }
+            
+            const teamId = drawAssignments[position];
+            console.log(`Team ID for position ${position}: ${teamId}`);
+            
+            if (!teams[teamId]) {
+                console.log(`No team data found for teamId: ${teamId}`);
+                return null;
+            }
+            
+            const teamData = {
+                id: teamId,
+                name: teams[teamId].teamName,
+                logo: teams[teamId].teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase()
+            };
+            
+            console.log(`Team data for ${position}:`, teamData);
+            return teamData;
+        }
+
+        // Get team list (similar to match-detail.html)
+        function getTeamList(teamId) {
+            // Get team name from the teams data
+            const teamName = teams[teamId]?.teamName;
+            if (!teamName) {
+                console.log(`No team name found for teamId: ${teamId}`);
+                return null;
+            }
+            
+            console.log(`Looking for team list with name: "${teamName}"`);
+            console.log('Available team lists:', Object.keys(teamLists));
+            
+            // Search through all team lists to find one matching this team name
+            const teamListEntries = Object.entries(teamLists);
+            console.log('Team list entries with team names:');
+            teamListEntries.forEach(([key, teamList]) => {
+                console.log(`  ${key}: "${teamList.teamName || 'NO TEAM NAME'}"`);
+            });
+            
+            const matchingEntry = teamListEntries.find(([key, teamList]) => 
+                teamList.teamName === teamName
+            );
+            
+            if (!matchingEntry) {
+                console.log(`No team list found for team: ${teamName}`);
+                // Try case-insensitive match
+                const caseInsensitiveMatch = teamListEntries.find(([key, teamList]) => 
+                    teamList.teamName && teamList.teamName.toLowerCase() === teamName.toLowerCase()
+                );
+                if (caseInsensitiveMatch) {
+                    console.log(`Found case-insensitive match for ${teamName}`);
+                    const [submissionId, teamList] = caseInsensitiveMatch;
+                    return teamList;
+                }
+                return null;
+            }
+            
+            const [submissionId, teamList] = matchingEntry;
+            console.log(`Found team list for ${teamName} with submission ID: ${submissionId}`);
+            
+            return teamList;
+        }
+
+        // Get player data from team lists
+        function getPlayerData(teamKey, personKey, matchId) {
+            try {
+                // Parse match ID to get team positions
+                const matchParts = matchId.split('-');
+                if (matchParts.length >= 2) {
+                    const teamsMatch = matchParts[1].match(/^(.+)vs(.+)$/);
+                    if (teamsMatch) {
+                        const team1Position = teamsMatch[1];
+                        const team2Position = teamsMatch[2];
+                        const position = teamKey === 'team1' ? team1Position : team2Position;
+                        
+                        // Get team data and team list (using match-detail approach)
+                        const teamData = getTeamData(position);
+                        if (teamData) {
+                            const teamList = getTeamList(teamData.id);
+                            if (teamList) {
+                                // Parse personKey (like "player-0" or "official-0") 
+                                const personMatch = personKey.match(/^(player|official)-(\d+)$/);
+                                if (personMatch) {
+                                    const personType = personMatch[1]; // "player" or "official"
+                                    const personIndex = parseInt(personMatch[2]);
+                                    
+                                    if (personType === 'player' && teamList.players && teamList.players[personIndex]) {
+                                        const player = teamList.players[personIndex];
+                                        return {
+                                            name: typeof player === 'string' ? player : (player.name || 'Unknown Player'),
+                                            jersey: typeof player === 'object' ? (player.jerseyNumber || player.jersey || 'N/A') : 'N/A',
+                                            teamId: teamData.id,
+                                            teamName: teamData.name
+                                        };
+                                    }
+                                    
+                                    if (personType === 'official' && teamList.officials && teamList.officials[personIndex]) {
+                                        const official = teamList.officials[personIndex];
+                                        return {
+                                            name: typeof official === 'string' ? official : (official.name || 'Unknown Official'),
+                                            jersey: 'N/A',
+                                            teamId: teamData.id,
+                                            teamName: teamData.name
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error getting player data:', error);
+            }
+            
+            return {
+                name: 'Unknown Player',
+                jersey: 'N/A',
+                teamId: null,
+                teamName: 'Unknown Team'
+            };
+        }
+
         // Calculate goal scorers from match events
         function calculateTopScorers() {
             try {
                 goalScorers = {};
                 let totalGoals = 0;
-                let matchesWithGoals = new Set();
+                const matchesWithGoals = new Set();
 
                 console.log('Processing match events for goal scorers:', matchEvents);
 
@@ -448,16 +585,18 @@
                             matchesWithGoals.add(matchId);
                             
                             const playerKey = `${event.teamKey}-${event.personKey}`;
-                            const playerName = event.playerName || 'Unknown Player';
+                            const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
                             const teamKey = event.teamKey;
                             
-                            console.log(`Goal found: ${playerName} (${playerKey})`);
+                            console.log(`Goal found: ${playerData.name} #${playerData.jersey} (${playerKey})`);
                             
                             // Initialize player if not exists
                             if (!goalScorers[playerKey]) {
                                 goalScorers[playerKey] = {
-                                    playerName: playerName,
+                                    playerName: playerData.name,
+                                    jerseyNumber: playerData.jersey,
                                     teamKey: teamKey,
+                                    teamName: playerData.teamName,
                                     goals: 0,
                                     matchId: matchId
                                 };
@@ -540,7 +679,14 @@
 
             sortedScorers.forEach((scorer, index) => {
                 const rank = index + 1;
-                const teamData = getScorerTeamData(scorer.teamKey, scorer.matchId);
+                // Use stored team data or fallback to getScorerTeamData
+                const teamData = scorer.teamName ? 
+                    { 
+                        name: scorer.teamName, 
+                        logo: scorer.teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase(),
+                        position: scorer.teamKey
+                    } : 
+                    getScorerTeamData(scorer.teamKey, scorer.matchId);
                 
                 let rankClass = 'regular';
                 if (rank === 1) rankClass = 'gold';
@@ -562,7 +708,7 @@
                     <div class="scorer-info">
                         ${logoHtml}
                         <div class="scorer-details">
-                            <div class="scorer-name">${scorer.playerName}</div>
+                            <div class="scorer-name">${scorer.playerName}${scorer.jerseyNumber !== 'N/A' ? ' <span class="jersey-number">#' + scorer.jerseyNumber + '</span>' : ''}</div>
                             <div class="scorer-team">${teamData.name}</div>
                         </div>
                         <div class="scorer-goals">
@@ -576,35 +722,43 @@
             });
         }
 
+        // Check if all data is loaded and recalculate if needed
+        function checkAndRecalculate() {
+            if (Object.keys(teams).length > 0 && 
+                Object.keys(drawAssignments).length > 0 && 
+                Object.keys(teamLists).length > 0 && 
+                Object.keys(matchEvents).length > 0) {
+                calculateTopScorers();
+                renderTopScorers();
+            }
+        }
+
         // Firebase listeners
         database.ref('applications').on('value', (snapshot) => {
             teams = snapshot.val() || {};
             console.log('Teams loaded:', teams);
-            renderTopScorers();
+            checkAndRecalculate();
         });
 
         database.ref('drawAssignments').on('value', (snapshot) => {
             drawAssignments = snapshot.val() || {};
             console.log('Draw assignments loaded:', drawAssignments);
-            renderTopScorers();
+            checkAndRecalculate();
         });
 
         database.ref('matchEvents').on('value', (snapshot) => {
             matchEvents = snapshot.val() || {};
             console.log('Match events loaded:', matchEvents);
-            calculateTopScorers();
-            renderTopScorers();
+            checkAndRecalculate();
         });
 
         database.ref('teamLists').on('value', (snapshot) => {
             teamLists = snapshot.val() || {};
             console.log('Team lists loaded:', teamLists);
-            renderTopScorers();
+            checkAndRecalculate();
         });
 
-        // Initial render
-        calculateTopScorers();
-        renderTopScorers();
+        // Don't render initially - wait for data to load
     </script>
 </body>
 </html>

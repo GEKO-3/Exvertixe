@@ -236,6 +236,12 @@
             margin-bottom: 5px;
         }
 
+        .player-name .jersey-number {
+            color: var(--accent-color);
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
         .player-team {
             font-size: 0.9rem;
             color: var(--primary-color);
@@ -520,12 +526,167 @@
         let cardPayments = {};
         let playerCards = {};
         let currentPaymentPlayer = null;
+        let teamLists = {};
 
-        // Fine amounts
+        // Fine amounts (in NVR)
         const FINE_AMOUNTS = {
             yellow: 10,
             red: 25
         };
+
+        // Get team data for a specific position
+        function getTeamData(position) {
+            try {
+                if (drawAssignments[position]) {
+                    const teamId = drawAssignments[position];
+                    if (teams[teamId]) {
+                        return {
+                            id: teamId,
+                            name: teams[teamId].teamName,
+                            logo: getTeamLogoFilename(teams[teamId].teamName),
+                            position: position
+                        };
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error('Error getting team data:', error);
+                return null;
+            }
+        }
+
+        // Get team list (similar to match-detail.html and top-scorers.html)
+        function getTeamList(teamId) {
+            // Get team name from the teams data
+            const teamName = teams[teamId]?.teamName;
+            if (!teamName) {
+                console.log(`No team name found for teamId: ${teamId}`);
+                return null;
+            }
+            
+            console.log(`Looking for team list with name: "${teamName}"`);
+            console.log('Available team lists:', Object.keys(teamLists));
+            
+            // Search through all team lists to find one matching this team name
+            const teamListEntries = Object.entries(teamLists);
+            console.log('Team list entries with team names:');
+            teamListEntries.forEach(([key, teamList]) => {
+                console.log(`  ${key}: "${teamList.teamName || 'NO TEAM NAME'}"`);
+            });
+            
+            const matchingEntry = teamListEntries.find(([key, teamList]) => 
+                teamList.teamName === teamName
+            );
+            
+            if (!matchingEntry) {
+                console.log(`No team list found for team: ${teamName}`);
+                // Try case-insensitive match
+                const caseInsensitiveMatch = teamListEntries.find(([key, teamList]) => 
+                    teamList.teamName && teamList.teamName.toLowerCase() === teamName.toLowerCase()
+                );
+                if (caseInsensitiveMatch) {
+                    console.log(`Found case-insensitive match for ${teamName}`);
+                    const [submissionId, teamList] = caseInsensitiveMatch;
+                    return teamList;
+                }
+                return null;
+            }
+            
+            const [submissionId, teamList] = matchingEntry;
+            console.log(`Found team list for ${teamName} with submission ID: ${submissionId}`);
+            
+            return teamList;
+        }
+
+        // Get player data for a specific person key within a team
+        function getPlayerData(teamKey, personKey, matchId) {
+            console.log(`🔍 getPlayerData called: teamKey=${teamKey}, personKey=${personKey}, matchId=${matchId}`);
+            
+            try {
+                // Parse match ID to get team positions
+                const matchParts = matchId.split('-');
+                console.log(`Match parts:`, matchParts);
+                
+                if (matchParts.length >= 2) {
+                    const teamsMatch = matchParts[1].match(/^(.+)vs(.+)$/);
+                    console.log(`Teams match result:`, teamsMatch);
+                    
+                    if (teamsMatch) {
+                        const team1Position = teamsMatch[1];
+                        const team2Position = teamsMatch[2];
+                        const position = teamKey === 'team1' ? team1Position : team2Position;
+                        console.log(`Position for ${teamKey}: ${position}`);
+                        
+                        // Get team data and team list (using match-detail approach)
+                        const teamData = getTeamData(position);
+                        console.log(`Team data for position ${position}:`, teamData);
+                        
+                        if (teamData) {
+                            const teamList = getTeamList(teamData.id);
+                            console.log(`Team list for ${teamData.id}:`, teamList);
+                            
+                            if (teamList) {
+                                // Parse personKey (like "player-0" or "official-0") 
+                                const personMatch = personKey.match(/^(player|official)-(\d+)$/);
+                                console.log(`Person match for ${personKey}:`, personMatch);
+                                
+                                if (personMatch) {
+                                    const personType = personMatch[1]; // "player" or "official"
+                                    const personIndex = parseInt(personMatch[2]);
+                                    console.log(`Looking for ${personType} at index ${personIndex}`);
+                                    
+                                    if (personType === 'player' && teamList.players && teamList.players[personIndex]) {
+                                        const player = teamList.players[personIndex];
+                                        console.log(`✅ Found player:`, player);
+                                        const result = {
+                                            name: typeof player === 'string' ? player : (player.name || 'Unknown Player'),
+                                            jersey: typeof player === 'object' ? (player.jerseyNumber || player.jersey || 'N/A') : 'N/A',
+                                            teamId: teamData.id,
+                                            teamName: teamData.name
+                                        };
+                                        console.log(`✅ Returning:`, result);
+                                        return result;
+                                    }
+                                    
+                                    if (personType === 'official' && teamList.officials && teamList.officials[personIndex]) {
+                                        const official = teamList.officials[personIndex];
+                                        console.log(`✅ Found official:`, official);
+                                        return {
+                                            name: typeof official === 'string' ? official : (official.name || 'Unknown Official'),
+                                            jersey: 'N/A',
+                                            teamId: teamData.id,
+                                            teamName: teamData.name
+                                        };
+                                    }
+                                    
+                                    console.log(`❌ No ${personType} found at index ${personIndex}`);
+                                } else {
+                                    console.log(`❌ PersonKey ${personKey} doesn't match pattern`);
+                                }
+                            } else {
+                                console.log(`❌ No team list found for team ID ${teamData.id}`);
+                            }
+                        } else {
+                            console.log(`❌ No team data found for position ${position}`);
+                        }
+                    } else {
+                        console.log(`❌ Match ID doesn't match vs pattern`);
+                    }
+                } else {
+                    console.log(`❌ Match ID has insufficient parts`);
+                }
+            } catch (error) {
+                console.error('❌ Error getting player data:', error);
+            }
+            
+            console.log(`❌ Returning Unknown Player`);
+            return {
+                name: 'Unknown Player',
+                jersey: 'N/A',
+                teamId: null,
+                teamName: 'Unknown Team'
+            };
+        }
 
         // Calculate player cards from match events
         function calculatePlayerCards() {
@@ -546,22 +707,29 @@
                         // Only process card events
                         if (event.eventType === 'yellow' || event.eventType === 'red') {
                             const playerKey = `${event.teamKey}-${event.personKey}`;
-                            const playerName = event.playerName || 'Unknown Player';
                             const teamKey = event.teamKey;
                             const cardType = event.eventType;
                             
-                            console.log(`Card found: ${cardType} card for ${playerName} (${playerKey})`);
+                            console.log(`Found ${cardType} card event:`, event);
+                            console.log(`MatchId: ${matchId}, TeamKey: ${teamKey}, PersonKey: ${event.personKey}`);
+                            
+                            // Get proper player name and details using the same approach as top-scorers
+                            const playerData = getPlayerData(teamKey, event.personKey, matchId);
+                            console.log(`Player data lookup result:`, playerData);
                             
                             // Initialize player if not exists
                             if (!playerCards[playerKey]) {
                                 playerCards[playerKey] = {
-                                    playerName: playerName,
+                                    playerName: playerData.name,
+                                    jerseyNumber: playerData.jersey,
                                     teamKey: teamKey,
+                                    teamName: playerData.teamName,
                                     matchId: matchId,
                                     yellow: 0,
                                     red: 0,
                                     events: []
                                 };
+                                console.log(`Created new player card entry:`, playerCards[playerKey]);
                             }
                             
                             playerCards[playerKey][cardType]++;
@@ -623,12 +791,16 @@
             
             currentPaymentPlayer = playerKey;
             
+            const playerDisplayName = player.jerseyNumber !== 'N/A' ? 
+                `${player.playerName} #${player.jerseyNumber}` : 
+                player.playerName;
+            
             const message = document.getElementById('dialog-message');
             message.innerHTML = `
-                <strong>${player.playerName}</strong><br>
-                ${player.yellow} Yellow Card${player.yellow !== 1 ? 's' : ''} ($${player.yellow * FINE_AMOUNTS.yellow})<br>
-                ${player.red} Red Card${player.red !== 1 ? 's' : ''} ($${player.red * FINE_AMOUNTS.red})<br>
-                <strong>Total Fine: $${fine}</strong>
+                <strong>${playerDisplayName}</strong><br>
+                ${player.yellow} Yellow Card${player.yellow !== 1 ? 's' : ''} (NVR ${player.yellow * FINE_AMOUNTS.yellow})<br>
+                ${player.red} Red Card${player.red !== 1 ? 's' : ''} (NVR ${player.red * FINE_AMOUNTS.red})<br>
+                <strong>Total Fine: NVR ${fine}</strong>
             `;
             
             document.getElementById('payment-dialog').style.display = 'flex';
@@ -717,7 +889,7 @@
 
                 const actionHtml = player.paid ? 
                     `<div class="paid-label">Paid</div>` :
-                    `<div class="fine-amount">$${player.fine}</div>
+                    `<div class="fine-amount">NVR ${player.fine}</div>
                      <button class="pay-btn" onclick="showPaymentDialog('${player.key}')">Pay</button>`;
 
                 cardItem.innerHTML = `
@@ -727,7 +899,7 @@
                     <div class="player-info">
                         ${logoHtml}
                         <div class="player-details">
-                            <div class="player-name">${player.playerName}</div>
+                            <div class="player-name">${player.playerName}${player.jerseyNumber !== 'N/A' ? ' <span class="jersey-number">#' + player.jerseyNumber + '</span>' : ''}</div>
                             <div class="player-team">${teamData.name}</div>
                         </div>
                     </div>
@@ -740,30 +912,49 @@
             });
         }
 
+        // Check if all data is loaded and recalculate if needed
+        function checkAndRecalculate() {
+            if (Object.keys(teams).length > 0 && 
+                Object.keys(drawAssignments).length > 0 && 
+                Object.keys(teamLists).length > 0 && 
+                Object.keys(matchEvents).length > 0) {
+                calculatePlayerCards();
+                renderCards();
+            }
+        }
+
         // Firebase listeners
         database.ref('applications').on('value', (snapshot) => {
             teams = snapshot.val() || {};
             console.log('Teams loaded:', teams);
-            renderCards();
+            checkAndRecalculate();
         });
 
         database.ref('drawAssignments').on('value', (snapshot) => {
             drawAssignments = snapshot.val() || {};
             console.log('Draw assignments loaded:', drawAssignments);
-            renderCards();
+            checkAndRecalculate();
+        });
+
+        database.ref('teamLists').on('value', (snapshot) => {
+            teamLists = snapshot.val() || {};
+            console.log('Team lists loaded:', teamLists);
+            checkAndRecalculate();
         });
 
         database.ref('matchEvents').on('value', (snapshot) => {
             matchEvents = snapshot.val() || {};
             console.log('Match events loaded:', matchEvents);
-            calculatePlayerCards();
-            renderCards();
+            checkAndRecalculate();
         });
 
         database.ref('cardPayments').on('value', (snapshot) => {
             cardPayments = snapshot.val() || {};
             console.log('Card payments loaded:', cardPayments);
-            renderCards();
+            // Card payments don't need to trigger recalculation, just re-render
+            if (Object.keys(playerCards).length > 0) {
+                renderCards();
+            }
         });
 
         // Close dialog when clicking outside

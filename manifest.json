@@ -1,8 +1,8 @@
 {
-  "name": "FMSC 2025 - Draw Control",
-  "short_name": "FMSC Control",
-  "description": "Tournament draw control panel for FMSC 2025",
-  "start_url": "./index.html",
+  "name": "FMSC 2025 - Tournament Suite",
+  "short_name": "FMSC Suite",
+  "description": "Complete tournament management suite for FMSC 2025",
+  "start_url": "./launcher.html",
   "display": "standalone",
   "background_color": "#0a0b0c",
   "theme_color": "#03bded",

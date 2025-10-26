@@ -563,27 +563,6 @@
         
         <div class="schedule-grid">
             <div class="day-column">
-                <div class="day-header">OCTOBER 23</div>
-                <div class="matches-list" id="oct23-matches">
-                    <!-- October 23 matches will be populated here -->
-                </div>
-            </div>
-            
-            <div class="day-column">
-                <div class="day-header">OCTOBER 24</div>
-                <div class="matches-list" id="oct24-matches">
-                    <!-- October 24 matches will be populated here -->
-                </div>
-            </div>
-            
-            <div class="day-column">
-                <div class="day-header">OCTOBER 25</div>
-                <div class="matches-list" id="oct25-matches">
-                    <!-- October 25 matches will be populated here -->
-                </div>
-            </div>
-            
-            <div class="day-column">
                 <div class="day-header">OCTOBER 26</div>
                 <div class="matches-list" id="oct26-matches">
                     <!-- October 26 matches will be populated here -->
@@ -594,6 +573,13 @@
                 <div class="day-header">OCTOBER 27</div>
                 <div class="matches-list" id="oct27-matches">
                     <!-- October 27 matches will be populated here -->
+                </div>
+            </div>
+            
+            <div class="day-column">
+                <div class="day-header">OCTOBER 28</div>
+                <div class="matches-list" id="oct28-matches">
+                    <!-- October 28 matches will be populated here -->
                 </div>
             </div>
         </div>
@@ -802,30 +788,26 @@
         // Schedule data - Updated tournament structure after team dropout
         // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
         const scheduleData = {
-            oct23: [
-                { teams: ['A1', 'A2'], type: 'Group A', time: '8:15 PM' },
-                { teams: ['B1', 'B2'], type: 'Group B', time: '9:15 PM' },
-                { teams: ['C1', 'C2'], type: 'Group C', time: '10:15 PM' }
-            ],
-            oct24: [
-                { teams: ['D1', 'D2'], type: 'Group D', time: '8:15 PM' },
-                { teams: ['A3', 'A4'], type: 'Group A', time: '9:15 PM' },
-                { teams: ['B1', 'B3'], type: 'Group B', time: '10:15 PM' }
-            ],
-            oct25: [
-                { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
-                { teams: ['A1', 'A3'], type: 'Group A', time: '9:15 PM' },
-                { teams: ['D1', 'D3'], type: 'Group D', time: '10:15 PM' }
-            ],
             oct26: [
-                { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
-                { teams: ['B2', 'B3'], type: 'Group B', time: '9:15 PM' },
-                { teams: ['A2', 'A3'], type: 'Group A', time: '10:15 PM' }
+                { teams: ['A1', 'A2'], type: 'Group A', time: '4:00 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '5:00 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '9:00 PM' },
+                { teams: ['D1', 'D2'], type: 'Group D', time: '10:00 PM' }
             ],
             oct27: [
-                { teams: ['C2', 'C3'], type: 'Group C', time: '8:15 PM' },
-                { teams: ['A2', 'A4'], type: 'Group A', time: '9:15 PM' },
-                { teams: ['D2', 'D3'], type: 'Group D', time: '10:15 PM' }
+                { teams: ['D1', 'D3'], type: 'Group D', time: '4:00 PM' },
+                { teams: ['C1', 'C3'], type: 'Group C', time: '5:00 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '10:00 PM' }
+            ],
+            oct28: [
+                { teams: ['B2', 'B3'], type: 'Group B', time: '4:00 PM' },
+                { teams: ['C2', 'C3'], type: 'Group C', time: '5:00 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '8:00 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['A1', 'A4'], type: 'Group A', time: '10:00 PM' }
             ]
         };
 
@@ -937,30 +919,6 @@
         function updateScheduleDisplay() {
             let matchCounter = 1;
             
-            // Update October 23 matches
-            const oct23Container = document.getElementById('oct23-matches');
-            oct23Container.innerHTML = '';
-            scheduleData.oct23.forEach(matchData => {
-                oct23Container.appendChild(createMatchElement(matchData, matchCounter));
-                matchCounter++;
-            });
-            
-            // Update October 24 matches
-            const oct24Container = document.getElementById('oct24-matches');
-            oct24Container.innerHTML = '';
-            scheduleData.oct24.forEach(matchData => {
-                oct24Container.appendChild(createMatchElement(matchData, matchCounter));
-                matchCounter++;
-            });
-            
-            // Update October 25 matches
-            const oct25Container = document.getElementById('oct25-matches');
-            oct25Container.innerHTML = '';
-            scheduleData.oct25.forEach(matchData => {
-                oct25Container.appendChild(createMatchElement(matchData, matchCounter));
-                matchCounter++;
-            });
-            
             // Update October 26 matches
             const oct26Container = document.getElementById('oct26-matches');
             oct26Container.innerHTML = '';
@@ -974,6 +932,14 @@
             oct27Container.innerHTML = '';
             scheduleData.oct27.forEach(matchData => {
                 oct27Container.appendChild(createMatchElement(matchData, matchCounter));
+                matchCounter++;
+            });
+            
+            // Update October 28 matches
+            const oct28Container = document.getElementById('oct28-matches');
+            oct28Container.innerHTML = '';
+            scheduleData.oct28.forEach(matchData => {
+                oct28Container.appendChild(createMatchElement(matchData, matchCounter));
                 matchCounter++;
             });
         }

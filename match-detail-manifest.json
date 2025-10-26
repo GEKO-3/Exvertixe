@@ -1,0 +1,37 @@
+{
+  "name": "FMSC 2025 - Match Detail",
+  "short_name": "Match Detail",
+  "description": "Live match recording and event tracking for FMSC 2025",
+  "start_url": "./match-detail.html",
+  "display": "standalone",
+  "background_color": "#0a0b0c",
+  "theme_color": "#03bded",
+  "orientation": "any",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "./Tounament logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "utilities"],
+  "lang": "en",
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "Record Match Events",
+      "short_name": "Record",
+      "description": "Record goals, cards, and match events",
+      "url": "./match-detail.html",
+      "icons": [{ "src": "./Tounament logo.svg", "sizes": "96x96" }]
+    }
+  ]
+}

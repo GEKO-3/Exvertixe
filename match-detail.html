@@ -6,7 +6,7 @@
     <title>FMSC 2025 - Match Detail</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="match-detail-manifest.json">
     <meta name="theme-color" content="#03bded">
     <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
     <link rel="apple-touch-icon" href="icon-192x192.png">
@@ -18,6 +18,9 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <!-- PDF Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         :root {
@@ -35,6 +38,10 @@
             --yellow-color: #ffff00;
             --red-color: #ff0000;
             --own-goal-color: #ff6600;
+            --assist-color: #00d2d3;
+            --substitution-color: #7b68ee;
+            --save-color: #32cd32;
+            --foul-color: #ff8c00;
         }
 
         * {
@@ -89,6 +96,58 @@
             margin-bottom: 10px;
         }
 
+        .match-control-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(68, 255, 68, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .match-control-btn:hover {
+            background: #3ae83a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(68, 255, 68, 0.4);
+        }
+
+        .match-control-btn.first-half {
+            background: var(--warning-color);
+            box-shadow: 0 4px 15px rgba(255, 170, 0, 0.3);
+        }
+
+        .match-control-btn.first-half:hover {
+            background: #e69900;
+            box-shadow: 0 6px 20px rgba(255, 170, 0, 0.4);
+        }
+
+        .match-control-btn.second-half {
+            background: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+        }
+
+        .match-control-btn.second-half:hover {
+            background: var(--secondary-color);
+            box-shadow: 0 6px 20px rgba(3, 189, 237, 0.4);
+        }
+
+        .match-control-btn.end-match {
+            background: var(--error-color);
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .match-control-btn.end-match:hover {
+            background: #e63939;
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+        }
+
         .back-btn {
             position: absolute;
             top: 20px;
@@ -108,6 +167,8 @@
             background: var(--secondary-color);
             transform: translateY(-2px);
         }
+
+
 
         .teams-layout {
             display: grid;
@@ -470,6 +531,23 @@
             color: var(--own-goal-color);
         }
 
+        .dropdown-item.substitution {
+            color: var(--substitution-color);
+        }
+
+        .dropdown-item.save {
+            color: var(--save-color);
+        }
+
+        .dropdown-item.foul {
+            color: var(--foul-color);
+        }
+
+        .dropdown-item.clear-all {
+            color: var(--error-color);
+            font-weight: 700;
+        }
+
         .vs-separator {
             display: flex;
             align-items: center;
@@ -503,6 +581,135 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* New primary action button styles */
+        .primary-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .primary-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .primary-action-btn.active {
+            position: relative;
+        }
+
+        .primary-action-btn.active.goal {
+            background: var(--goal-color);
+            color: white;
+        }
+
+        .primary-action-btn.active.yellow {
+            background: var(--yellow-color);
+            color: black;
+        }
+
+        .primary-action-btn.active.red {
+            background: var(--red-color);
+            color: white;
+        }
+
+        .primary-action-btn.active.assist {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .primary-action-btn.active::after {
+            content: '●';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid white;
+        }
+
+        /* Plus button styles */
+        .plus-action-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            color: var(--accent-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .plus-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .plus-action-btn.has-events {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+            border-style: solid;
+        }
+
+        /* Plus button specific styles */
+        .plus-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            color: var(--accent-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .plus-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .plus-dropdown .dropdown-menu {
+            min-width: 150px;
+        }
+
+        /* Slot submenu styles */
+        .slot-submenu {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            min-width: 140px;
+            z-index: 1001;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .slot-submenu .dropdown-item {
+            padding: 8px 12px;
+            font-size: 0.85rem;
         }
 
 
@@ -571,6 +778,12 @@
                 padding: 6px 8px;
                 font-size: 0.7rem;
             }
+
+            .plus-btn {
+                min-width: 40px;
+                padding: 6px 8px;
+                font-size: 0.8rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -629,6 +842,26 @@
             background: var(--secondary-color);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(3, 189, 237, 0.4);
+        }
+
+        .referee-manage-btn {
+            background: var(--accent-color);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .referee-manage-btn:hover {
+            background: #e55a2b;
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .print-btn {
+            background: #28a745;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .print-btn:hover {
+            background: #218838;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
 
         /* Modal Styles */
@@ -963,6 +1196,169 @@
                 margin: 0 auto;
             }
         }
+
+        /* Referee Dialog Styles */
+        .referee-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .referee-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .referee-input:focus {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(3, 189, 237, 0.1);
+        }
+
+        .referee-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Man of the Match Styles */
+        .motm-teams {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .motm-team {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .motm-team h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .motm-player-option {
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .motm-player-option:hover {
+            border-color: var(--primary-color);
+            background: rgba(3, 189, 237, 0.1);
+        }
+
+        .motm-player-option.selected {
+            border-color: var(--primary-color);
+            background: rgba(3, 189, 237, 0.2);
+            box-shadow: 0 0 10px rgba(3, 189, 237, 0.3);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-name {
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 13px;
+        }
+
+        .player-jersey {
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 30px;
+        }
+
+        .selected-motm {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(3, 189, 237, 0.1);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+        }
+
+        .selected-motm h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .motm-selection {
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .motm-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .motm-btn:hover {
+            background: linear-gradient(135deg, #FFA500, #FFD700);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .motm-teams {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .player-list {
+                max-height: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .referee-inputs {
+                gap: 15px;
+            }
+            
+            .referee-input {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -972,6 +1368,9 @@
         <div class="header">
             <h1 class="match-title" id="match-title">Loading Match...</h1>
             <div class="match-info" id="match-info"></div>
+            <button class="match-control-btn" id="match-control-btn" onclick="handleMatchControl()">
+                Start Match
+            </button>
         </div>
 
         <div class="fouls-container">
@@ -1018,6 +1417,7 @@
         let matchEvents = {};
         let matchFouls = { team1: 0, team2: 0 };
         let teamLists = {};
+        let playerSlotCounts = {};
         let currentMatchId = '';
 
         // Get match ID from URL
@@ -1059,6 +1459,21 @@
             updateFoulDisplays();
         });
 
+        // Listen for referee data
+        database.ref(`matchReferees/${currentMatchId}`).on('value', (snapshot) => {
+            const refereeData = snapshot.val();
+            console.log('Referee data updated:', refereeData);
+            // Referee data is loaded automatically when dialog opens
+        });
+
+        // Listen for match state changes (with delay to ensure DOM is ready)
+        setTimeout(() => {
+            database.ref(`matchState/${currentMatchId}`).on('value', (snapshot) => {
+                const matchState = snapshot.val();
+                updateMatchControlButton(matchState);
+            });
+        }, 1000);
+
         function loadMatch() {
             if (!currentMatchId) {
                 document.getElementById('match-title').textContent = 'Invalid Match';
@@ -1083,14 +1498,24 @@
             document.getElementById('match-info').textContent = `${team1Name} vs ${team2Name} • ${matchData.date} • ${matchData.time} • ${matchData.type}`;
 
             // Update signature titles
-            document.getElementById('team1-signature-title').textContent = `${team1Name} Signature`;
-            document.getElementById('team2-signature-title').textContent = `${team2Name} Signature`;
+            const team1SignatureTitle = document.getElementById('team1-signature-title');
+            const team2SignatureTitle = document.getElementById('team2-signature-title');
+            
+            if (team1SignatureTitle) {
+                team1SignatureTitle.textContent = `${team1Name} Signature`;
+            }
+            if (team2SignatureTitle) {
+                team2SignatureTitle.textContent = `${team2Name} Signature`;
+            }
 
             // Create foul sections
             createFoulSections(matchData.teams);
             
-            // Create team sections
-            createTeamSections(matchData.teams);
+            // Load player slot counts first, then create team sections
+            loadPlayerSlotCounts(() => {
+                createTeamSections(matchData.teams);
+                loadExistingEvents();
+            });
             
             // Load existing signatures for this match
             loadExistingSignatures();
@@ -1323,6 +1748,11 @@
             return section;
         }
 
+        function getPlayerSlotCount(teamKey, personKey) {
+            const playerSlotKey = `${teamKey}-${personKey}`;
+            return playerSlotCounts[playerSlotKey] || 4; // Default to 4 slots
+        }
+
         function createPlayerRow(player, playerIndex, teamKey, personType) {
             const personKey = `${personType}-${playerIndex}`;
             
@@ -1340,11 +1770,12 @@
             return `
                 <div class="player-row">
                     <div class="player-name">
-                        <span class="name">${playerName}</span>
                         <span class="jersey">${jerseyNumber}</span>
+                        <span class="name">${playerName}</span>
                     </div>
                     <div class="player-actions">
-                        ${Array.from({length: 6}, (_, i) => `
+                        <!-- Dynamic dropdown buttons based on slot count -->
+                        ${Array.from({length: getPlayerSlotCount(teamKey, personKey)}, (_, i) => `
                             <div class="action-dropdown">
                                 <button class="action-btn" data-team="${teamKey}" data-person="${personKey}" data-slot="${i}" onclick="toggleDropdown(this)">
                                     ${i + 1}
@@ -1352,12 +1783,18 @@
                                 <div class="dropdown-menu">
                                     <div class="dropdown-item goal" data-action="goal">⚽ Goal</div>
                                     <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
-                                    <div class="dropdown-item red" data-action="red">🟥 Red</div>
+                                    <div class="dropdown-item Red" data-action="red">🟥 Red</div>
                                     <div class="dropdown-item own-goal" data-action="own-goal">⚽ Own Goal</div>
+                                    <div class="dropdown-item assist" data-action="assist">🅰️ Assist</div>
                                     <div class="dropdown-item" data-action="clear">❌ Clear</div>
                                 </div>
                             </div>
                         `).join('')}
+                        
+                        <!-- Plus button for additional actions -->
+                        <button class="action-btn plus-btn" data-team="${teamKey}" data-person="${personKey}" onclick="addNewSlot(this)">
+                            ➕
+                        </button>
                     </div>
                 </div>
             `;
@@ -1383,18 +1820,24 @@
                         ${position ? `<span class="position">(${position})</span>` : ''}
                     </div>
                     <div class="player-actions">
-                        ${Array.from({length: 6}, (_, i) => `
+                        <!-- Dynamic dropdown buttons based on slot count (default 4 for officials) -->
+                        ${Array.from({length: getPlayerSlotCount(teamKey, personKey)}, (_, i) => `
                             <div class="action-dropdown">
                                 <button class="action-btn" data-team="${teamKey}" data-person="${personKey}" data-slot="${i}" onclick="toggleDropdown(this)">
                                     ${i + 1}
                                 </button>
                                 <div class="dropdown-menu">
                                     <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
-                                    <div class="dropdown-item red" data-action="red">🟥 Red</div>
+                                    <div class="dropdown-item Red" data-action="red">🟥 Red</div>
                                     <div class="dropdown-item" data-action="clear">❌ Clear</div>
                                 </div>
                             </div>
                         `).join('')}
+                        
+                        <!-- Plus button for additional actions -->
+                        <button class="action-btn plus-btn" data-team="${teamKey}" data-person="${personKey}" onclick="addNewSlot(this)">
+                            ➕
+                        </button>
                     </div>
                 </div>
             `;
@@ -1412,6 +1855,8 @@
             const dropdown = button.nextElementSibling;
             dropdown.classList.toggle('active');
         }
+
+
 
         function addEvent(teamKey, personKey, slot, eventType) {
             const eventKey = `${teamKey}-${personKey}-${slot}`;
@@ -1460,52 +1905,120 @@
             });
         }
 
+
+
+        function addNewSlot(button) {
+            const teamKey = button.dataset.team;
+            const personKey = button.dataset.person;
+            
+            // Find the player actions container
+            const playerActions = button.parentElement;
+            
+            // Count existing action slots (excluding the plus button)
+            const existingSlots = playerActions.querySelectorAll('.action-dropdown').length;
+            const newSlotNumber = existingSlots; // Since we start from 0, this gives us the next slot
+            
+            // Create new action dropdown button
+            const newSlotDiv = document.createElement('div');
+            newSlotDiv.className = 'action-dropdown';
+            newSlotDiv.innerHTML = `
+                <button class="action-btn" data-team="${teamKey}" data-person="${personKey}" data-slot="${newSlotNumber}" onclick="toggleDropdown(this)">
+                    ${newSlotNumber + 1}
+                </button>
+                <div class="dropdown-menu">
+                    <div class="dropdown-item goal" data-action="goal">⚽ Goal</div>
+                    <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
+                    <div class="dropdown-item Red" data-action="red">� Red</div>
+                    <div class="dropdown-item own-goal" data-action="own-goal">⚽ Own Goal</div>
+                    <div class="dropdown-item assist" data-action="assist">🅰️ Assist</div>
+                    <div class="dropdown-item" data-action="clear">❌ Clear</div>
+                </div>
+            `;
+            
+            // Insert the new slot before the plus button
+            playerActions.insertBefore(newSlotDiv, button);
+            
+            // Save the new slot count to Firebase
+            const playerSlotKey = `${teamKey}-${personKey}`;
+            const newSlotCount = newSlotNumber + 1; // +1 because we just added a slot
+            playerSlotCounts[playerSlotKey] = newSlotCount;
+            
+            database.ref(`matchPlayerSlots/${currentMatchId}/${playerSlotKey}`).set(newSlotCount)
+                .catch(error => {
+                    console.error('Error saving slot count:', error);
+                });
+        }
+
         function getEventDisplay(eventType) {
             const eventDisplayMap = {
                 'goal': '⚽',
                 'yellow': '🟨',
                 'red': '🟥',
-                'own-goal': '⚽🔄'
+                'own-goal': '⚽🔄',
+                'assist': '🅰️',
+                'substitution': '🔄',
+                'save': '🥅',
+                'foul': '⚠️'
             };
             return eventDisplayMap[eventType] || eventType;
         }
 
         function updatePlayerButtons() {
-            // Update all buttons to show current events
+            // Update action buttons (including numbered and plus buttons)
             document.querySelectorAll('.action-btn').forEach(button => {
                 const teamKey = button.dataset.team;
                 const personKey = button.dataset.person;
                 const slot = button.dataset.slot;
-                const eventKey = `${teamKey}-${personKey}-${slot}`;
-                const event = matchEvents[eventKey];
                 
-                if (event) {
-                    button.className = `action-btn has-event ${event.eventType}`;
-                    button.textContent = getEventDisplay(event.eventType);
-                    // Set button styles based on event type
-                    switch (event.eventType) {
-                        case 'goal':
-                            button.style.background = 'var(--goal-color)';
-                            button.style.color = 'white';
-                            break;
-                        case 'yellow':
-                            button.style.background = 'var(--yellow-color)';
-                            button.style.color = 'black';
-                            break;
-                        case 'red':
-                            button.style.background = 'var(--red-color)';
-                            button.style.color = 'white';
-                            break;
-                        case 'own-goal':
-                            button.style.background = 'var(--own-goal-color)';
-                            button.style.color = 'white';
-                            break;
+                if (slot !== undefined) {
+                    // This is a numbered button (1, 2, 3, 4)
+                    const eventKey = `${teamKey}-${personKey}-${slot}`;
+                    const event = matchEvents[eventKey];
+                    
+                    if (event) {
+                        button.className = `action-btn has-events ${event.eventType}`;
+                        button.textContent = getEventDisplay(event.eventType);
+                        // Set button styles based on event type
+                        switch (event.eventType) {
+                            case 'goal':
+                                button.style.background = 'var(--goal-color)';
+                                button.style.color = 'white';
+                                break;
+                            case 'yellow':
+                                button.style.background = 'var(--yellow-color)';
+                                button.style.color = 'black';
+                                break;
+                            case 'red':
+                                button.style.background = 'var(--red-color)';
+                                button.style.color = 'white';
+                                break;
+                            case 'own-goal':
+                                button.style.background = 'var(--own-goal-color)';
+                                button.style.color = 'white';
+                                break;
+                            case 'assist':
+                                button.style.background = 'var(--assist-color)';
+                                button.style.color = 'white';
+                                break;
+                            case 'substitution':
+                                button.style.background = 'var(--substitution-color)';
+                                button.style.color = 'white';
+                                break;
+                            case 'save':
+                                button.style.background = 'var(--save-color)';
+                                button.style.color = 'white';
+                                break;
+                            case 'foul':
+                                button.style.background = 'var(--foul-color)';
+                                button.style.color = 'white';
+                                break;
+                        }
+                    } else {
+                        button.className = 'action-btn';
+                        button.textContent = parseInt(slot) + 1;
+                        button.style.background = '';
+                        button.style.color = '';
                     }
-                } else {
-                    button.className = 'action-btn';
-                    button.textContent = parseInt(slot) + 1;
-                    button.style.background = '';
-                    button.style.color = '';
                 }
             });
         }
@@ -1568,12 +2081,13 @@
                 const button = dropdown.querySelector('.action-btn');
                 const teamKey = button.dataset.team;
                 const personKey = button.dataset.person;
-                const slot = parseInt(button.dataset.slot);
                 const action = e.target.dataset.action;
 
                 if (action === 'clear') {
+                    const slot = parseInt(button.dataset.slot);
                     clearEvent(teamKey, personKey, slot);
                 } else {
+                    const slot = parseInt(button.dataset.slot);
                     addEvent(teamKey, personKey, slot, action);
                 }
             }
@@ -1594,7 +2108,11 @@
         // Signature functionality
         function toggleSignatures(teamFocus = null) {
             const modal = document.getElementById('signature-modal');
+            if (!modal) return;
+            
             const signaturesGrid = document.querySelector('.signatures-grid');
+            if (!signaturesGrid) return;
+            
             const team1Box = signaturesGrid.querySelector('.signature-box:first-child');
             const team2Box = signaturesGrid.querySelector('.signature-box:last-child');
             
@@ -1630,13 +2148,15 @@
 
         function closeSignatureModal() {
             const modal = document.getElementById('signature-modal');
-            modal.style.display = 'none';
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
 
         // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('signature-modal');
-            if (event.target === modal) {
+            if (modal && event.target === modal) {
                 closeSignatureModal();
             }
         }
@@ -1651,24 +2171,67 @@
                         const signatureData = snapshot.val();
                         console.log('Found existing signatures for match:', currentMatchId);
                         
-                        // Update button text to indicate signatures exist
+                        // Update button text to indicate signatures exist (with null check)
                         const signatureBtn = document.getElementById('show-signatures-btn');
-                        signatureBtn.textContent = 'View/Edit Signatures';
-                        signatureBtn.style.background = 'var(--success-color)';
+                        if (signatureBtn) {
+                            signatureBtn.textContent = 'View/Edit Signatures';
+                            signatureBtn.style.background = 'var(--success-color)';
+                        }
                         
                         // Store signature data for loading into canvas when modal opens
                         window.existingSignatures = signatureData;
                     } else {
                         console.log('No existing signatures found for match:', currentMatchId);
-                        // Reset button to default state
+                        // Reset button to default state (with null check)
                         const signatureBtn = document.getElementById('show-signatures-btn');
-                        signatureBtn.textContent = 'Add Signatures';
-                        signatureBtn.style.background = 'var(--primary-color)';
+                        if (signatureBtn) {
+                            signatureBtn.textContent = 'Add Signatures';
+                            signatureBtn.style.background = 'var(--primary-color)';
+                        }
                         window.existingSignatures = null;
                     }
                 })
                 .catch((error) => {
                     console.error('Error loading signatures:', error);
+                });
+        }
+
+        // Load existing events for the match
+        function loadExistingEvents() {
+            if (!currentMatchId) return;
+            
+            database.ref('matchEvents/' + currentMatchId).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        matchEvents = snapshot.val();
+                        console.log('Loaded existing events:', matchEvents);
+                        updatePlayerButtons();
+                        updateScores();
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading events:', error);
+                });
+        }
+
+        // Load player slot counts for the match
+        function loadPlayerSlotCounts(callback) {
+            if (!currentMatchId) {
+                if (callback) callback();
+                return;
+            }
+            
+            database.ref('matchPlayerSlots/' + currentMatchId).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        playerSlotCounts = snapshot.val();
+                        console.log('Loaded player slot counts:', playerSlotCounts);
+                    }
+                    if (callback) callback();
+                })
+                .catch((error) => {
+                    console.error('Error loading player slot counts:', error);
+                    if (callback) callback();
                 });
         }
 
@@ -1678,6 +2241,12 @@
             
             const canvas1 = document.getElementById('signature-canvas-1');
             const canvas2 = document.getElementById('signature-canvas-2');
+            
+            if (!canvas1 || !canvas2) {
+                console.log('Signature canvases not found yet');
+                return;
+            }
+            
             const ctx1 = canvas1.getContext('2d');
             const ctx2 = canvas2.getContext('2d');
             
@@ -1706,8 +2275,8 @@
             const canvas1 = document.getElementById('signature-canvas-1');
             const canvas2 = document.getElementById('signature-canvas-2');
             
-            setupCanvas(canvas1);
-            setupCanvas(canvas2);
+            if (canvas1) setupCanvas(canvas1);
+            if (canvas2) setupCanvas(canvas2);
         }
 
         function setupCanvas(canvas) {
@@ -1940,15 +2509,683 @@
                     saveBtn.disabled = false;
                 });
         }
+
+        // Referee Management Functions
+        function openRefereeDialog() {
+            const dialog = document.getElementById('referee-dialog');
+            dialog.style.display = 'flex';
+            
+            // Load existing referee data
+            loadRefereeData();
+        }
+
+        function closeRefereeDialog() {
+            const dialog = document.getElementById('referee-dialog');
+            dialog.style.display = 'none';
+        }
+
+        function loadRefereeData() {
+            database.ref(`matchReferees/${currentMatchId}`).once('value')
+                .then(snapshot => {
+                    const refereeData = snapshot.val();
+                    if (refereeData) {
+                        document.getElementById('first-referee').value = refereeData.firstReferee || '';
+                        document.getElementById('second-referee').value = refereeData.secondReferee || '';
+                        document.getElementById('third-referee').value = refereeData.thirdReferee || '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading referee data:', error);
+                });
+        }
+
+        function saveReferees() {
+            const firstReferee = document.getElementById('first-referee').value.trim();
+            const secondReferee = document.getElementById('second-referee').value.trim();
+            const thirdReferee = document.getElementById('third-referee').value.trim();
+
+            const refereeData = {
+                firstReferee: firstReferee,
+                secondReferee: secondReferee,
+                thirdReferee: thirdReferee,
+                lastUpdated: Date.now()
+            };
+
+            database.ref(`matchReferees/${currentMatchId}`).set(refereeData)
+                .then(() => {
+                    console.log('Referee data saved successfully');
+                    alert('Referee information saved successfully!');
+                    closeRefereeDialog();
+                })
+                .catch(error => {
+                    console.error('Error saving referee data:', error);
+                    alert('Error saving referee information. Please try again.');
+                });
+        }
+
+        // Close dialog when clicking outside (wait for DOM to be ready)
+        document.addEventListener('DOMContentLoaded', () => {
+            const refereeDialog = document.getElementById('referee-dialog');
+            if (refereeDialog) {
+                refereeDialog.addEventListener('click', (e) => {
+                    if (e.target.id === 'referee-dialog') {
+                        closeRefereeDialog();
+                    }
+                });
+            }
+        });
+
+        // Man of the Match Functions
+        let selectedMotmPlayer = null;
+
+        function openMotmDialog() {
+            const dialog = document.getElementById('motm-dialog');
+            if (dialog) {
+                dialog.style.display = 'flex';
+                populateMotmPlayers();
+                loadExistingMotm();
+            }
+        }
+
+        function closeMotmDialog() {
+            const dialog = document.getElementById('motm-dialog');
+            if (dialog) {
+                dialog.style.display = 'none';
+                selectedMotmPlayer = null;
+                document.getElementById('selected-motm').style.display = 'none';
+                document.getElementById('save-motm-btn').disabled = true;
+            }
+        }
+
+        function populateMotmPlayers() {
+            const matchData = parseMatchId(currentMatchId);
+            
+            // Get team data using the same method as other parts of the page
+            const team1Data = getTeamData(matchData.teams[0]);
+            const team2Data = getTeamData(matchData.teams[1]);
+
+            // Update team names with actual team names
+            const team1Name = team1Data ? team1Data.name : matchData.teams[0];
+            const team2Name = team2Data ? team2Data.name : matchData.teams[1];
+            
+            console.log('MOTM Dialog - Team 1:', team1Name, 'Team 2:', team2Name);
+            
+            document.getElementById('motm-team1-name').textContent = `${team1Name} Players`;
+            document.getElementById('motm-team2-name').textContent = `${team2Name} Players`;
+
+            // Populate team 1 players
+            const team1Container = document.getElementById('motm-team1-players');
+            team1Container.innerHTML = '';
+            if (team1Data && team1Data.id) {
+                const team1List = getTeamList(team1Data.id);
+                console.log('Team 1 List:', team1List);
+                if (team1List && team1List.players) {
+                    team1List.players.forEach((player, index) => {
+                        const playerName = typeof player === 'object' ? player.name : player;
+                        const jersey = typeof player === 'object' ? (player.jerseyNumber || player.jersey) : (index + 1);
+                        
+                        const playerOption = createPlayerOption(playerName, jersey, 'team1', index);
+                        team1Container.appendChild(playerOption);
+                    });
+                } else {
+                    team1Container.innerHTML = '<div style="color: #888; text-align: center; padding: 20px;">No players found</div>';
+                }
+            }
+
+            // Populate team 2 players
+            const team2Container = document.getElementById('motm-team2-players');
+            team2Container.innerHTML = '';
+            if (team2Data && team2Data.id) {
+                const team2List = getTeamList(team2Data.id);
+                console.log('Team 2 List:', team2List);
+                if (team2List && team2List.players) {
+                    team2List.players.forEach((player, index) => {
+                        const playerName = typeof player === 'object' ? player.name : player;
+                        const jersey = typeof player === 'object' ? (player.jerseyNumber || player.jersey) : (index + 1);
+                        
+                        const playerOption = createPlayerOption(playerName, jersey, 'team2', index);
+                        team2Container.appendChild(playerOption);
+                    });
+                } else {
+                    team2Container.innerHTML = '<div style="color: #888; text-align: center; padding: 20px;">No players found</div>';
+                }
+            }
+        }
+
+        function createPlayerOption(playerName, jersey, team, index) {
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'motm-player-option';
+            playerDiv.dataset.team = team;
+            playerDiv.dataset.index = index;
+            playerDiv.dataset.name = playerName;
+            playerDiv.dataset.jersey = jersey;
+
+            playerDiv.innerHTML = `
+                <div class="player-info">
+                    <span class="player-jersey">#${jersey}</span>
+                    <span class="player-name">${playerName}</span>
+                </div>
+            `;
+
+            playerDiv.addEventListener('click', () => selectMotmPlayer(playerDiv));
+            return playerDiv;
+        }
+
+        function selectMotmPlayer(playerElement) {
+            // Remove previous selection
+            document.querySelectorAll('.motm-player-option.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Select current player
+            playerElement.classList.add('selected');
+            
+            selectedMotmPlayer = {
+                name: playerElement.dataset.name,
+                jersey: playerElement.dataset.jersey,
+                team: playerElement.dataset.team,
+                index: playerElement.dataset.index
+            };
+
+            // Show selection
+            const selectedDiv = document.getElementById('selected-motm');
+            const playerNameSpan = document.getElementById('selected-player-name');
+            const playerDetailsSpan = document.getElementById('selected-player-details');
+            
+            playerNameSpan.textContent = selectedMotmPlayer.name;
+            
+            // Get the actual team name (remove " Players" suffix)
+            const teamHeaderText = selectedMotmPlayer.team === 'team1' ? 
+                document.getElementById('motm-team1-name').textContent : 
+                document.getElementById('motm-team2-name').textContent;
+            const teamName = teamHeaderText.replace(' Players', '');
+            
+            playerDetailsSpan.textContent = `(Jersey #${selectedMotmPlayer.jersey} - ${teamName})`;
+            
+            selectedDiv.style.display = 'block';
+            document.getElementById('save-motm-btn').disabled = false;
+        }
+
+        function loadExistingMotm() {
+            database.ref(`matchMotm/${currentMatchId}`).once('value')
+                .then(snapshot => {
+                    const motmData = snapshot.val();
+                    if (motmData) {
+                        // Find and select the existing MOTM player
+                        const playerElements = document.querySelectorAll('.motm-player-option');
+                        playerElements.forEach(el => {
+                            if (el.dataset.name === motmData.playerName && 
+                                el.dataset.jersey === motmData.jersey && 
+                                el.dataset.team === motmData.team) {
+                                selectMotmPlayer(el);
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading MOTM data:', error);
+                });
+        }
+
+        function saveMotm() {
+            if (!selectedMotmPlayer) {
+                alert('Please select a player first!');
+                return;
+            }
+
+            // Get the actual team name (remove " Players" suffix)
+            const teamHeaderText = selectedMotmPlayer.team === 'team1' ? 
+                document.getElementById('motm-team1-name').textContent : 
+                document.getElementById('motm-team2-name').textContent;
+            const actualTeamName = teamHeaderText.replace(' Players', '');
+
+            const motmData = {
+                playerName: selectedMotmPlayer.name,
+                jersey: selectedMotmPlayer.jersey,
+                team: selectedMotmPlayer.team,
+                teamName: actualTeamName,
+                lastUpdated: Date.now()
+            };
+
+            database.ref(`matchMotm/${currentMatchId}`).set(motmData)
+                .then(() => {
+                    console.log('Man of the Match saved successfully');
+                    alert(`Man of the Match saved: ${motmData.playerName} (Jersey #${motmData.jersey})`);
+                    closeMotmDialog();
+                })
+                .catch(error => {
+                    console.error('Error saving MOTM data:', error);
+                    alert('Error saving Man of the Match. Please try again.');
+                });
+        }
+
+        // Close MOTM dialog when clicking outside
+        document.addEventListener('DOMContentLoaded', () => {
+            const motmDialog = document.getElementById('motm-dialog');
+            if (motmDialog) {
+                motmDialog.addEventListener('click', (e) => {
+                    if (e.target.id === 'motm-dialog') {
+                        closeMotmDialog();
+                    }
+                });
+            }
+        });
+
+        // PDF Generation Functions
+        function generateMatchSheetPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('landscape', 'mm', 'a4'); // Landscape orientation for better layout
+                
+                // Get match data
+                const matchData = parseMatchId(currentMatchId);
+                const team1Data = getTeamDataFromPosition(matchData.team1Position);
+                const team2Data = getTeamDataFromPosition(matchData.team2Position);
+                
+                // Calculate current scores from match events
+                const scores = calculateCurrentScores();
+                const team1Score = scores.team1;
+                const team2Score = scores.team2;
+                
+                // Get referee data and generate PDF
+                database.ref(`matchReferees/${currentMatchId}`).once('value')
+                    .then(snapshot => {
+                        const refereeData = snapshot.val();
+                        generateMatchSheetLayout(doc, matchData, team1Data, team2Data, refereeData, team1Score, team2Score);
+                    })
+                    .catch(error => {
+                        console.error('Error getting referee data:', error);
+                        generateMatchSheetLayout(doc, matchData, team1Data, team2Data, null, team1Score, team2Score);
+                    });
+                    
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+            }
+        }
+
+        function calculateCurrentScores() {
+            let team1Goals = 0;
+            let team2Goals = 0;
+            
+            // Count goals from match events
+            Object.keys(matchEvents).forEach(eventKey => {
+                const event = matchEvents[eventKey];
+                const isTeam1 = event.teamKey === 'team1';
+                
+                if (event.eventType === 'goal') {
+                    if (isTeam1) team1Goals++;
+                    else team2Goals++;
+                } else if (event.eventType === 'own-goal') {
+                    // Own goal counts for opponent
+                    if (isTeam1) team2Goals++;
+                    else team1Goals++;
+                }
+            });
+            
+            return { team1: team1Goals, team2: team2Goals };
+        }
+
+        function generateMatchSheetLayout(doc, matchData, team1Data, team2Data, refereeData, team1Score, team2Score) {
+            // Page dimensions
+            const pageWidth = 297; // A4 landscape width
+            const pageHeight = 210; // A4 landscape height
+            const margin = 10;
+            
+            // Draw outer border
+            doc.setLineWidth(0.5);
+            doc.rect(margin, margin, pageWidth - 2*margin, pageHeight - 2*margin);
+            
+            // Title
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('MATCH SUMMARY SHEET', pageWidth/2, 20, { align: 'center' });
+            
+            // Match number and venue info
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            const matchNo = currentMatchId ? currentMatchId.substring(0, 8) : 'N/A';
+            doc.text(`Match No: ${matchNo}`, 15, 30);
+            doc.text('Venue: Medhuavashu Futsal Dhandu', 15, 35);
+            doc.text(`Date: ${matchData.date}`, 150, 30);
+            doc.text(`Kick Off: ${matchData.time}`, 200, 30);
+            
+            // Team names and scores
+            const team1Name = team1Data ? team1Data.name : 'Team A';
+            const team2Name = team2Data ? team2Data.name : 'Team B';
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            
+            // Left team
+            doc.text(team1Name, 15, 50);
+            doc.text('Score', 15, 60);
+            doc.setFontSize(18);
+            doc.text(team1Score.toString(), 50, 60);
+            
+            // Right team
+            doc.text(team2Name, 200, 50);
+            doc.text('Score', 200, 60);
+            doc.text(team2Score.toString(), 235, 60);
+            
+            // Half time scores boxes
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            
+            // Left team halves
+            doc.rect(70, 45, 15, 8);
+            doc.rect(85, 45, 15, 8);
+            doc.text('1st Half', 72, 42);
+            doc.text('2nd Half', 87, 42);
+            
+            // Right team halves  
+            doc.rect(160, 45, 15, 8);
+            doc.rect(175, 45, 15, 8);
+            doc.text('1st Half', 162, 42);
+            doc.text('2nd Half', 177, 42);
+            
+            // Referee information
+            doc.setFontSize(10);
+            doc.text('Referee:', 15, 70);
+            if (refereeData && refereeData.firstReferee) {
+                doc.text(refereeData.firstReferee, 40, 70);
+            }
+            doc.text('J.color: Blue / Blue', 15, 75);
+            
+            doc.text('Referee:', 200, 70);
+            if (refereeData && refereeData.secondReferee) {
+                doc.text(refereeData.secondReferee, 225, 70);
+            }
+            doc.text('J.color: Green / Black', 200, 75);
+            
+            // Player roster grids
+            drawPlayerRoster(doc, team1Data, 'left', 85);
+            drawPlayerRoster(doc, team2Data, 'right', 85);
+            
+            // Officials section
+            drawOfficialsSection(doc, refereeData, 85);
+            
+            // Signature section
+            drawSignatureSection(doc, team1Name, team2Name, 175);
+            
+            // Save the PDF
+            const fileName = `FMSC_Match_Sheet_${team1Name.replace(/\s+/g, '_')}_vs_${team2Name.replace(/\s+/g, '_')}_${matchData.date}.pdf`;
+            doc.save(fileName);
+            
+            console.log('PDF generated successfully');
+            alert('Match sheet PDF generated successfully!');
+        }
+
+        function drawPlayerRoster(doc, teamData, side, yStart) {
+            const startX = side === 'left' ? 15 : 160;
+            const colWidth = 20;
+            
+            // Headers
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            
+            // Draw grid headers
+            const headers = ['#', 'Name', 'P', 'S', 'N', 'Goals'];
+            headers.forEach((header, i) => {
+                doc.text(header, startX + i * colWidth, yStart - 2);
+            });
+            
+            // Draw horizontal lines for players (20 rows)
+            for (let i = 0; i <= 20; i++) {
+                const y = yStart + i * 4;
+                doc.line(startX, y, startX + 120, y);
+            }
+            
+            // Draw vertical lines
+            for (let i = 0; i <= 6; i++) {
+                const x = startX + i * colWidth;
+                doc.line(x, yStart, x, yStart + 80);
+            }
+            
+            // Fill in player data
+            doc.setFont('helvetica', 'normal');
+            if (teamData) {
+                const teamList = getTeamList(teamData.id);
+                if (teamList && teamList.players) {
+                    teamList.players.slice(0, 20).forEach((player, index) => {
+                        const playerName = typeof player === 'object' ? player.name : player;
+                        const jersey = typeof player === 'object' ? (player.jerseyNumber || player.jersey) : (index + 1);
+                        
+                        const y = yStart + (index + 1) * 4 - 1;
+                        doc.text(jersey.toString(), startX + 2, y);
+                        
+                        // Truncate long names
+                        const truncatedName = playerName.length > 15 ? playerName.substring(0, 15) + '...' : playerName;
+                        doc.text(truncatedName, startX + 22, y);
+                        
+                        // Add checkmarks for captain (C) if applicable
+                        if (typeof player === 'object' && player.captain) {
+                            doc.text('C', startX + 42, y);
+                        }
+                    });
+                }
+            }
+            
+            // Goals grid (numbered 1-20 horizontally)
+            const goalY = yStart + 85;
+            doc.text('Goals', startX, goalY);
+            for (let i = 1; i <= 20; i++) {
+                doc.rect(startX + 20 + i * 4, goalY - 3, 4, 6);
+                if (i % 5 === 0) {
+                    doc.setFontSize(6);
+                    doc.text(i.toString(), startX + 21 + i * 4, goalY + 5);
+                    doc.setFontSize(8);
+                }
+            }
+            
+            // Total boxes
+            doc.text('Total', startX + 105, goalY);
+            doc.rect(startX + 115, goalY - 3, 8, 6);
+        }
+
+        function drawOfficialsSection(doc, refereeData, yStart) {
+            const centerX = 148;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Officials', centerX, yStart + 40, { align: 'center' });
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            
+            // Officials list
+            const officials = [
+                { label: 'M', name: refereeData?.firstReferee || '' },
+                { label: 'C', name: refereeData?.secondReferee || '' },
+                { label: 'AC', name: refereeData?.thirdReferee || '' },
+                { label: 'Me', name: '' },
+                { label: 'O', name: '' },
+                { label: 'Q', name: '' }
+            ];
+            
+            officials.forEach((official, index) => {
+                const y = yStart + 45 + index * 5;
+                doc.text(official.label, centerX - 20, y);
+                doc.text(official.name, centerX - 10, y);
+            });
+        }
+
+        function drawSignatureSection(doc, team1Name, team2Name, yStart) {
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            
+            // Signature lines
+            doc.text('Signature:', 15, yStart);
+            doc.line(35, yStart, 80, yStart);
+            
+            doc.text(`Signature (${team1Name})`, 90, yStart);
+            doc.line(140, yStart, 185, yStart);
+            
+            doc.text(`Signature (${team2Name})`, 200, yStart);
+            doc.line(240, yStart, 285, yStart);
+            
+            // 3rd Referee
+            doc.text('3rd Referee (Name):', 15, yStart + 10);
+            doc.line(50, yStart + 10, 120, yStart + 10);
+            
+            // Man of the Match
+            doc.text('*** Man of The Match:', 15, yStart + 20);
+            doc.line(60, yStart + 20, 150, yStart + 20);
+            doc.text('JNO:', 155, yStart + 20);
+            doc.line(170, yStart + 20, 190, yStart + 20);
+            doc.text('TEAM:', 195, yStart + 20);
+            doc.line(210, yStart + 20, 280, yStart + 20);
+        }
+
+
+
+        function getTeamDataFromPosition(position) {
+            if (drawAssignments && drawAssignments[position] && teams && teams[drawAssignments[position]]) {
+                const teamId = drawAssignments[position];
+                return {
+                    id: teamId,
+                    name: teams[teamId].teamName,
+                    position: position
+                };
+            }
+            return null;
+        }
+
+        // Match Control Functions - Initialize variable first
+        var currentMatchState = 'not-started'; // not-started, first-half, half-time, second-half, finished
+
+        function handleMatchControl() {
+            switch(currentMatchState) {
+                case 'not-started':
+                    setMatchState('first-half');
+                    break;
+                case 'first-half':
+                    setMatchState('half-time');
+                    break;
+                case 'half-time':
+                    setMatchState('second-half');
+                    break;
+                case 'second-half':
+                    setMatchState('finished');
+                    break;
+                case 'finished':
+                    // Match is already finished, could show restart option
+                    if (confirm('Match is finished. Do you want to restart?')) {
+                        setMatchState('not-started');
+                    }
+                    break;
+                default:
+                    setMatchState('not-started');
+            }
+        }
+
+        function setMatchState(newState) {
+            const stateData = {
+                state: newState,
+                timestamp: Date.now()
+            };
+
+            database.ref(`matchState/${currentMatchId}`).set(stateData)
+                .then(() => {
+                    console.log(`Match state updated to: ${newState}`);
+                    currentMatchState = newState;
+                })
+                .catch(error => {
+                    console.error('Error updating match state:', error);
+                    alert('Error updating match state. Please try again.');
+                });
+        }
+
+        function updateMatchControlButton(matchStateData) {
+            const button = document.getElementById('match-control-btn');
+            if (!button) {
+                console.log('Match control button not found yet, will retry later');
+                return;
+            }
+
+            const state = matchStateData ? matchStateData.state : 'not-started';
+            currentMatchState = state;
+
+            // Reset all classes
+            button.className = 'match-control-btn';
+
+            switch(state) {
+                case 'not-started':
+                    button.textContent = 'Start Match';
+                    button.classList.add('start-match');
+                    break;
+                case 'first-half':
+                    button.textContent = 'End First Half';
+                    button.classList.add('first-half');
+                    break;
+                case 'half-time':
+                    button.textContent = 'Start Second Half';
+                    button.classList.add('second-half');
+                    break;
+                case 'second-half':
+                    button.textContent = 'End Match';
+                    button.classList.add('end-match');
+                    break;
+                case 'finished':
+                    button.textContent = 'Match Finished';
+                    button.classList.add('end-match');
+                    break;
+                default:
+                    button.textContent = 'Start Match';
+                    button.classList.add('start-match');
+            }
+        }
+
+        // Initialize match control button on page load
+        function initializeMatchControl() {
+            database.ref(`matchState/${currentMatchId}`).once('value')
+                .then(snapshot => {
+                    const matchStateData = snapshot.val();
+                    updateMatchControlButton(matchStateData);
+                })
+                .catch(error => {
+                    console.error('Error loading match state:', error);
+                    // Default to not-started if there's an error
+                    updateMatchControlButton(null);
+                });
+        }
+
+        // Call initialize when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Give time for all elements to be loaded
+            setTimeout(initializeMatchControl, 2000); // Wait for Firebase and DOM to initialize
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./match-detail-sw.js')
+                    .then(function(registration) {
+                        console.log('Match Detail SW registered with scope: ', registration.scope);
+                    }, function(err) {
+                        console.log('Match Detail SW registration failed: ', err);
+                    });
+            });
+        }
     </script>
 
-    <!-- Signatures Buttons -->
+    <!-- Action Buttons -->
     <div class="signatures-container">
         <button id="show-team-a-signature-btn" class="signatures-toggle-btn" onclick="toggleSignatures('team1')">
             Add Team A Signature
         </button>
         <button id="show-team-b-signature-btn" class="signatures-toggle-btn" onclick="toggleSignatures('team2')">
             Add Team B Signature
+        </button>
+        <button class="signatures-toggle-btn referee-manage-btn" onclick="openRefereeDialog()">
+            👨‍⚖️ Manage Referees
+        </button>
+        <button class="signatures-toggle-btn motm-btn" onclick="openMotmDialog()">
+            🏆 Man of the Match
+        </button>
+        <!-- PDF button hidden for now -->
+        <button class="signatures-toggle-btn print-btn" onclick="generateMatchSheetPDF()" style="display: none;">
+            🖨️ Print Match Sheet
         </button>
     </div>
 
@@ -1990,5 +3227,85 @@
             </div>
         </div>
     </div>
+
+    <!-- Referee Management Dialog -->
+    <div id="referee-dialog" class="signature-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👨‍⚖️ Manage Referees</h3>
+                <button class="close-btn" onclick="closeRefereeDialog()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <p>Enter the names of the referees for this match</p>
+                
+                <div class="referee-inputs">
+                    <div class="input-group">
+                        <label for="first-referee">First Referee Name:</label>
+                        <input type="text" id="first-referee" class="referee-input" placeholder="Enter first referee name">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="second-referee">Second Referee Name:</label>
+                        <input type="text" id="second-referee" class="referee-input" placeholder="Enter second referee name">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="third-referee">Third Referee Name:</label>
+                        <input type="text" id="third-referee" class="referee-input" placeholder="Enter third referee name">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeRefereeDialog()" class="cancel-btn">Cancel</button>
+                <button onclick="saveReferees()" class="save-signatures-btn">Save Referees</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Man of the Match Dialog -->
+    <div id="motm-dialog" class="signature-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🏆 Select Man of the Match</h3>
+                <button class="close-btn" onclick="closeMotmDialog()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <p>Select the Man of the Match from either team</p>
+                
+                <div class="motm-teams">
+                    <div class="motm-team">
+                        <h4 id="motm-team1-name">Loading Team Players...</h4>
+                        <div id="motm-team1-players" class="player-list">
+                            <!-- Team 1 players will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="motm-team">
+                        <h4 id="motm-team2-name">Loading Team Players...</h4>
+                        <div id="motm-team2-players" class="player-list">
+                            <!-- Team 2 players will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="selected-motm" id="selected-motm" style="display: none;">
+                    <h4>Selected Man of the Match:</h4>
+                    <div class="motm-selection">
+                        <span id="selected-player-name"></span> 
+                        <span id="selected-player-details"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeMotmDialog()" class="cancel-btn">Cancel</button>
+                <button onclick="saveMotm()" class="save-signatures-btn" id="save-motm-btn" disabled>Save Selection</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
+

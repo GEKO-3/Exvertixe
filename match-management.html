@@ -6,7 +6,7 @@
     <title>FMSC 2025 - Match Management</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="match-management-manifest.json">
     <meta name="theme-color" content="#03bded">
     <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
     <link rel="apple-touch-icon" href="icon-192x192.png">
@@ -418,33 +418,29 @@
         let teams = {};
         let drawAssignments = {};
 
-        // Match schedule data - Updated tournament structure after team dropout
+        // Match schedule data - Updated for October 26-28, 2025
         // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
         const matchSchedule = {
-            'October 23': [
-                { teams: ['A1', 'A2'], type: 'Group A', time: '8:15 PM' },
-                { teams: ['B1', 'B2'], type: 'Group B', time: '9:15 PM' },
-                { teams: ['C1', 'C2'], type: 'Group C', time: '10:15 PM' }
-            ],
-            'October 24': [
-                { teams: ['D1', 'D2'], type: 'Group D', time: '8:15 PM' },
-                { teams: ['A3', 'A4'], type: 'Group A', time: '9:15 PM' },
-                { teams: ['B1', 'B3'], type: 'Group B', time: '10:15 PM' }
-            ],
-            'October 25': [
-                { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
-                { teams: ['A1', 'A3'], type: 'Group A', time: '9:15 PM' },
-                { teams: ['D1', 'D3'], type: 'Group D', time: '10:15 PM' }
-            ],
             'October 26': [
-                { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
-                { teams: ['B2', 'B3'], type: 'Group B', time: '9:15 PM' },
-                { teams: ['A2', 'A3'], type: 'Group A', time: '10:15 PM' }
+                { teams: ['A1', 'A2'], type: 'Group A', time: '4:00 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '5:00 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '9:00 PM' },
+                { teams: ['D1', 'D2'], type: 'Group D', time: '10:00 PM' }
             ],
             'October 27': [
-                { teams: ['C2', 'C3'], type: 'Group C', time: '8:15 PM' },
-                { teams: ['A2', 'A4'], type: 'Group A', time: '9:15 PM' },
-                { teams: ['D2', 'D3'], type: 'Group D', time: '10:15 PM' }
+                { teams: ['D1', 'D3'], type: 'Group D', time: '4:00 PM' },
+                { teams: ['C1', 'C3'], type: 'Group C', time: '5:00 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '10:00 PM' }
+            ],
+            'October 28': [
+                { teams: ['B2', 'B3'], type: 'Group B', time: '4:00 PM' },
+                { teams: ['C2', 'C3'], type: 'Group C', time: '5:00 PM' },
+                { teams: ['D2', 'D3'], type: 'Group D', time: '8:00 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['A1', 'A4'], type: 'Group A', time: '10:00 PM' }
             ]
         };
 
@@ -571,6 +567,18 @@
 
         // Initial render
         renderMatches();
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./match-management-sw.js')
+                    .then(function(registration) {
+                        console.log('Match Management SW registered with scope: ', registration.scope);
+                    }, function(err) {
+                        console.log('Match Management SW registration failed: ', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>

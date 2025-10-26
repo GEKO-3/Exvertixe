@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Live Score Display</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --success-color: #44ff44;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Tournament Logo Default Display */
+        .tournament-logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .tournament-logo {
+            width: 400px;
+            height: 400px;
+            object-fit: contain;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 30px rgba(3, 189, 237, 0.3));
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            from {
+                filter: drop-shadow(0 0 30px rgba(3, 189, 237, 0.3));
+            }
+            to {
+                filter: drop-shadow(0 0 50px rgba(3, 189, 237, 0.6));
+            }
+        }
+
+        .tournament-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(3, 189, 237, 0.3);
+        }
+
+        .tournament-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+        }
+
+        /* Live Match Display */
+        .live-match-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .match-header {
+            margin-bottom: 40px;
+        }
+
+        .match-status {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5rem;
+            color: var(--success-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(68, 255, 68, 0.5);
+        }
+
+        .match-info {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .scoreboard {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 50px;
+            background: rgba(26, 29, 33, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .team-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 250px;
+        }
+
+        .team-logo-display {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 30px rgba(3, 189, 237, 0.4);
+        }
+
+        .team-name-display {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .team-score {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 20px rgba(3, 189, 237, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .vs-divider {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            color: var(--accent-color);
+            opacity: 0.8;
+        }
+
+        .goal-scorers {
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .goal-scorer {
+            background: rgba(3, 189, 237, 0.1);
+            border: 1px solid rgba(3, 189, 237, 0.3);
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: scoreAnimation 0.5s ease-out;
+        }
+
+        @keyframes scoreAnimation {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .goal-scorer .ball-emoji {
+            font-size: 1.2rem;
+        }
+
+        .goal-scorer .jersey-number {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .tournament-logo {
+                width: 250px;
+                height: 250px;
+            }
+
+            .tournament-title {
+                font-size: 2.5rem;
+            }
+
+            .tournament-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .scoreboard {
+                flex-direction: column;
+                gap: 30px;
+                padding: 30px 20px;
+            }
+
+            .vs-divider {
+                transform: rotate(90deg);
+                margin: 20px 0;
+            }
+
+            .team-logo-display {
+                width: 80px;
+                height: 80px;
+            }
+
+            .team-name-display {
+                font-size: 1.5rem;
+            }
+
+            .team-score {
+                font-size: 3rem;
+            }
+
+            .match-status {
+                font-size: 2rem;
+            }
+        }
+
+        .loading-indicator {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0.6;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tournament Logo Default Display -->
+    <div class="tournament-logo-container" id="tournament-display">
+        <img src="Tounament logo.svg" alt="FMSC 2025 Tournament Logo" class="tournament-logo" 
+             onerror="this.src='Tounament logo.png'">
+        <h1 class="tournament-title">FMSC 2025</h1>
+        <p class="tournament-subtitle">Futsal Championship</p>
+        <div class="loading-indicator">
+            <div class="loading-spinner"></div>
+            <p>Monitoring for live matches...</p>
+        </div>
+    </div>
+
+    <!-- Live Match Display -->
+    <div class="live-match-container" id="live-match-display">
+        <div class="match-header">
+            <div class="match-status" id="match-status">🔴 LIVE</div>
+            <div class="match-info" id="match-info"></div>
+        </div>
+
+        <div class="scoreboard">
+            <!-- Team 1 -->
+            <div class="team-display" id="team1-display">
+                <img src="" alt="Team 1 Logo" class="team-logo-display" id="team1-logo">
+                <div class="team-name-display" id="team1-name">Team 1</div>
+                <div class="team-score" id="team1-score">0</div>
+                <div class="goal-scorers" id="team1-scorers">
+                    <!-- Goal scorers will be populated here -->
+                </div>
+            </div>
+
+            <div class="vs-divider">VS</div>
+
+            <!-- Team 2 -->
+            <div class="team-display" id="team2-display">
+                <img src="" alt="Team 2 Logo" class="team-logo-display" id="team2-logo">
+                <div class="team-name-display" id="team2-name">Team 2</div>
+                <div class="team-score" id="team2-score">0</div>
+                <div class="goal-scorers" id="team2-scorers">
+                    <!-- Goal scorers will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data storage
+        let teams = {};
+        let drawAssignments = {};
+        let teamLists = {};
+        let matchEvents = {};
+        let matchStates = {};
+        let currentLiveMatch = null;
+
+        // Team name to logo filename mapping
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'LeCrose Sports Club': 'lecrose_sports_club',
+                'Maahinna United': 'maahinna_united',
+                'Outreef Sports Club': 'outreef_sports_club',
+                'Youth Academy': 'youth_academy'
+            };
+            
+            if (logoMap[teamName]) {
+                return logoMap[teamName];
+            }
+            
+            return teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+        }
+
+        // Parse match ID to get match details
+        function parseMatchId(matchId) {
+            const parts = matchId.split('-');
+            if (parts.length >= 3) {
+                const date = parts[0];
+                const teams = parts[1];
+                const time = parts[2];
+                
+                const teamsMatch = teams.match(/^(.+)vs(.+)$/);
+                if (teamsMatch) {
+                    return {
+                        date: date,
+                        team1Position: teamsMatch[1],
+                        team2Position: teamsMatch[2],
+                        time: time,
+                        type: parts[3] || 'Regular'
+                    };
+                }
+            }
+            return null;
+        }
+
+        // Get team data for a specific position
+        function getTeamData(position) {
+            try {
+                if (drawAssignments[position]) {
+                    const teamId = drawAssignments[position];
+                    if (teams[teamId]) {
+                        return {
+                            id: teamId,
+                            name: teams[teamId].teamName,
+                            logo: getTeamLogoFilename(teams[teamId].teamName),
+                            position: position
+                        };
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error('Error getting team data:', error);
+                return null;
+            }
+        }
+
+        // Get team list for a specific team
+        function getTeamList(teamId) {
+            const teamName = teams[teamId]?.teamName;
+            if (!teamName) return null;
+            
+            const teamListEntries = Object.entries(teamLists);
+            const matchingEntry = teamListEntries.find(([key, teamList]) => 
+                teamList.teamName === teamName
+            );
+            
+            if (!matchingEntry) {
+                const caseInsensitiveMatch = teamListEntries.find(([key, teamList]) => 
+                    teamList.teamName && teamList.teamName.toLowerCase() === teamName.toLowerCase()
+                );
+                if (caseInsensitiveMatch) {
+                    return caseInsensitiveMatch[1];
+                }
+                return null;
+            }
+            
+            return matchingEntry[1];
+        }
+
+        // Get player data for a specific person key within a team
+        function getPlayerData(teamKey, personKey, matchId) {
+            try {
+                const matchParts = matchId.split('-');
+                if (matchParts.length >= 2) {
+                    const teamsMatch = matchParts[1].match(/^(.+)vs(.+)$/);
+                    if (teamsMatch) {
+                        const team1Position = teamsMatch[1];
+                        const team2Position = teamsMatch[2];
+                        const position = teamKey === 'team1' ? team1Position : team2Position;
+                        
+                        const teamData = getTeamData(position);
+                        if (teamData) {
+                            const teamList = getTeamList(teamData.id);
+                            if (teamList) {
+                                const personMatch = personKey.match(/^(player|official)-(\d+)$/);
+                                if (personMatch) {
+                                    const personType = personMatch[1];
+                                    const personIndex = parseInt(personMatch[2]);
+                                    
+                                    if (personType === 'player' && teamList.players && teamList.players[personIndex]) {
+                                        const player = teamList.players[personIndex];
+                                        return {
+                                            name: typeof player === 'string' ? player : (player.name || 'Unknown Player'),
+                                            jersey: typeof player === 'object' ? (player.jerseyNumber || player.jersey || 'N/A') : 'N/A',
+                                            teamId: teamData.id,
+                                            teamName: teamData.name
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error getting player data:', error);
+            }
+            
+            return {
+                name: 'Unknown Player',
+                jersey: 'N/A',
+                teamId: null,
+                teamName: 'Unknown Team'
+            };
+        }
+
+        // Find and display live matches
+        function checkForLiveMatches() {
+            let foundLiveMatch = false;
+            
+            Object.keys(matchStates).forEach(matchId => {
+                const matchState = matchStates[matchId];
+                
+                // Check if match is live (first-half or second-half)
+                if (matchState.state === 'first-half' || matchState.state === 'second-half') {
+                    if (!currentLiveMatch || currentLiveMatch !== matchId) {
+                        currentLiveMatch = matchId;
+                        displayLiveMatch(matchId);
+                        foundLiveMatch = true;
+                    }
+                }
+            });
+            
+            if (!foundLiveMatch && currentLiveMatch) {
+                // No live matches found, return to tournament display
+                currentLiveMatch = null;
+                showTournamentDisplay();
+            }
+        }
+
+        // Display live match
+        function displayLiveMatch(matchId) {
+            const matchData = parseMatchId(matchId);
+            if (!matchData) return;
+
+            const team1Data = getTeamData(matchData.team1Position);
+            const team2Data = getTeamData(matchData.team2Position);
+
+            // Hide tournament display, show live match
+            document.getElementById('tournament-display').style.display = 'none';
+            document.getElementById('live-match-display').style.display = 'block';
+
+            // Update match info
+            const matchState = matchStates[matchId];
+            const statusText = matchState.state === 'first-half' ? '🔴 FIRST HALF' : '🔴 SECOND HALF';
+            document.getElementById('match-status').textContent = statusText;
+            document.getElementById('match-info').textContent = `${matchData.date} • ${matchData.time} • ${matchData.type}`;
+
+            // Update team information
+            updateTeamDisplay('team1', team1Data);
+            updateTeamDisplay('team2', team2Data);
+
+            // Calculate and display scores
+            calculateScores(matchId);
+        }
+
+        // Update team display
+        function updateTeamDisplay(teamKey, teamData) {
+            const teamName = teamData ? teamData.name : `Team ${teamKey}`;
+            const logoSrc = teamData ? `logos/${teamData.logo}.jpg` : '';
+
+            document.getElementById(`${teamKey}-name`).textContent = teamName;
+            
+            const logoElement = document.getElementById(`${teamKey}-logo`);
+            if (logoSrc) {
+                logoElement.src = logoSrc;
+                logoElement.onerror = function() {
+                    this.src = `logos/${teamData.logo}.png`;
+                    this.onerror = function() {
+                        this.style.display = 'none';
+                    };
+                };
+            } else {
+                logoElement.style.display = 'none';
+            }
+        }
+
+        // Calculate scores and goal scorers
+        function calculateScores(matchId) {
+            const events = matchEvents[matchId] || {};
+            const scores = { team1: 0, team2: 0 };
+            const goalScorers = { team1: [], team2: [] };
+
+            Object.keys(events).forEach(eventKey => {
+                const event = events[eventKey];
+                
+                if (event.eventType === 'goal') {
+                    scores[event.teamKey]++;
+                    
+                    // Get player information
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    goalScorers[event.teamKey].push({
+                        name: playerData.name,
+                        jersey: playerData.jersey,
+                        eventKey: eventKey
+                    });
+                }
+            });
+
+            // Update scores
+            document.getElementById('team1-score').textContent = scores.team1;
+            document.getElementById('team2-score').textContent = scores.team2;
+
+            // Update goal scorers
+            updateGoalScorers('team1', goalScorers.team1);
+            updateGoalScorers('team2', goalScorers.team2);
+        }
+
+        // Update goal scorers display
+        function updateGoalScorers(teamKey, scorers) {
+            const container = document.getElementById(`${teamKey}-scorers`);
+            container.innerHTML = '';
+
+            scorers.forEach(scorer => {
+                const scorerElement = document.createElement('div');
+                scorerElement.className = 'goal-scorer';
+                
+                const jerseyText = scorer.jersey !== 'N/A' ? scorer.jersey : '?';
+                scorerElement.innerHTML = `
+                    <span class="ball-emoji">⚽</span>
+                    <span class="jersey-number">#${jerseyText}</span>
+                    <span class="player-name">${scorer.name}</span>
+                `;
+                
+                container.appendChild(scorerElement);
+            });
+        }
+
+        // Show tournament display
+        function showTournamentDisplay() {
+            document.getElementById('tournament-display').style.display = 'flex';
+            document.getElementById('live-match-display').style.display = 'none';
+        }
+
+        // Check if all data is loaded
+        function checkAllDataLoaded() {
+            if (Object.keys(teams).length > 0 && 
+                Object.keys(drawAssignments).length > 0 && 
+                Object.keys(teamLists).length > 0) {
+                console.log('All data loaded, checking for live matches...');
+                checkForLiveMatches();
+            }
+        }
+
+        // Firebase listeners
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            console.log('Teams loaded:', Object.keys(teams).length);
+            checkAllDataLoaded();
+        });
+
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            console.log('Draw assignments loaded:', Object.keys(drawAssignments).length);
+            checkAllDataLoaded();
+        });
+
+        database.ref('teamLists').on('value', (snapshot) => {
+            teamLists = snapshot.val() || {};
+            console.log('Team lists loaded:', Object.keys(teamLists).length);
+            checkAllDataLoaded();
+        });
+
+        database.ref('matchState').on('value', (snapshot) => {
+            matchStates = snapshot.val() || {};
+            console.log('Match states loaded:', matchStates);
+            checkForLiveMatches();
+        });
+
+        database.ref('matchEvents').on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            console.log('Match events loaded');
+            
+            // If we have a live match, update the scores
+            if (currentLiveMatch) {
+                calculateScores(currentLiveMatch);
+            }
+        });
+
+        // Auto-refresh every 5 seconds to ensure real-time updates
+        setInterval(() => {
+            if (currentLiveMatch) {
+                calculateScores(currentLiveMatch);
+            }
+        }, 5000);
+
+        console.log('Score Display initialized - monitoring for live matches...');
+    </script>
+</body>
+</html>
