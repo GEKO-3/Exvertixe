@@ -148,7 +148,7 @@
         }
 
         .back-btn {
-            position: absolute;
+            position: fixed;
             top: 20px;
             left: 20px;
             background: var(--primary-color);
@@ -160,6 +160,8 @@
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .back-btn:hover {
@@ -358,6 +360,22 @@
 
         .foul-btn:active {
             transform: scale(0.95);
+        }
+
+        .foul-btn.disabled,
+        .foul-btn:disabled {
+            background: rgba(128, 128, 128, 0.2);
+            border-color: #808080;
+            color: #808080;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .foul-btn.disabled:hover,
+        .foul-btn:disabled:hover {
+            background: rgba(128, 128, 128, 0.2);
+            box-shadow: none;
+            transform: none;
         }
 
         /* First Half Fouls Styles */
@@ -916,6 +934,16 @@
         .referee-manage-btn:hover {
             background: #e55a2b;
             box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .official-signature-btn {
+            background: #6f42c1;
+            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+        }
+
+        .official-signature-btn:hover {
+            background: #5a32a3;
+            box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4);
         }
 
         .print-btn {
@@ -1488,6 +1516,56 @@
         let playerSlotCounts = {};
         let currentMatchId = '';
 
+        // Helper function to ensure valid foul counts
+        function validateFouls(foulObj) {
+            if (!foulObj || typeof foulObj !== 'object') {
+                return { team1: 0, team2: 0 };
+            }
+            return {
+                team1: Number(foulObj.team1) || 0,
+                team2: Number(foulObj.team2) || 0
+            };
+        }
+
+        // Helper function to validate entire matchFouls structure
+        function validateMatchFouls() {
+            if (!matchFouls || typeof matchFouls !== 'object') {
+                matchFouls = {
+                    current: { team1: 0, team2: 0 },
+                    firstHalf: { team1: 0, team2: 0 },
+                    secondHalf: { team1: 0, team2: 0 }
+                };
+            } else {
+                matchFouls.current = validateFouls(matchFouls.current);
+                matchFouls.firstHalf = validateFouls(matchFouls.firstHalf);
+                matchFouls.secondHalf = validateFouls(matchFouls.secondHalf);
+            }
+        }
+
+        // Helper function to check if foul adjustments are allowed
+        function isFoulAdjustmentAllowed() {
+            // Fouls can only be adjusted during active play periods
+            return currentMatchState === 'first-half' || currentMatchState === 'second-half';
+        }
+
+        // Function to update foul button states based on match state
+        function updateFoulButtonStates() {
+            const isAllowed = isFoulAdjustmentAllowed();
+            const foulButtons = document.querySelectorAll('.foul-btn');
+            
+            foulButtons.forEach(button => {
+                if (isAllowed) {
+                    button.disabled = false;
+                    button.classList.remove('disabled');
+                } else {
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                }
+            });
+            
+            console.log(`Foul buttons ${isAllowed ? 'enabled' : 'disabled'} - match state: ${currentMatchState}`);
+        }
+
         // Get match ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         currentMatchId = urlParams.get('match') || '';
@@ -1549,13 +1627,16 @@
                 // Save the migrated structure back to Firebase
                 database.ref(`matchFouls/${currentMatchId}`).set(matchFouls);
             } else {
-                // New structure, use as-is but ensure all properties exist
+                // New structure, use as-is but validate all properties
                 matchFouls = {
-                    current: foulData.current || { team1: 0, team2: 0 },
-                    firstHalf: foulData.firstHalf || { team1: 0, team2: 0 },
-                    secondHalf: foulData.secondHalf || { team1: 0, team2: 0 }
+                    current: validateFouls(foulData.current),
+                    firstHalf: validateFouls(foulData.firstHalf),
+                    secondHalf: validateFouls(foulData.secondHalf)
                 };
             }
+            
+            // Final validation to ensure everything is correct
+            validateMatchFouls();
             
             console.log('Final matchFouls structure:', matchFouls);
             updateFoulDisplays();
@@ -2161,6 +2242,14 @@
         function adjustFouls(teamKey, change) {
             console.log('adjustFouls called:', teamKey, change);
             console.log('Current matchFouls:', matchFouls);
+            console.log('Current match state:', currentMatchState);
+            
+            // Check if fouls can be adjusted based on match state
+            if (!isFoulAdjustmentAllowed()) {
+                console.log('Foul adjustment blocked - match not in active play state');
+                alert('Fouls can only be adjusted during active play (first half or second half)');
+                return;
+            }
             
             // Ensure matchFouls.current exists
             if (!matchFouls.current) {
@@ -2716,6 +2805,155 @@
             }
         });
 
+        // Match Official Functions
+        let officialCanvas = null;
+        let officialCtx = null;
+        let officialIsDrawing = false;
+
+        function openOfficialDialog() {
+            const dialog = document.getElementById('official-dialog');
+            dialog.style.display = 'flex';
+            
+            // Initialize canvas
+            setTimeout(() => {
+                initOfficialCanvas();
+                loadOfficialData();
+            }, 100);
+        }
+
+        function closeOfficialDialog() {
+            const dialog = document.getElementById('official-dialog');
+            dialog.style.display = 'none';
+        }
+
+        function initOfficialCanvas() {
+            officialCanvas = document.getElementById('official-signature-canvas');
+            officialCtx = officialCanvas.getContext('2d');
+            
+            // Set canvas size
+            officialCanvas.width = 400;
+            officialCanvas.height = 200;
+            
+            // Set initial styles
+            officialCtx.strokeStyle = '#000';
+            officialCtx.lineWidth = 2;
+            officialCtx.lineCap = 'round';
+            
+            // Mouse events
+            officialCanvas.addEventListener('mousedown', startOfficialDrawing);
+            officialCanvas.addEventListener('mousemove', drawOfficial);
+            officialCanvas.addEventListener('mouseup', stopOfficialDrawing);
+            officialCanvas.addEventListener('mouseout', stopOfficialDrawing);
+            
+            // Touch events
+            officialCanvas.addEventListener('touchstart', handleOfficialTouch);
+            officialCanvas.addEventListener('touchmove', handleOfficialTouch);
+            officialCanvas.addEventListener('touchend', stopOfficialDrawing);
+        }
+
+        function startOfficialDrawing(e) {
+            officialIsDrawing = true;
+            const rect = officialCanvas.getBoundingClientRect();
+            officialCtx.beginPath();
+            officialCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function drawOfficial(e) {
+            if (!officialIsDrawing) return;
+            const rect = officialCanvas.getBoundingClientRect();
+            officialCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            officialCtx.stroke();
+        }
+
+        function stopOfficialDrawing() {
+            officialIsDrawing = false;
+        }
+
+        function handleOfficialTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            officialCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function clearOfficialSignature() {
+            officialCtx.clearRect(0, 0, officialCanvas.width, officialCanvas.height);
+        }
+
+        function loadOfficialData() {
+            database.ref(`matchOfficial/${currentMatchId}`).once('value')
+                .then(snapshot => {
+                    const officialData = snapshot.val();
+                    if (officialData) {
+                        document.getElementById('official-name').value = officialData.name || '';
+                        
+                        // Load signature if exists
+                        if (officialData.signature) {
+                            const img = new Image();
+                            img.onload = function() {
+                                officialCtx.drawImage(img, 0, 0);
+                            };
+                            img.src = officialData.signature;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading official data:', error);
+                });
+        }
+
+        function saveOfficialSignature() {
+            const officialName = document.getElementById('official-name').value.trim();
+            
+            if (!officialName) {
+                alert('Please enter the match official name.');
+                return;
+            }
+
+            // Check if signature is drawn
+            const signatureData = officialCanvas.toDataURL();
+            const emptyCanvas = document.createElement('canvas');
+            emptyCanvas.width = officialCanvas.width;
+            emptyCanvas.height = officialCanvas.height;
+            
+            if (signatureData === emptyCanvas.toDataURL()) {
+                alert('Please provide a signature.');
+                return;
+            }
+
+            const officialData = {
+                name: officialName,
+                signature: signatureData,
+                timestamp: Date.now()
+            };
+
+            database.ref(`matchOfficial/${currentMatchId}`).set(officialData)
+                .then(() => {
+                    console.log('Official signature saved successfully');
+                    alert('Match official signature saved successfully!');
+                    closeOfficialDialog();
+                })
+                .catch(error => {
+                    console.error('Error saving official signature:', error);
+                    alert('Error saving official signature. Please try again.');
+                });
+        }
+
+        // Close official dialog when clicking outside
+        document.addEventListener('DOMContentLoaded', () => {
+            const officialDialog = document.getElementById('official-dialog');
+            if (officialDialog) {
+                officialDialog.addEventListener('click', (e) => {
+                    if (e.target.id === 'official-dialog') {
+                        closeOfficialDialog();
+                    }
+                });
+            }
+        });
+
         // Man of the Match Functions
         let selectedMotmPlayer = null;
 
@@ -3243,20 +3481,26 @@
         }
 
         function saveFirstHalfFoulsAndReset() {
+            console.log('saveFirstHalfFoulsAndReset called with matchFouls:', matchFouls);
+            
+            // Validate the entire matchFouls structure first
+            validateMatchFouls();
+            
             // Save current fouls as first half fouls (FINAL - no longer active)
-            matchFouls.firstHalf = { 
-                team1: matchFouls.current.team1, 
-                team2: matchFouls.current.team2 
-            };
+            matchFouls.firstHalf = validateFouls(matchFouls.current);
+
+            console.log('First half fouls to save:', matchFouls.firstHalf);
 
             // IMPORTANT: Reset current fouls to 0 for second half (fresh start)
             // Second half fouls are counted completely separately and never added to first half
             matchFouls.current = { team1: 0, team2: 0 };
 
-            // Save to Firebase
+            // Save to Firebase with validated data
             const updates = {};
-            updates[`matchFouls/${currentMatchId}/firstHalf`] = matchFouls.firstHalf;
-            updates[`matchFouls/${currentMatchId}/current`] = matchFouls.current;
+            updates[`matchFouls/${currentMatchId}/firstHalf`] = validateFouls(matchFouls.firstHalf);
+            updates[`matchFouls/${currentMatchId}/current`] = validateFouls(matchFouls.current);
+            
+            console.log('Firebase updates to send:', updates);
 
             database.ref().update(updates)
                 .then(() => {
@@ -3359,6 +3603,9 @@
             
             // Update the current fouls title based on match state
             updateCurrentFoulsTitle(state);
+            
+            // Update foul button states based on match state
+            updateFoulButtonStates();
 
             // Reset all classes
             button.className = 'match-control-btn';
@@ -3408,6 +3655,11 @@
         window.addEventListener('DOMContentLoaded', () => {
             // Give time for all elements to be loaded
             setTimeout(initializeMatchControl, 2000); // Wait for Firebase and DOM to initialize
+            
+            // Fallback: Update foul button states after a short delay
+            setTimeout(() => {
+                updateFoulButtonStates();
+            }, 3000);
         });
 
         // Register Service Worker for PWA
@@ -3433,6 +3685,9 @@
         </button>
         <button class="signatures-toggle-btn referee-manage-btn" onclick="openRefereeDialog()">
             👨‍⚖️ Manage Referees
+        </button>
+        <button class="signatures-toggle-btn official-signature-btn" onclick="openOfficialDialog()">
+            📋 Match Official Signature
         </button>
         <button class="signatures-toggle-btn motm-btn" onclick="openMotmDialog()">
             🏆 Man of the Match
@@ -3514,6 +3769,36 @@
             <div class="modal-footer">
                 <button onclick="closeRefereeDialog()" class="cancel-btn">Cancel</button>
                 <button onclick="saveReferees()" class="save-signatures-btn">Save Referees</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Official Signature Dialog -->
+    <div id="official-dialog" class="signature-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📋 Match Official Signature</h3>
+                <button class="close-btn" onclick="closeOfficialDialog()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="official-name">Match Official Name:</label>
+                    <input type="text" id="official-name" class="referee-input" placeholder="Enter match official name">
+                </div>
+                
+                <div class="signature-section">
+                    <h4>Official Signature:</h4>
+                    <canvas id="official-signature-canvas" class="signature-canvas"></canvas>
+                    <div class="signature-controls">
+                        <button onclick="clearOfficialSignature()" class="clear-btn">Clear Signature</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeOfficialDialog()" class="cancel-btn">Cancel</button>
+                <button onclick="saveOfficialSignature()" class="save-signatures-btn">Save Official Signature</button>
             </div>
         </div>
     </div>
