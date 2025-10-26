@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fmsc-match-detail-v1';
+const CACHE_NAME = 'fmsc-match-detail-v4.0';
 const urlsToCache = [
   './match-detail.html',
   './Tounament logo.svg',

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fmsc-match-management-v3';
+const CACHE_NAME = 'fmsc-match-management-v4.0';
 const urlsToCache = [
   './match-management.html?pwa=true',
   './match-management.html',
