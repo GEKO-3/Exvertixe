@@ -478,6 +478,65 @@
             transition: all 0.3s ease;
         }
 
+        .player-checkbox-section {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .player-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .player-row.selected {
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid var(--accent-color);
+        }
+
+        .selection-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .selection-counter.at-limit {
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid var(--accent-color);
+        }
+
+        .counter-text {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .clear-selection-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .clear-selection-btn:hover {
+            background: #0056b3;
+        }
+
         .player-row:hover {
             background: rgba(255, 255, 255, 0.08);
         }
@@ -848,6 +907,17 @@
                 flex-direction: column;
                 gap: 10px;
                 align-items: stretch;
+            }
+
+            .player-checkbox-section {
+                justify-content: center;
+                margin-bottom: 5px;
+            }
+
+            .selection-counter {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
             }
 
             .player-actions {
@@ -1566,6 +1636,112 @@
             console.log(`Foul buttons ${isAllowed ? 'enabled' : 'disabled'} - match state: ${currentMatchState}`);
         }
 
+        // Player Selection Management
+        let selectedPlayers = {
+            team1: new Set(),
+            team2: new Set()
+        };
+
+        function handlePlayerSelection(checkbox) {
+            const teamKey = checkbox.dataset.team;
+            const playerKey = checkbox.dataset.person;
+            const playerName = checkbox.dataset.playerName;
+            const jersey = checkbox.dataset.jersey;
+            const playerId = `${teamKey}-${playerKey}`;
+            
+            console.log('Player selection changed:', { teamKey, playerKey, playerName, checked: checkbox.checked });
+            
+            if (checkbox.checked) {
+                // Check if team already has 5 players selected
+                if (selectedPlayers[teamKey].size >= 5) {
+                    checkbox.checked = false;
+                    alert(`Maximum 5 players can be selected for ${teamKey === 'team1' ? 'Team A' : 'Team B'}`);
+                    return;
+                }
+                
+                // Add player to selected set
+                selectedPlayers[teamKey].add(playerId);
+                
+                // Add visual feedback
+                checkbox.closest('.player-row').classList.add('selected');
+                
+            } else {
+                // Remove player from selected set
+                selectedPlayers[teamKey].delete(playerId);
+                
+                // Remove visual feedback
+                checkbox.closest('.player-row').classList.remove('selected');
+            }
+            
+            // Update selection counter display
+            updateSelectionCounter(teamKey);
+            
+            console.log('Current selections:', selectedPlayers);
+        }
+
+        function updateSelectionCounter(teamKey) {
+            const count = selectedPlayers[teamKey].size;
+            const maxCount = 5;
+            
+            // Find or create counter display
+            let counterElement = document.querySelector(`#${teamKey}-selection-counter`);
+            
+            if (!counterElement) {
+                // Create counter element if it doesn't exist
+                const teamSection = document.querySelector(`#${teamKey}`);
+                if (teamSection) {
+                    const teamHeader = teamSection.querySelector('.team-header');
+                    if (teamHeader) {
+                        counterElement = document.createElement('div');
+                        counterElement.id = `${teamKey}-selection-counter`;
+                        counterElement.className = 'selection-counter';
+                        teamHeader.appendChild(counterElement);
+                    }
+                }
+            }
+            
+            if (counterElement) {
+                counterElement.innerHTML = `
+                    <span class="counter-text">Selected: ${count}/${maxCount}</span>
+                    ${count > 0 ? `<button onclick="clearTeamSelection('${teamKey}')" class="clear-selection-btn">Clear All</button>` : ''}
+                `;
+                
+                // Add warning style if at limit
+                if (count >= maxCount) {
+                    counterElement.classList.add('at-limit');
+                } else {
+                    counterElement.classList.remove('at-limit');
+                }
+            }
+        }
+
+        function clearTeamSelection(teamKey) {
+            // Uncheck all checkboxes for this team
+            const checkboxes = document.querySelectorAll(`input[data-team="${teamKey}"].player-checkbox`);
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.closest('.player-row').classList.remove('selected');
+            });
+            
+            // Clear the selected players set
+            selectedPlayers[teamKey].clear();
+            
+            // Update counter
+            updateSelectionCounter(teamKey);
+            
+            console.log(`Cleared all selections for ${teamKey}`);
+        }
+
+        function getSelectedPlayers(teamKey = null) {
+            if (teamKey) {
+                return Array.from(selectedPlayers[teamKey]);
+            }
+            return {
+                team1: Array.from(selectedPlayers.team1),
+                team2: Array.from(selectedPlayers.team2)
+            };
+        }
+
         // Get match ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         currentMatchId = urlParams.get('match') || '';
@@ -1964,6 +2140,17 @@
             
             return `
                 <div class="player-row">
+                    <div class="player-checkbox-section">
+                        <input type="checkbox" 
+                               class="player-checkbox" 
+                               id="${teamKey}-${personKey}-checkbox" 
+                               data-team="${teamKey}" 
+                               data-person="${personKey}"
+                               data-player-name="${playerName}"
+                               data-jersey="${jerseyNumber}"
+                               onchange="handlePlayerSelection(this)">
+                        <label for="${teamKey}-${personKey}-checkbox" class="checkbox-label"></label>
+                    </div>
                     <div class="player-name">
                         <span class="jersey">${jerseyNumber}</span>
                         <span class="name">${playerName}</span>
@@ -2157,6 +2344,12 @@
         }
 
         function updatePlayerButtons() {
+            // Initialize selection counters for both teams
+            setTimeout(() => {
+                updateSelectionCounter('team1');
+                updateSelectionCounter('team2');
+            }, 100);
+            
             // Update action buttons (including numbered and plus buttons)
             document.querySelectorAll('.action-btn').forEach(button => {
                 const teamKey = button.dataset.team;
