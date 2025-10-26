@@ -1523,12 +1523,41 @@
 
         // Listen for match fouls
         database.ref(`matchFouls/${currentMatchId}`).on('value', (snapshot) => {
-            const foulData = snapshot.val() || { 
-                current: { team1: 0, team2: 0 }, 
-                firstHalf: { team1: 0, team2: 0 }, 
-                secondHalf: { team1: 0, team2: 0 } 
-            };
-            matchFouls = foulData;
+            console.log('Firebase fouls data received:', snapshot.val());
+            
+            const foulData = snapshot.val();
+            
+            if (!foulData) {
+                // No data exists, use default structure
+                matchFouls = { 
+                    current: { team1: 0, team2: 0 }, 
+                    firstHalf: { team1: 0, team2: 0 }, 
+                    secondHalf: { team1: 0, team2: 0 } 
+                };
+            } else if (foulData.team1 !== undefined || foulData.team2 !== undefined) {
+                // Old structure detected, migrate it
+                console.log('Migrating old foul structure to new format');
+                matchFouls = {
+                    current: { 
+                        team1: foulData.team1 || 0, 
+                        team2: foulData.team2 || 0 
+                    },
+                    firstHalf: { team1: 0, team2: 0 },
+                    secondHalf: { team1: 0, team2: 0 }
+                };
+                
+                // Save the migrated structure back to Firebase
+                database.ref(`matchFouls/${currentMatchId}`).set(matchFouls);
+            } else {
+                // New structure, use as-is but ensure all properties exist
+                matchFouls = {
+                    current: foulData.current || { team1: 0, team2: 0 },
+                    firstHalf: foulData.firstHalf || { team1: 0, team2: 0 },
+                    secondHalf: foulData.secondHalf || { team1: 0, team2: 0 }
+                };
+            }
+            
+            console.log('Final matchFouls structure:', matchFouls);
             updateFoulDisplays();
         });
 
@@ -2130,25 +2159,48 @@
         }
 
         function adjustFouls(teamKey, change) {
-            const newFoulCount = Math.max(0, matchFouls.current[teamKey] + change);
+            console.log('adjustFouls called:', teamKey, change);
+            console.log('Current matchFouls:', matchFouls);
+            
+            // Ensure matchFouls.current exists
+            if (!matchFouls.current) {
+                console.log('Initializing matchFouls.current');
+                matchFouls.current = { team1: 0, team2: 0 };
+            }
+            
+            const currentFouls = matchFouls.current[teamKey] || 0;
+            const newFoulCount = Math.max(0, currentFouls + change);
             matchFouls.current[teamKey] = newFoulCount;
+            
+            console.log(`Updated ${teamKey} fouls from ${currentFouls} to ${newFoulCount}`);
             
             // Update display
             const foulElement = document.getElementById(`fouls-${teamKey}`);
             if (foulElement) {
                 foulElement.textContent = newFoulCount;
+                console.log(`Display updated for ${teamKey}: ${newFoulCount}`);
+            } else {
+                console.error(`Foul display element not found: fouls-${teamKey}`);
             }
             
             // Save to Firebase
             database.ref(`matchFouls/${currentMatchId}/current/${teamKey}`).set(newFoulCount)
+                .then(() => {
+                    console.log(`Firebase updated for ${teamKey}: ${newFoulCount}`);
+                })
                 .catch(error => {
                     console.error('Error updating fouls:', error);
                 });
         }
 
         function updateFoulDisplays() {
+            console.log('updateFoulDisplays called with matchFouls:', matchFouls);
+            
             const team1FoulElement = document.getElementById('fouls-team1');
             const team2FoulElement = document.getElementById('fouls-team2');
+            
+            console.log('Found DOM elements:', { team1FoulElement, team2FoulElement });
+            console.log('Current fouls to display:', matchFouls.current);
             
             if (team1FoulElement) team1FoulElement.textContent = matchFouls.current.team1 || 0;
             if (team2FoulElement) team2FoulElement.textContent = matchFouls.current.team2 || 0;
@@ -2159,6 +2211,8 @@
             
             if (team1FirstHalfElement) team1FirstHalfElement.textContent = matchFouls.firstHalf.team1 || 0;
             if (team2FirstHalfElement) team2FirstHalfElement.textContent = matchFouls.firstHalf.team2 || 0;
+            
+            console.log('Updated displays - Team 1:', team1FoulElement?.textContent, 'Team 2:', team2FoulElement?.textContent);
         }
 
         // Handle dropdown item clicks using event delegation
