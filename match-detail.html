@@ -336,6 +336,97 @@
             box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
         }
 
+        .timeouts-container {
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .timeouts-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timeouts-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .timeouts-layout {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .team-timeout-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .team-timeout-section.team1 {
+            justify-content: flex-end;
+        }
+
+        .team-timeout-section.team2 {
+            justify-content: flex-start;
+        }
+
+        .timeout-team-name {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            letter-spacing: 1px;
+        }
+
+        .timeout-button {
+            width: 120px;
+            height: 60px;
+            border: 2px solid var(--secondary-color);
+            background: rgba(0, 123, 255, 0.2);
+            color: var(--secondary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .timeout-button:hover:not(.used) {
+            background: rgba(0, 123, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .timeout-button.used {
+            background: rgba(220, 53, 69, 0.3);
+            border-color: #dc3545;
+            color: #dc3545;
+            cursor: not-allowed;
+        }
+
+        .timeout-button.used:after {
+            content: "✓ USED";
+            font-size: 0.8rem;
+        }
+
         .foul-btn {
             width: 50px;
             height: 50px;
@@ -893,6 +984,21 @@
             
             .vs-separator {
                 font-size: 1.5rem;
+            }
+            
+            .timeouts-layout {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 10px;
+            }
+            
+            .timeout-button {
+                width: 100px;
+                height: 50px;
+                font-size: 0.8rem;
+            }
+            
+            .timeout-team-name {
+                font-size: 1rem;
             }
             
             body {
@@ -1550,6 +1656,21 @@
             </div>
         </div>
 
+        <div class="timeouts-container">
+            <div class="timeouts-header">
+                <div class="timeouts-title" id="current-timeouts-title">TEAM TIMEOUTS (CURRENT HALF)</div>
+            </div>
+            <div class="timeouts-layout">
+                <div class="team-timeout-section team1" id="timeout-section-team1">
+                    <!-- Team 1 timeout will be populated here -->
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="team-timeout-section team2" id="timeout-section-team2">
+                    <!-- Team 2 timeout will be populated here -->
+                </div>
+            </div>
+        </div>
+
         <div class="teams-layout" id="teams-layout">
             <!-- Teams will be populated here -->
         </div>
@@ -1581,6 +1702,10 @@
             current: { team1: 0, team2: 0 }, // Current half fouls
             firstHalf: { team1: 0, team2: 0 }, // First half fouls (saved)
             secondHalf: { team1: 0, team2: 0 } // Second half fouls (saved)
+        };
+        let matchTimeouts = {
+            firstHalf: { team1: false, team2: false }, // First half timeouts used
+            secondHalf: { team1: false, team2: false } // Second half timeouts used
         };
         let teamLists = {};
         let playerSlotCounts = {};
@@ -1742,6 +1867,125 @@
             };
         }
 
+        // Timeout Management Functions
+        function useTimeout(teamKey) {
+            console.log('useTimeout called for:', teamKey);
+            
+            // Check if timeout can be used based on match state
+            if (!isTimeoutAllowed()) {
+                alert('Timeouts can only be used during active play (first half or second half)');
+                return;
+            }
+            
+            const currentHalf = getCurrentHalf();
+            if (!currentHalf) {
+                alert('Cannot determine current half');
+                return;
+            }
+            
+            // Check if timeout already used for this half
+            if (matchTimeouts[currentHalf][teamKey]) {
+                alert(`${teamKey === 'team1' ? 'Team A' : 'Team B'} has already used their timeout for this half`);
+                return;
+            }
+            
+            // Confirm timeout usage
+            const teamName = teamKey === 'team1' ? 'Team A' : 'Team B';
+            if (confirm(`Use timeout for ${teamName}? This cannot be undone.`)) {
+                // Mark timeout as used
+                matchTimeouts[currentHalf][teamKey] = true;
+                
+                // Save to Firebase
+                database.ref(`matchTimeouts/${currentMatchId}/${currentHalf}/${teamKey}`).set(true)
+                    .then(() => {
+                        console.log(`Timeout used for ${teamKey} in ${currentHalf}`);
+                        updateTimeoutDisplays();
+                    })
+                    .catch(error => {
+                        console.error('Error saving timeout:', error);
+                        // Revert on error
+                        matchTimeouts[currentHalf][teamKey] = false;
+                        alert('Error saving timeout. Please try again.');
+                    });
+            }
+        }
+
+        function isTimeoutAllowed() {
+            return currentMatchState === 'first-half' || currentMatchState === 'second-half';
+        }
+
+        function getCurrentHalf() {
+            switch(currentMatchState) {
+                case 'first-half':
+                    return 'firstHalf';
+                case 'second-half':
+                    return 'secondHalf';
+                default:
+                    return null;
+            }
+        }
+
+        function updateTimeoutDisplays() {
+            const currentHalf = getCurrentHalf();
+            
+            // Update Team 1 timeout display
+            const team1Section = document.getElementById('timeout-section-team1');
+            if (team1Section) {
+                const team1Name = teams.team1?.name || 'Team A';
+                const isUsed = currentHalf && matchTimeouts[currentHalf]?.team1;
+                
+                team1Section.innerHTML = `
+                    <div class="timeout-team-name">${team1Name}</div>
+                    <button class="timeout-button ${isUsed ? 'used' : ''}" 
+                            onclick="${!isUsed ? 'useTimeout(\'team1\')' : ''}" 
+                            ${isUsed ? 'disabled' : ''}>
+                        ${isUsed ? '' : '⏰ TIMEOUT'}
+                    </button>
+                `;
+            }
+            
+            // Update Team 2 timeout display
+            const team2Section = document.getElementById('timeout-section-team2');
+            if (team2Section) {
+                const team2Name = teams.team2?.name || 'Team B';
+                const isUsed = currentHalf && matchTimeouts[currentHalf]?.team2;
+                
+                team2Section.innerHTML = `
+                    <button class="timeout-button ${isUsed ? 'used' : ''}" 
+                            onclick="${!isUsed ? 'useTimeout(\'team2\')' : ''}" 
+                            ${isUsed ? 'disabled' : ''}>
+                        ${isUsed ? '' : '⏰ TIMEOUT'}
+                    </button>
+                    <div class="timeout-team-name">${team2Name}</div>
+                `;
+            }
+        }
+
+        function updateTimeoutsTitle(matchState) {
+            const titleElement = document.getElementById('current-timeouts-title');
+            if (!titleElement) return;
+
+            switch(matchState) {
+                case 'not-started':
+                    titleElement.textContent = 'TEAM TIMEOUTS';
+                    break;
+                case 'first-half':
+                    titleElement.textContent = 'TEAM TIMEOUTS (FIRST HALF)';
+                    break;
+                case 'half-time':
+                    titleElement.textContent = 'TEAM TIMEOUTS (SECOND HALF STARTING)';
+                    break;
+                case 'second-half':
+                    titleElement.textContent = 'TEAM TIMEOUTS (SECOND HALF)';
+                    break;
+                case 'finished':
+                    titleElement.textContent = 'TEAM TIMEOUTS (MATCH FINISHED)';
+                    break;
+                default:
+                    titleElement.textContent = 'TEAM TIMEOUTS';
+            }
+        }
+
         // Get match ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         currentMatchId = urlParams.get('match') || '';
@@ -1816,6 +2060,36 @@
             
             console.log('Final matchFouls structure:', matchFouls);
             updateFoulDisplays();
+        });
+
+        // Listen for match timeouts
+        database.ref(`matchTimeouts/${currentMatchId}`).on('value', (snapshot) => {
+            console.log('Firebase timeout data received:', snapshot.val());
+            
+            const timeoutData = snapshot.val();
+            
+            if (!timeoutData) {
+                // No data exists, use default structure
+                matchTimeouts = {
+                    firstHalf: { team1: false, team2: false },
+                    secondHalf: { team1: false, team2: false }
+                };
+            } else {
+                // Use existing data but ensure structure
+                matchTimeouts = {
+                    firstHalf: {
+                        team1: timeoutData.firstHalf?.team1 || false,
+                        team2: timeoutData.firstHalf?.team2 || false
+                    },
+                    secondHalf: {
+                        team1: timeoutData.secondHalf?.team1 || false,
+                        team2: timeoutData.secondHalf?.team2 || false
+                    }
+                };
+            }
+            
+            console.log('Final matchTimeouts structure:', matchTimeouts);
+            updateTimeoutDisplays();
         });
 
         // Listen for referee data
@@ -3797,8 +4071,14 @@
             // Update the current fouls title based on match state
             updateCurrentFoulsTitle(state);
             
+            // Update the current timeouts title based on match state
+            updateTimeoutsTitle(state);
+            
             // Update foul button states based on match state
             updateFoulButtonStates();
+            
+            // Update timeout displays based on match state
+            updateTimeoutDisplays();
 
             // Reset all classes
             button.className = 'match-control-btn';
