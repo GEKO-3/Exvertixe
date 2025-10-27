@@ -381,7 +381,7 @@
         }
 
         .match-tile.expanded .match-details {
-            max-height: 300px;
+            max-height: 500px;
         }
 
         .match-details-content {
@@ -391,6 +391,170 @@
 
         [data-theme="light"] .match-details-content {
             border-top: 1px solid var(--border-color);
+        }
+
+        .goal-scorers-section {
+            margin-bottom: 20px;
+        }
+
+        .goal-scorers-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .goal-scorers-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .team-scorers {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        [data-theme="light"] .team-scorers {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .team-scorers-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .team-logo-small {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .team-name-small {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .scorer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .scorer-item-small {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            padding: 4px 0;
+        }
+
+        .scorer-name {
+            flex: 1;
+            color: var(--text-color);
+        }
+
+        .scorer-jersey {
+            color: var(--accent-color);
+            font-weight: 600;
+            min-width: 30px;
+        }
+
+        .scorer-events {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        .scorer-goals {
+            background: var(--success-color);
+            color: var(--bg-color);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .scorer-own-goals {
+            background: var(--error-color);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .scorer-yellow-cards {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scorer-red-cards {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .no-scorers {
+            color: var(--text-color);
+            opacity: 0.6;
+            font-style: italic;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .motm-section {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        [data-theme="light"] .motm-section {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .motm-title {
+            font-size: 0.7rem;
+            color: #ffd700;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .motm-player {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .motm-team {
+            color: var(--primary-color);
+            font-weight: 600;
         }
 
         .match-actions {
@@ -708,6 +872,8 @@
         let matchStates = {};
         let matchScores = {};
         let matchEvents = {};
+        let teamLists = {};
+        let matchMotm = {};
 
         // Match schedule data - Updated for October 26-28, 2025
         // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
@@ -765,6 +931,18 @@
             renderMatches();
         });
 
+        // Listen for team lists changes
+        database.ref('teamLists').on('value', (snapshot) => {
+            teamLists = snapshot.val() || {};
+            renderMatches();
+        });
+
+        // Listen for match MOTM changes
+        database.ref('matchMotm').on('value', (snapshot) => {
+            matchMotm = snapshot.val() || {};
+            renderMatches();
+        });
+
         // Calculate final score from match events
         function calculateFinalScore(matchId) {
             const events = matchEvents[matchId] || {};
@@ -789,6 +967,249 @@
             });
 
             return { team1: team1Score, team2: team2Score };
+        }
+
+        // Get team list for a team ID
+        function getTeamList(teamId) {
+            const teamName = teams[teamId]?.teamName;
+            if (!teamName) return null;
+            
+            const teamListEntries = Object.entries(teamLists);
+            const matchingEntry = teamListEntries.find(([key, teamList]) => 
+                teamList.teamName === teamName
+            );
+            
+            if (!matchingEntry) {
+                const caseInsensitiveMatch = teamListEntries.find(([key, teamList]) => 
+                    teamList.teamName && teamList.teamName.toLowerCase() === teamName.toLowerCase()
+                );
+                if (caseInsensitiveMatch) {
+                    return caseInsensitiveMatch[1];
+                }
+                return null;
+            }
+            
+            return matchingEntry[1];
+        }
+
+        // Get player data from team lists
+        function getPlayerData(teamKey, personKey, matchId) {
+            try {
+                const matchParts = matchId.split('-');
+                if (matchParts.length >= 2) {
+                    const teamsMatch = matchParts[1].match(/^(.+)vs(.+)$/);
+                    if (teamsMatch) {
+                        const team1Position = teamsMatch[1];
+                        const team2Position = teamsMatch[2];
+                        const position = teamKey === 'team1' ? team1Position : team2Position;
+                        
+                        if (drawAssignments[position] && teams[drawAssignments[position]]) {
+                            const teamId = drawAssignments[position];
+                            const teamList = getTeamList(teamId);
+                            
+                            if (teamList && teamList.players) {
+                                // Try direct access first
+                                let player = teamList.players[personKey];
+                                
+                                // If not found, try searching by index or different key formats
+                                if (!player) {
+                                    const playerKeys = Object.keys(teamList.players);
+                                    console.log(`Available player keys for ${teamId}:`, playerKeys);
+                                    
+                                    // Try personKey as index
+                                    const playerIndex = parseInt(personKey);
+                                    if (!isNaN(playerIndex) && playerKeys[playerIndex]) {
+                                        player = teamList.players[playerKeys[playerIndex]];
+                                    }
+                                    
+                                    // Try finding by different formats
+                                    if (!player) {
+                                        player = playerKeys.find(key => key.includes(personKey) || personKey.includes(key));
+                                        if (player) {
+                                            player = teamList.players[player];
+                                        }
+                                    }
+                                }
+                                
+                                if (player && player.name) {
+                                    return {
+                                        name: player.name,
+                                        jersey: player.jerseyNumber || player.jersey || 'N/A',
+                                        teamId: teamId,
+                                        teamName: teams[teamId].teamName
+                                    };
+                                }
+                            }
+                            
+                            console.log(`Player not found: teamKey=${teamKey}, personKey=${personKey}, teamId=${teamId}`);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error getting player data:', error);
+            }
+            
+            return {
+                name: `Player ${personKey}`,
+                jersey: 'N/A',
+                teamId: null,
+                teamName: 'Unknown Team'
+            };
+        }
+
+        // Generate goal scorers section for a match
+        function generateGoalScorersSection(matchId) {
+            const events = matchEvents[matchId] || {};
+            const team1Scorers = {};
+            const team2Scorers = {};
+
+            console.log(`Generating goal scorers for match ${matchId}`);
+            console.log('Available events:', events);
+            console.log('Event types found:', Object.values(events).map(e => e.eventType));
+
+            // Process events to count goals by player
+            Object.values(events).forEach(event => {
+                if (event.eventType === 'goal') {
+                    console.log('Processing goal event:', event);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    console.log('Player data:', playerData);
+                    
+                    const playerKey = `${playerData.name}-${playerData.jersey}`;
+                    
+                    if (event.teamKey === 'team1') {
+                        team1Scorers[playerKey] = team1Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team1Scorers[playerKey].goals++;
+                    } else if (event.teamKey === 'team2') {
+                        team2Scorers[playerKey] = team2Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team2Scorers[playerKey].goals++;
+                    }
+                } else if (event.eventType === 'own-goal') {
+                    console.log('Processing own goal event:', event);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    console.log('Own goal player data:', playerData);
+                    
+                    const playerKey = `${playerData.name}-${playerData.jersey}`;
+                    
+                    if (event.teamKey === 'team1') {
+                        team1Scorers[playerKey] = team1Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team1Scorers[playerKey].ownGoals++;
+                    } else if (event.teamKey === 'team2') {
+                        team2Scorers[playerKey] = team2Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team2Scorers[playerKey].ownGoals++;
+                    }
+                } else if (event.eventType === 'yellow') {
+                    console.log('Processing yellow card event:', event);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    const playerKey = `${playerData.name}-${playerData.jersey}`;
+                    
+                    if (event.teamKey === 'team1') {
+                        team1Scorers[playerKey] = team1Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team1Scorers[playerKey].yellowCards++;
+                    } else if (event.teamKey === 'team2') {
+                        team2Scorers[playerKey] = team2Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team2Scorers[playerKey].yellowCards++;
+                    }
+                } else if (event.eventType === 'red') {
+                    console.log('Processing red card event:', event);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    const playerKey = `${playerData.name}-${playerData.jersey}`;
+                    
+                    if (event.teamKey === 'team1') {
+                        team1Scorers[playerKey] = team1Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team1Scorers[playerKey].redCards++;
+                    } else if (event.teamKey === 'team2') {
+                        team2Scorers[playerKey] = team2Scorers[playerKey] || { ...playerData, goals: 0, ownGoals: 0, yellowCards: 0, redCards: 0 };
+                        team2Scorers[playerKey].redCards++;
+                    }
+                }
+            });
+
+            console.log('Team 1 scorers:', team1Scorers);
+            console.log('Team 2 scorers:', team2Scorers);
+
+            // Get MOTM data from separate database structure
+            const motmData = matchMotm[matchId];
+            console.log('MOTM data for match:', matchId, motmData);
+
+            // Generate HTML
+            const generateTeamScorers = (scorers, teamData) => {
+                let scorersHtml = '';
+                if (Object.keys(scorers).length === 0) {
+                    scorersHtml = '<div class="no-scorers">No events recorded</div>';
+                } else {
+                    scorersHtml = Object.values(scorers)
+                        .filter(scorer => scorer.goals > 0 || scorer.ownGoals > 0 || scorer.yellowCards > 0 || scorer.redCards > 0) // Show players with any events
+                        .sort((a, b) => {
+                            // Sort by goals first, then by total events
+                            const aTotal = a.goals + a.ownGoals + a.yellowCards + a.redCards;
+                            const bTotal = b.goals + b.ownGoals + b.yellowCards + b.redCards;
+                            if (b.goals !== a.goals) return b.goals - a.goals; // Goals first
+                            return bTotal - aTotal; // Then total events
+                        })
+                        .map(scorer => {
+                            let eventBadges = '';
+                            
+                            // Add regular goals
+                            if (scorer.goals > 0) {
+                                eventBadges += `<span class="scorer-goals">${scorer.goals}</span>`;
+                            }
+                            
+                            // Add own goals
+                            if (scorer.ownGoals > 0) {
+                                eventBadges += `<span class="scorer-own-goals">OG ${scorer.ownGoals}</span>`;
+                            }
+                            
+                            // Add yellow cards
+                            if (scorer.yellowCards > 0) {
+                                eventBadges += `<span class="scorer-yellow-cards">🟨${scorer.yellowCards > 1 ? scorer.yellowCards : ''}</span>`;
+                            }
+                            
+                            // Add red cards
+                            if (scorer.redCards > 0) {
+                                eventBadges += `<span class="scorer-red-cards">🟥${scorer.redCards > 1 ? scorer.redCards : ''}</span>`;
+                            }
+                            
+                            return `
+                                <div class="scorer-item-small">
+                                    <span class="scorer-name">${scorer.name}</span>
+                                    <span class="scorer-jersey">#${scorer.jersey}</span>
+                                    <div class="scorer-events">${eventBadges}</div>
+                                </div>
+                            `;
+                        }).join('');
+                }
+
+                return `
+                    <div class="team-scorers">
+                        <div class="scorer-list">
+                            ${scorersHtml}
+                        </div>
+                    </div>
+                `;
+            };
+
+            let motmHtml = '';
+            if (motmData && motmData.playerName) {
+                motmHtml = `
+                    <div class="motm-section">
+                        <div class="motm-title">Man of the Match</div>
+                        <div class="motm-player">
+                            <span>${motmData.playerName} #${motmData.jersey}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="goal-scorers-section">
+                    <div class="goal-scorers-title">⚽ MATCH EVENTS</div>
+                    <div class="goal-scorers-container">
+                        ${generateTeamScorers(team1Scorers, null)}
+                        ${generateTeamScorers(team2Scorers, null)}
+                    </div>
+                    ${motmHtml}
+                </div>
+            `;
         }
 
         function getTeamData(position) {
@@ -915,7 +1336,7 @@
                         </div>
                         <div class="match-details">
                             <div class="match-details-content">
-                                <p>Match details will be added here...</p>
+                                ${generateGoalScorersSection(matchId)}
                                 <div class="match-actions">
                                     <a href="match-detail.html?match=${encodeURIComponent(matchTile.dataset.matchId)}" class="action-btn manage">
                                         🎯 Manage Match
