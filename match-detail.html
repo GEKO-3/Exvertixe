@@ -2427,32 +2427,6 @@
             });
         }
 
-        // Clear all player selections for a team
-        function clearTeamSelections(teamKey) {
-            if (!selectedPlayers[teamKey]) return;
-            
-            // Clear from database
-            selectedPlayers[teamKey].clear();
-            savePlayerSelectionToDatabase();
-            
-            // Clear UI
-            const checkboxes = document.querySelectorAll(`input[data-team="${teamKey}"].player-checkbox`);
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                checkbox.closest('.player-row').classList.remove('selected');
-            });
-            
-            updateSelectionCounter(teamKey);
-            console.log(`Cleared all selections for ${teamKey}`);
-        }
-
-        // Clear all player selections for both teams
-        function clearAllSelections() {
-            clearTeamSelections('team1');
-            clearTeamSelections('team2');
-            console.log('Cleared all player selections');
-        }
-
         function updateSelectionCounter(teamKey) {
             const count = selectedPlayers[teamKey].size;
             const maxCount = 5;
@@ -2477,7 +2451,6 @@
             if (counterElement) {
                 counterElement.innerHTML = `
                     <span class="counter-text">Selected: ${count}/${maxCount}</span>
-                    ${count > 0 ? `<button onclick="clearTeamSelections('${teamKey}')" class="clear-selection-btn">Clear All</button>` : ''}
                 `;
                 
                 // Add warning style if at limit
@@ -6076,15 +6049,6 @@
         </button>
         <button class="signatures-toggle-btn motm-btn" onclick="openMotmDialog()">
             🏆 Man of the Match
-        </button>
-        <button class="signatures-toggle-btn" onclick="clearTeamSelections('team1')" title="Clear Team A player selections">
-            🔄 Clear Team A
-        </button>
-        <button class="signatures-toggle-btn" onclick="clearTeamSelections('team2')" title="Clear Team B player selections">
-            🔄 Clear Team B  
-        </button>
-        <button class="signatures-toggle-btn" onclick="clearAllSelections()" title="Clear all player selections">
-            ❌ Clear All Players
         </button>
         <button class="signatures-toggle-btn print-btn" id="print-summary-btn" onclick="printMatchSummary()">
             🖨️ Print Match Summary
