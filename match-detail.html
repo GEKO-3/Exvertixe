@@ -209,7 +209,115 @@
             transform: translateY(-2px);
         }
 
+        .print-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
 
+        .print-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        /* Print-specific styles */
+        @media print {
+            /* Force landscape orientation */
+            @page {
+                size: A4 landscape;
+                margin: 15mm;
+            }
+            
+            /* Hide everything by default */
+            * {
+                visibility: hidden !important;
+            }
+            
+            /* Show only print elements and their children */
+            #print-header, #print-header *,
+            #match-summary, #match-summary *,
+            #print-footer, #print-footer * {
+                visibility: visible !important;
+            }
+            
+            /* Hide all page elements */
+            .container, .back-btn, .print-btn, #theme-toggle,
+            .match-control-btn, .action-btn, .primary-action-btn,
+            .plus-action-btn, .referee-management, .player-checkbox-section {
+                display: none !important;
+            }
+            
+            /* Reset body styling */
+            body {
+                background: white !important;
+                color: black !important;
+                font-family: Arial, sans-serif !important;
+                font-size: 10pt !important;
+                line-height: 1.2 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            /* Show print elements */
+            #print-header, #match-summary, #print-footer {
+                display: block !important;
+                visibility: visible !important;
+                position: static !important;
+            }
+            
+            /* Clean table styling */
+            table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+                page-break-inside: avoid;
+            }
+            
+            th, td {
+                border: 1px solid black !important;
+                padding: 3px !important;
+                font-size: 8pt !important;
+                vertical-align: top !important;
+            }
+            
+            th {
+                background: #f0f0f0 !important;
+                font-weight: bold !important;
+                text-align: center !important;
+            }
+            
+            /* Prevent page breaks inside tables */
+            tr {
+                page-break-inside: avoid !important;
+            }
+            
+            /* Headers */
+            h1, h2, h3 {
+                color: black !important;
+                margin: 5px 0 !important;
+                page-break-after: avoid !important;
+            }
+            
+            /* Force everything to stay on one page */
+            #match-summary {
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            
+            /* Ensure no extra page breaks */
+            * {
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+            }
+        }
 
         .teams-layout {
             display: grid;
@@ -688,6 +796,111 @@
         .selection-counter.at-limit {
             background: rgba(255, 107, 53, 0.2);
             border: 1px solid var(--accent-color);
+        }
+
+        .clear-selection-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .clear-selection-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .counter-text {
+            font-weight: 500;
+        }
+
+        /* Half Scores Container Styles */
+        .half-scores-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: var(--backdrop-filter);
+        }
+
+        .half-scores-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .half-scores-header h3 {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .half-scores-layout {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .half-score-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        [data-theme="light"] .half-score-section {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .half-score-label {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .half-score-values {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .team1-half-score, .team2-half-score {
+            color: var(--text-color);
+        }
+
+        .score-separator {
+            color: var(--accent-color);
+            font-weight: normal;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .half-scores-layout {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .half-score-section {
+                min-width: 120px;
+            }
+            
+            .half-score-values {
+                font-size: 1.5rem;
+            }
         }
 
         .counter-text {
@@ -1837,6 +2050,21 @@
             <!-- Teams will be populated here -->
         </div>
 
+        <!-- Half Scores Container -->
+        <div class="half-scores-container" id="half-scores-container" style="display: none;">
+            <div class="half-scores-header">
+                <h3>Half-Time Breakdown</h3>
+            </div>
+            <div class="half-scores-layout">
+                <div class="half-score-section" id="first-half-scores">
+                    <!-- First half scores will be populated here -->
+                </div>
+                <div class="half-score-section" id="second-half-scores" style="display: none;">
+                    <!-- Second half scores will be populated here -->
+                </div>
+            </div>
+        </div>
+
 
     </div>
 
@@ -1892,6 +2120,11 @@
             current: { team1: 0, team2: 0 }, // Current half fouls
             firstHalf: { team1: 0, team2: 0 }, // First half fouls (saved)
             secondHalf: { team1: 0, team2: 0 } // Second half fouls (saved)
+        };
+        let matchScores = {
+            current: { team1: 0, team2: 0 }, // Current total scores
+            firstHalf: { team1: 0, team2: 0 }, // First half scores (saved)
+            secondHalf: { team1: 0, team2: 0 } // Second half scores (calculated)
         };
         let matchTimeouts = {
             firstHalf: { team1: false, team2: false }, // First half timeouts used
@@ -1991,7 +2224,233 @@
             // Update selection counter display
             updateSelectionCounter(teamKey);
             
+            // Save to database
+            savePlayerSelectionToDatabase();
+            
             console.log('Current selections:', selectedPlayers);
+        }
+
+        // Save player selection states to Firebase
+        function savePlayerSelectionToDatabase() {
+            if (!currentMatchId) return;
+            
+            const selectionData = {
+                team1: Array.from(selectedPlayers.team1),
+                team2: Array.from(selectedPlayers.team2)
+            };
+            
+            database.ref(`matchPlayerSelections/${currentMatchId}`).set(selectionData)
+                .then(() => {
+                    console.log('Player selections saved to database');
+                })
+                .catch(error => {
+                    console.error('Error saving player selections:', error);
+                });
+        }
+
+        // Load match scores from Firebase
+        function loadMatchScoresFromDatabase() {
+            if (!currentMatchId) return;
+            
+            database.ref(`matchScores/${currentMatchId}`).once('value')
+                .then(snapshot => {
+                    const scoresData = snapshot.val();
+                    if (scoresData) {
+                        console.log('Loading match scores from database:', scoresData);
+                        
+                        // Load first half scores
+                        if (scoresData.firstHalf) {
+                            matchScores.firstHalf = scoresData.firstHalf;
+                        }
+                        
+                        // Load second half scores
+                        if (scoresData.secondHalf) {
+                            matchScores.secondHalf = scoresData.secondHalf;
+                        }
+                        
+                        // Update display
+                        updateHalfScoresDisplay();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading match scores:', error);
+                });
+        }
+
+        // Load player selection states from Firebase
+        function loadPlayerSelectionFromDatabase() {
+            if (!currentMatchId) return;
+            
+            database.ref(`matchPlayerSelections/${currentMatchId}`).once('value')
+                .then(snapshot => {
+                    const selectionData = snapshot.val();
+                    if (selectionData) {
+                        console.log('Loading player selections from database:', selectionData);
+                        
+                        // Clear current selections
+                        selectedPlayers.team1.clear();
+                        selectedPlayers.team2.clear();
+                        
+                        // Restore team1 selections
+                        if (selectionData.team1) {
+                            selectionData.team1.forEach(playerId => {
+                                selectedPlayers.team1.add(playerId);
+                                const personKey = playerId.split('-').slice(1).join('-'); // Handle cases like "team1-player-0"
+                                const checkbox = document.querySelector(`input[data-team="team1"][data-person="${personKey}"]`);
+                                if (checkbox) {
+                                    checkbox.checked = true;
+                                    checkbox.closest('.player-row').classList.add('selected');
+                                }
+                            });
+                            updateSelectionCounter('team1');
+                        }
+                        
+                        // Restore team2 selections
+                        if (selectionData.team2) {
+                            selectionData.team2.forEach(playerId => {
+                                selectedPlayers.team2.add(playerId);
+                                const personKey = playerId.split('-').slice(1).join('-'); // Handle cases like "team2-player-0"
+                                const checkbox = document.querySelector(`input[data-team="team2"][data-person="${personKey}"]`);
+                                if (checkbox) {
+                                    checkbox.checked = true;
+                                    checkbox.closest('.player-row').classList.add('selected');
+                                }
+                            });
+                            updateSelectionCounter('team2');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading player selections:', error);
+                });
+        }
+
+        // Setup real-time listener for player selections
+        // Setup listener for match state changes
+        function setupMatchStateListener() {
+            if (!currentMatchId) return;
+            
+            database.ref(`matchState/${currentMatchId}`).on('value', snapshot => {
+                const stateData = snapshot.val();
+                if (stateData && stateData.state) {
+                    const previousState = currentMatchState;
+                    currentMatchState = stateData.state;
+                    
+                    console.log('Match state updated:', previousState, '->', currentMatchState);
+                    
+                    // Update displays based on new state
+                    updateHalfScoresDisplay();
+                    
+                    // Load appropriate foul displays based on state
+                    if (currentMatchState === 'half-time' || currentMatchState === 'second-half' || currentMatchState === 'finished') {
+                        // Show first half fouls if transitioning from first half
+                        if (previousState === 'first-half' || document.getElementById('first-half-fouls-section') === null) {
+                            setTimeout(showFirstHalfFouls, 500);
+                        }
+                    }
+                    
+                    if (currentMatchState === 'finished') {
+                        // Show second half fouls when match ends
+                        setTimeout(showSecondHalfFouls, 1000);
+                    }
+                }
+            });
+        }
+
+        function setupPlayerSelectionListener() {
+            if (!currentMatchId) return;
+            
+            database.ref(`matchPlayerSelections/${currentMatchId}`).on('value', snapshot => {
+                const selectionData = snapshot.val();
+                if (selectionData) {
+                    console.log('Player selections updated from database:', selectionData);
+                    
+                    // Update local state without triggering save
+                    const previousTeam1 = new Set(selectedPlayers.team1);
+                    const previousTeam2 = new Set(selectedPlayers.team2);
+                    
+                    selectedPlayers.team1.clear();
+                    selectedPlayers.team2.clear();
+                    
+                    // Update team1 selections
+                    if (selectionData.team1) {
+                        selectionData.team1.forEach(playerId => {
+                            selectedPlayers.team1.add(playerId);
+                        });
+                    }
+                    
+                    // Update team2 selections
+                    if (selectionData.team2) {
+                        selectionData.team2.forEach(playerId => {
+                            selectedPlayers.team2.add(playerId);
+                        });
+                    }
+                    
+                    // Update UI for team1
+                    const team1Checkboxes = document.querySelectorAll('input[data-team="team1"].player-checkbox');
+                    team1Checkboxes.forEach(checkbox => {
+                        const personKey = checkbox.dataset.person;
+                        const playerId = `team1-${personKey}`;
+                        const shouldBeChecked = selectedPlayers.team1.has(playerId);
+                        
+                        if (checkbox.checked !== shouldBeChecked) {
+                            checkbox.checked = shouldBeChecked;
+                            if (shouldBeChecked) {
+                                checkbox.closest('.player-row').classList.add('selected');
+                            } else {
+                                checkbox.closest('.player-row').classList.remove('selected');
+                            }
+                        }
+                    });
+                    
+                    // Update UI for team2
+                    const team2Checkboxes = document.querySelectorAll('input[data-team="team2"].player-checkbox');
+                    team2Checkboxes.forEach(checkbox => {
+                        const personKey = checkbox.dataset.person;
+                        const playerId = `team2-${personKey}`;
+                        const shouldBeChecked = selectedPlayers.team2.has(playerId);
+                        
+                        if (checkbox.checked !== shouldBeChecked) {
+                            checkbox.checked = shouldBeChecked;
+                            if (shouldBeChecked) {
+                                checkbox.closest('.player-row').classList.add('selected');
+                            } else {
+                                checkbox.closest('.player-row').classList.remove('selected');
+                            }
+                        }
+                    });
+                    
+                    // Update counters
+                    updateSelectionCounter('team1');
+                    updateSelectionCounter('team2');
+                }
+            });
+        }
+
+        // Clear all player selections for a team
+        function clearTeamSelections(teamKey) {
+            if (!selectedPlayers[teamKey]) return;
+            
+            // Clear from database
+            selectedPlayers[teamKey].clear();
+            savePlayerSelectionToDatabase();
+            
+            // Clear UI
+            const checkboxes = document.querySelectorAll(`input[data-team="${teamKey}"].player-checkbox`);
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.closest('.player-row').classList.remove('selected');
+            });
+            
+            updateSelectionCounter(teamKey);
+            console.log(`Cleared all selections for ${teamKey}`);
+        }
+
+        // Clear all player selections for both teams
+        function clearAllSelections() {
+            clearTeamSelections('team1');
+            clearTeamSelections('team2');
+            console.log('Cleared all player selections');
         }
 
         function updateSelectionCounter(teamKey) {
@@ -2018,7 +2477,7 @@
             if (counterElement) {
                 counterElement.innerHTML = `
                     <span class="counter-text">Selected: ${count}/${maxCount}</span>
-                    ${count > 0 ? `<button onclick="clearTeamSelection('${teamKey}')" class="clear-selection-btn">Clear All</button>` : ''}
+                    ${count > 0 ? `<button onclick="clearTeamSelections('${teamKey}')" class="clear-selection-btn">Clear All</button>` : ''}
                 `;
                 
                 // Add warning style if at limit
@@ -2030,23 +2489,6 @@
             }
         }
 
-        function clearTeamSelection(teamKey) {
-            // Uncheck all checkboxes for this team
-            const checkboxes = document.querySelectorAll(`input[data-team="${teamKey}"].player-checkbox`);
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                checkbox.closest('.player-row').classList.remove('selected');
-            });
-            
-            // Clear the selected players set
-            selectedPlayers[teamKey].clear();
-            
-            // Update counter
-            updateSelectionCounter(teamKey);
-            
-            console.log(`Cleared all selections for ${teamKey}`);
-        }
-
         function getSelectedPlayers(teamKey = null) {
             if (teamKey) {
                 return Array.from(selectedPlayers[teamKey]);
@@ -2056,6 +2498,45 @@
                 team2: Array.from(selectedPlayers.team2)
             };
         }
+
+        // Get selected players with their details for display/export
+        function getSelectedPlayersDetails() {
+            const details = {
+                team1: [],
+                team2: []
+            };
+
+            ['team1', 'team2'].forEach(teamKey => {
+                selectedPlayers[teamKey].forEach(playerId => {
+                    const personKey = playerId.split('-').slice(1).join('-');
+                    const checkbox = document.querySelector(`input[data-team="${teamKey}"][data-person="${personKey}"]`);
+                    if (checkbox) {
+                        details[teamKey].push({
+                            playerId: playerId,
+                            personKey: personKey,
+                            name: checkbox.dataset.playerName,
+                            jersey: checkbox.dataset.jersey
+                        });
+                    }
+                });
+            });
+
+            return details;
+        }
+
+        // Debug function to show selected players in console
+        function showSelectedPlayersInConsole() {
+            const details = getSelectedPlayersDetails();
+            console.log('=== SELECTED PLAYERS ===');
+            console.log('Team 1:', details.team1);
+            console.log('Team 2:', details.team2);
+            console.log('Total Team 1:', details.team1.length);
+            console.log('Total Team 2:', details.team2.length);
+            return details;
+        }
+
+        // Make debug function available globally for console access
+        window.showSelectedPlayers = showSelectedPlayersInConsole;
 
         // Timeout Management Functions
 
@@ -2367,6 +2848,12 @@
             const team1Name = team1Data ? team1Data.name : matchData.teams[0];
             const team2Name = team2Data ? team2Data.name : matchData.teams[1];
             
+            // Debug match number calculation
+            console.log('Match ID:', currentMatchId);
+            console.log('Calculated match number:', matchData.matchNumber);
+            console.log('Match teams:', matchData.teams);
+            console.log('Match time:', matchData.time);
+            
             document.getElementById('match-title').textContent = `Match ${matchData.matchNumber}`;
             document.getElementById('match-info').textContent = `${team1Name} vs ${team2Name} • ${matchData.date} • ${matchData.time} • ${matchData.type}`;
 
@@ -2425,35 +2912,121 @@
         };
 
         function getMatchNumber(matchId) {
-            let matchNumber = 1;
+            let matchCounter = 1;
             
             // Parse the match ID to get teams and time
             const parts = matchId.split('-');
-            if (parts.length < 3) return matchNumber;
+            if (parts.length < 3) {
+                console.log('Invalid match ID format:', matchId);
+                return 1;
+            }
             
             const teamsStr = parts[1];
             const timeStr = parts[2];
             const teamsMatch = teamsStr.match(/^(.+)vs(.+)$/);
-            if (!teamsMatch) return matchNumber;
+            if (!teamsMatch) {
+                console.log('Could not parse teams from:', teamsStr);
+                return 1;
+            }
             
             const team1 = teamsMatch[1];
             const team2 = teamsMatch[2];
             const formattedTime = timeStr.replace(/(\d+)(\d{2})$/, '$1:$2');
             
-            // Search through the schedule to find this match
-            for (const date of Object.keys(matchSchedule)) {
-                for (const match of matchSchedule[date]) {
-                    if ((match.teams[0] === team1 && match.teams[1] === team2) ||
-                        (match.teams[0] === team2 && match.teams[1] === team1)) {
-                        if (match.time === formattedTime) {
-                            return matchNumber;
-                        }
-                    }
-                    matchNumber++;
+            console.log('Looking for match:', team1, 'vs', team2, 'at time:', formattedTime, '(from ID:', timeStr + ')');
+            const availableDates = Object.keys(matchSchedule);
+            console.log('Available schedule dates:', availableDates);
+            
+            // Check what matches are available for this date  
+            const parsedDate = parts[0]; // e.g., "october26"
+            console.log('Looking for date:', parsedDate);
+            
+            // Try different date format variations
+            const dateVariations = [
+                parsedDate,
+                parsedDate.toLowerCase(),
+                parsedDate.replace(/(\d+)/, ' $1'), // "october26" -> "october 26"
+                parsedDate.replace(/([a-z]+)(\d+)/, '$1 $2'), // "october26" -> "october 26"
+                parsedDate.replace(/([a-z]+)(\d+)/i, (match, month, day) => 
+                    month.charAt(0).toUpperCase() + month.slice(1) + ' ' + day) // "october26" -> "October 26"
+            ];
+            
+            let foundDate = null;
+            let foundMatches = null;
+            
+            for (const dateVar of dateVariations) {
+                if (matchSchedule[dateVar]) {
+                    foundDate = dateVar;
+                    foundMatches = matchSchedule[dateVar];
+                    console.log('Found matches for date variation "' + dateVar + '":', foundMatches.map(m => `${m.teams[0]} vs ${m.teams[1]} at ${m.time}`));
+                    break;
                 }
             }
             
-            return matchNumber;
+            if (!foundDate) {
+                console.log('No matches found for any date variation of:', parsedDate);
+                console.log('Available dates are:', availableDates);
+                console.log('Trying to match against first available date as fallback...');
+                
+                // Try to find the match in any available date as a fallback
+                for (const date of availableDates) {
+                    const matchesForDate = matchSchedule[date];
+                    console.log(`Checking date "${date}" with ${matchesForDate.length} matches`);
+                    
+                    for (const match of matchesForDate) {
+                        if ((match.teams[0] === team1 && match.teams[1] === team2) ||
+                            (match.teams[0] === team2 && match.teams[1] === team1)) {
+                            console.log(`Found matching teams on different date: "${date}" - ${match.teams[0]} vs ${match.teams[1]} at ${match.time}`);
+                            foundDate = date;
+                            foundMatches = [match];
+                            break;
+                        }
+                    }
+                    if (foundDate) break;
+                }
+            }
+            
+            // Iterate through schedule in exact same order as management page
+            for (const date of Object.keys(matchSchedule)) {
+                for (const match of matchSchedule[date]) {
+                    // Check if this is the match we're looking for
+                    if ((match.teams[0] === team1 && match.teams[1] === team2) ||
+                        (match.teams[0] === team2 && match.teams[1] === team1)) {
+                        
+                        // Try multiple time format matches
+                        const scheduleTimeFormatted = match.time.replace(/[^0-9]/g, ''); // Remove all non-digits
+                        const matchIdTimeFormatted = timeStr; // Already just digits
+                        
+                        console.log(`Match ${matchCounter}: Found teams match! Time check:`, {
+                            scheduleTime: match.time,
+                            scheduleNumbers: scheduleTimeFormatted,
+                            idNumbers: matchIdTimeFormatted,
+                            directMatch: match.time === formattedTime,
+                            numericMatch: scheduleTimeFormatted === matchIdTimeFormatted
+                        });
+                        
+                        if (match.time === formattedTime || scheduleTimeFormatted === matchIdTimeFormatted) {
+                            console.log('✅ Found match at position:', matchCounter);
+                            return matchCounter;
+                        } else {
+                            console.log('❌ Teams match but time doesn\'t. Expected:', formattedTime, 'or', matchIdTimeFormatted, 'but got:', match.time, 'or', scheduleTimeFormatted);
+                        }
+                    }
+                    // Increment counter for next match (same as management page logic)
+                    matchCounter++;
+                }
+            }
+            
+            console.log('⚠️ Match not found in schedule! Returning fallback number 1');
+            console.log('Summary: Looking for', team1, 'vs', team2, 'at', formattedTime, 'but no exact match found in schedule');
+            console.log('💡 This might be due to:');
+            console.log('  - Date format mismatch (looking for "october26" but schedule has "October 26")');
+            console.log('  - Time format mismatch (looking for "4:00" but schedule has "8:15 PM")'); 
+            console.log('  - Match doesn\'t exist in current schedule');
+            console.log('  - Teams or match ID generated incorrectly');
+            
+            // If not found, return 1 as fallback
+            return 1;
         }
 
         function parseMatchId(matchId) {
@@ -2940,6 +3513,10 @@
             
             if (team1ScoreElement) team1ScoreElement.textContent = team1Goals;
             if (team2ScoreElement) team2ScoreElement.textContent = team2Goals;
+            
+            // Update match scores and calculate half scores
+            matchScores.current = { team1: team1Goals, team2: team2Goals };
+            calculateScoresByHalf();
         }
 
         function adjustFouls(teamKey, change) {
@@ -3003,6 +3580,13 @@
             
             if (team1FirstHalfElement) team1FirstHalfElement.textContent = matchFouls.firstHalf.team1 || 0;
             if (team2FirstHalfElement) team2FirstHalfElement.textContent = matchFouls.firstHalf.team2 || 0;
+            
+            // Update second half fouls display if they exist
+            const team1SecondHalfElement = document.getElementById('second-half-fouls-team1');
+            const team2SecondHalfElement = document.getElementById('second-half-fouls-team2');
+            
+            if (team1SecondHalfElement) team1SecondHalfElement.textContent = matchFouls.secondHalf.team1 || 0;
+            if (team2SecondHalfElement) team2SecondHalfElement.textContent = matchFouls.secondHalf.team2 || 0;
             
             console.log('Updated displays - Team 1:', team1FoulElement?.textContent, 'Team 2:', team2FoulElement?.textContent);
         }
@@ -3908,6 +4492,127 @@
             return { team1: team1Goals, team2: team2Goals };
         }
 
+        // Calculate scores by half based on match events and their timestamps
+        function calculateScoresByHalf() {
+            let firstHalfScores = { team1: 0, team2: 0 };
+            let secondHalfScores = { team1: 0, team2: 0 };
+            
+            // Get match state transitions to determine when second half started
+            database.ref(`matchState/${currentMatchId}`).once('value').then(snapshot => {
+                const stateData = snapshot.val();
+                let secondHalfStartTime = null;
+                
+                // If we have state data, we can determine timing, otherwise count all as current half
+                if (stateData && currentMatchState === 'second-half') {
+                    // For now, use a simple approach: if match is in second half, 
+                    // assume first half scores are saved and current events are second half
+                    firstHalfScores = { ...matchScores.firstHalf };
+                }
+                
+                // Count current events
+                let currentGoals = { team1: 0, team2: 0 };
+                Object.keys(matchEvents).forEach(eventKey => {
+                    const event = matchEvents[eventKey];
+                    const isTeam1 = event.teamKey === 'team1';
+                    
+                    if (event.eventType === 'goal') {
+                        if (isTeam1) currentGoals.team1++;
+                        else currentGoals.team2++;
+                    } else if (event.eventType === 'own-goal') {
+                        if (isTeam1) currentGoals.team2++;
+                        else currentGoals.team1++;
+                    }
+                });
+                
+                if (currentMatchState === 'first-half' || currentMatchState === 'not-started') {
+                    // All current goals are first half goals
+                    firstHalfScores = currentGoals;
+                    secondHalfScores = { team1: 0, team2: 0 };
+                } else if (currentMatchState === 'second-half') {
+                    // Current goals minus saved first half = second half goals
+                    secondHalfScores = {
+                        team1: Math.max(0, currentGoals.team1 - firstHalfScores.team1),
+                        team2: Math.max(0, currentGoals.team2 - firstHalfScores.team2)
+                    };
+                } else if (currentMatchState === 'finished') {
+                    // Use saved values if available
+                    secondHalfScores = {
+                        team1: Math.max(0, currentGoals.team1 - firstHalfScores.team1),
+                        team2: Math.max(0, currentGoals.team2 - firstHalfScores.team2)
+                    };
+                }
+                
+                // Update match scores
+                matchScores.firstHalf = firstHalfScores;
+                matchScores.secondHalf = secondHalfScores;
+                matchScores.current = currentGoals;
+                
+                // Update display
+                updateHalfScoresDisplay();
+            });
+            
+            return {
+                firstHalf: firstHalfScores,
+                secondHalf: secondHalfScores,
+                total: {
+                    team1: firstHalfScores.team1 + secondHalfScores.team1,
+                    team2: firstHalfScores.team2 + secondHalfScores.team2
+                }
+            };
+        }
+
+        // Save first half scores when transitioning to half-time
+        function saveFirstHalfScores() {
+            const currentScores = calculateCurrentScores();
+            matchScores.firstHalf = { ...currentScores };
+            
+            // Save to database
+            database.ref(`matchScores/${currentMatchId}/firstHalf`).set(matchScores.firstHalf)
+                .then(() => {
+                    console.log('First half scores saved:', matchScores.firstHalf);
+                    updateHalfScoresDisplay();
+                })
+                .catch(error => {
+                    console.error('Error saving first half scores:', error);
+                });
+        }
+
+        // Update the display for half scores
+        function updateHalfScoresDisplay() {
+            const container = document.getElementById('half-scores-container');
+            const firstHalfElement = document.getElementById('first-half-scores');
+            const secondHalfElement = document.getElementById('second-half-scores');
+            
+            // Show container when we have half-time data
+            if (container && (currentMatchState === 'half-time' || currentMatchState === 'second-half' || currentMatchState === 'finished')) {
+                container.style.display = 'block';
+            }
+            
+            if (firstHalfElement && (currentMatchState === 'half-time' || currentMatchState === 'second-half' || currentMatchState === 'finished')) {
+                firstHalfElement.innerHTML = `
+                    <div class="half-score-label">1st Half</div>
+                    <div class="half-score-values">
+                        <span class="team1-half-score">${matchScores.firstHalf.team1}</span>
+                        <span class="score-separator">-</span>
+                        <span class="team2-half-score">${matchScores.firstHalf.team2}</span>
+                    </div>
+                `;
+                firstHalfElement.style.display = 'block';
+            }
+            
+            if (secondHalfElement && (currentMatchState === 'second-half' || currentMatchState === 'finished')) {
+                secondHalfElement.innerHTML = `
+                    <div class="half-score-label">2nd Half</div>
+                    <div class="half-score-values">
+                        <span class="team1-half-score">${matchScores.secondHalf.team1}</span>
+                        <span class="score-separator">-</span>
+                        <span class="team2-half-score">${matchScores.secondHalf.team2}</span>
+                    </div>
+                `;
+                secondHalfElement.style.display = 'block';
+            }
+        }
+
         function generateMatchSheetLayout(doc, matchData, team1Data, team2Data, refereeData, team1Score, team2Score) {
             // Page dimensions
             const pageWidth = 297; // A4 landscape width
@@ -3960,11 +4665,29 @@
             doc.text('1st Half', 72, 42);
             doc.text('2nd Half', 87, 42);
             
+            // Add first half score for team1
+            if (matchScores.firstHalf.team1 !== undefined) {
+                doc.text(matchScores.firstHalf.team1.toString(), 76, 50);
+            }
+            // Add second half score for team1
+            if (matchScores.secondHalf.team1 !== undefined) {
+                doc.text(matchScores.secondHalf.team1.toString(), 91, 50);
+            }
+            
             // Right team halves  
             doc.rect(160, 45, 15, 8);
             doc.rect(175, 45, 15, 8);
             doc.text('1st Half', 162, 42);
             doc.text('2nd Half', 177, 42);
+            
+            // Add first half score for team2
+            if (matchScores.firstHalf.team2 !== undefined) {
+                doc.text(matchScores.firstHalf.team2.toString(), 166, 50);
+            }
+            // Add second half score for team2
+            if (matchScores.secondHalf.team2 !== undefined) {
+                doc.text(matchScores.secondHalf.team2.toString(), 181, 50);
+            }
             
             // Referee information
             doc.setFontSize(10);
@@ -4040,9 +4763,18 @@
                         const truncatedName = playerName.length > 15 ? playerName.substring(0, 15) + '...' : playerName;
                         doc.text(truncatedName, startX + 22, y);
                         
+                        // Check if this player is selected for playing (P column)
+                        const teamKey = side === 'left' ? 'team1' : 'team2';
+                        const playerKey = `player-${index}`; // Match the format used in createPlayerRow
+                        const playerId = `${teamKey}-${playerKey}`;
+                        
+                        if (selectedPlayers[teamKey] && selectedPlayers[teamKey].has(playerId)) {
+                            doc.text('P', startX + 42, y);
+                        }
+                        
                         // Add checkmarks for captain (C) if applicable
                         if (typeof player === 'object' && player.captain) {
-                            doc.text('C', startX + 42, y);
+                            doc.text('C', startX + 62, y);
                         }
                     });
                 }
@@ -4171,6 +4903,11 @@
             if (newState === 'half-time') {
                 saveFirstHalfFoulsAndReset();
             }
+            
+            // Handle special logic for match end
+            if (newState === 'finished') {
+                saveSecondHalfFoulsAndScores();
+            }
 
             database.ref(`matchState/${currentMatchId}`).set(stateData)
                 .then(() => {
@@ -4193,6 +4930,9 @@
             matchFouls.firstHalf = validateFouls(matchFouls.current);
 
             console.log('First half fouls to save:', matchFouls.firstHalf);
+
+            // Save current scores as first half scores
+            saveFirstHalfScores();
 
             // IMPORTANT: Reset current fouls to 0 for second half (fresh start)
             // Second half fouls are counted completely separately and never added to first half
@@ -4252,6 +4992,95 @@
             
             // Update the display
             updateFoulDisplays();
+        }
+
+        // Save second half fouls and scores when match ends
+        function saveSecondHalfFoulsAndScores() {
+            console.log('saveSecondHalfFoulsAndScores called');
+            
+            // Save current fouls as second half fouls
+            matchFouls.secondHalf = validateFouls(matchFouls.current);
+            
+            // Calculate and save second half scores
+            const currentScores = calculateCurrentScores();
+            matchScores.secondHalf = {
+                team1: Math.max(0, currentScores.team1 - matchScores.firstHalf.team1),
+                team2: Math.max(0, currentScores.team2 - matchScores.firstHalf.team2)
+            };
+            
+            // Save to database
+            const updates = {};
+            updates[`matchFouls/${currentMatchId}/secondHalf`] = validateFouls(matchFouls.secondHalf);
+            updates[`matchScores/${currentMatchId}/secondHalf`] = matchScores.secondHalf;
+            
+            database.ref().update(updates)
+                .then(() => {
+                    console.log('Second half fouls and scores saved');
+                    showSecondHalfFouls();
+                    updateHalfScoresDisplay();
+                })
+                .catch(error => {
+                    console.error('Error saving second half data:', error);
+                });
+        }
+
+        function showSecondHalfFouls() {
+            // Show second half fouls in the interface
+            const firstHalfSection = document.getElementById('first-half-fouls-section');
+            
+            // Check if second half display already exists
+            if (!document.getElementById('second-half-fouls-section') && firstHalfSection) {
+                const secondHalfSection = document.createElement('div');
+                secondHalfSection.id = 'second-half-fouls-section';
+                secondHalfSection.className = 'first-half-fouls-section'; // Reuse same styles
+                secondHalfSection.innerHTML = `
+                    <div class="first-half-header">
+                        <div class="first-half-title">SECOND HALF FOULS (FINAL)</div>
+                        <div class="first-half-subtitle">Match completed fouls for second half</div>
+                    </div>
+                    <div class="first-half-layout">
+                        <div class="first-half-team team1">
+                            <span class="first-half-team-name" id="second-half-team1-name">Team 1</span>
+                            <span class="first-half-foul-count" id="second-half-fouls-team1">0</span>
+                        </div>
+                        <div class="first-half-divider">|</div>
+                        <div class="first-half-team team2">
+                            <span class="first-half-team-name" id="second-half-team2-name">Team 2</span>
+                            <span class="first-half-foul-count" id="second-half-fouls-team2">0</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert after the first half fouls section
+                firstHalfSection.parentNode.insertBefore(secondHalfSection, firstHalfSection.nextSibling);
+                
+                // Update team names and fouls
+                updateSecondHalfTeamNames();
+                updateSecondHalfFoulDisplay();
+            }
+        }
+
+        function updateSecondHalfTeamNames() {
+            const matchData = parseMatchId(currentMatchId);
+            const team1Data = getTeamData(matchData.teams[0]);
+            const team2Data = getTeamData(matchData.teams[1]);
+
+            const team1Name = team1Data ? team1Data.name : matchData.teams[0];
+            const team2Name = team2Data ? team2Data.name : matchData.teams[1];
+
+            const team1NameElement = document.getElementById('second-half-team1-name');
+            const team2NameElement = document.getElementById('second-half-team2-name');
+            
+            if (team1NameElement) team1NameElement.textContent = team1Name;
+            if (team2NameElement) team2NameElement.textContent = team2Name;
+        }
+
+        function updateSecondHalfFoulDisplay() {
+            const team1FoulElement = document.getElementById('second-half-fouls-team1');
+            const team2FoulElement = document.getElementById('second-half-fouls-team2');
+            
+            if (team1FoulElement) team1FoulElement.textContent = matchFouls.secondHalf.team1;
+            if (team2FoulElement) team2FoulElement.textContent = matchFouls.secondHalf.team2;
         }
 
         function updateFirstHalfTeamNames() {
@@ -4365,6 +5194,14 @@
             // Give time for all elements to be loaded
             setTimeout(initializeMatchControl, 2000); // Wait for Firebase and DOM to initialize
             
+            // Load player selections and match scores from database and setup real-time listeners
+            setTimeout(() => {
+                loadPlayerSelectionFromDatabase();
+                loadMatchScoresFromDatabase();
+                setupPlayerSelectionListener();
+                setupMatchStateListener();
+            }, 2500);
+            
             // Fallback: Update foul button states after a short delay
             setTimeout(() => {
                 updateFoulButtonStates();
@@ -4381,6 +5218,845 @@
                         console.log('Match Detail SW registration failed: ', err);
                     });
             });
+        }
+
+        // Print Match Summary Function
+        async function printMatchSummary() {
+            try {
+                // Store original title
+                const originalTitle = document.title;
+                
+                // Get match info for the title with null checks
+                const matchTitleElement = document.getElementById('match-title');
+                const matchInfoElement = document.getElementById('match-info');
+                const matchTitle = matchTitleElement ? matchTitleElement.textContent : 'Match Details';
+                const matchInfo = matchInfoElement ? matchInfoElement.textContent : 'Tournament Match';
+            
+            // Set document title for print
+            document.title = `${matchTitle} - FMSC 2025`;
+            
+            // Add print-specific content
+            const printHeader = document.createElement('div');
+            printHeader.id = 'print-header';
+            printHeader.style.cssText = 'display: none; position: static; visibility: hidden; z-index: 10000;';
+            printHeader.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="margin: 0; font-size: 20pt; color: black;">FMSC 2025 - FUTSAL TOURNAMENT</h1>
+                    <h2 style="margin: 10px 0; font-size: 16pt; color: black;">${matchTitle}</h2>
+                    <p style="margin: 0; font-size: 12pt; color: black;">${matchInfo}</p>
+                    <hr style="border: 1px solid black; margin: 15px 0;">
+                </div>
+            `;
+            
+            // Add match summary section
+            const matchSummary = document.createElement('div');
+            matchSummary.id = 'match-summary';
+            matchSummary.style.cssText = 'display: none; position: static; visibility: hidden; z-index: 10000;';
+            
+            // Generate HTML async and then set innerHTML
+            console.log('Generating match summary HTML...');
+            const summaryHTML = await generateMatchSummaryHTML();
+            matchSummary.innerHTML = summaryHTML;
+            console.log('Match summary HTML generated successfully');
+            
+            // Add print footer
+            const printFooter = document.createElement('div');
+            printFooter.id = 'print-footer';
+            printFooter.style.cssText = 'display: none; position: static; visibility: hidden; z-index: 10000;';
+            printFooter.innerHTML = `
+                <div style="margin-top: 20px; border-top: 1px solid black; padding-top: 10px; text-align: center;">
+                    <p style="margin: 0; font-size: 8pt; color: black;">
+                        Generated on ${new Date().toLocaleString()} | FMSC 2025 Tournament Management System
+                    </p>
+                </div>
+            `;
+            
+            // Insert print elements
+            document.body.insertBefore(printHeader, document.body.firstChild);
+            document.body.appendChild(matchSummary);
+            document.body.appendChild(printFooter);
+            
+            // Show print elements only during print
+            const printElements = [printHeader, matchSummary, printFooter];
+            
+            // Print event listeners
+            const beforePrint = () => {
+                // Show print elements
+                printElements.forEach(el => {
+                    el.style.display = 'block';
+                    el.style.visibility = 'visible';
+                });
+                
+                // Hide all other content
+                const allElements = document.body.children;
+                for (let i = 0; i < allElements.length; i++) {
+                    const element = allElements[i];
+                    if (!printElements.includes(element)) {
+                        element.style.display = 'none';
+                        element.setAttribute('data-hidden-for-print', 'true');
+                    }
+                }
+                
+                document.body.style.overflow = 'visible';
+            };
+            
+            const afterPrint = () => {
+                // Hide print elements
+                printElements.forEach(el => {
+                    el.style.display = 'none';
+                    el.style.visibility = 'hidden';
+                });
+                
+                // Restore all other content
+                const hiddenElements = document.querySelectorAll('[data-hidden-for-print="true"]');
+                hiddenElements.forEach(element => {
+                    element.style.display = '';
+                    element.removeAttribute('data-hidden-for-print');
+                });
+                
+                document.body.style.overflow = '';
+                document.title = originalTitle;
+                
+                // Clean up print elements
+                setTimeout(() => {
+                    printElements.forEach(el => {
+                        if (el.parentNode) {
+                            el.parentNode.removeChild(el);
+                        }
+                    });
+                }, 100);
+            };
+            
+            // Add event listeners
+            window.addEventListener('beforeprint', beforePrint);
+            window.addEventListener('afterprint', afterPrint);
+            
+            // Trigger print
+            setTimeout(() => {
+                window.print();
+                
+                // Clean up event listeners
+                setTimeout(() => {
+                    window.removeEventListener('beforeprint', beforePrint);
+                    window.removeEventListener('afterprint', afterPrint);
+                }, 500);
+            }, 100);
+            
+            } catch (error) {
+                console.error('Error in print function:', error);
+                alert('There was an error generating the print summary. Please check the console for details.');
+            }
+        }
+
+        async function generateMatchSummaryHTML() {
+            try {
+            // Get match info from Firebase
+            const matchInfo = await getMatchInfoFromFirebase();
+            
+            // Check if match info was retrieved successfully
+            if (!matchInfo) {
+                console.error('Could not retrieve match info from Firebase');
+                return '<div style="text-align: center; padding: 50px;">Error: Could not load match information</div>';
+            }
+            
+            // Get player data for tables from Firebase
+            const playersData = await getPlayersTableData();
+            console.log('Players data for print:', playersData);
+            console.log('Team 1 players count:', playersData?.team1?.length || 0);
+            console.log('Team 2 players count:', playersData?.team2?.length || 0);
+            console.log('Sample team 1 player:', playersData?.team1?.[0]);
+            console.log('Sample team 2 player:', playersData?.team2?.[0]);
+            
+            // Full team names are already set in matchInfo from getMatchInfoFromFirebase
+            
+            return `
+                <div style="width: 100%; font-family: Arial, sans-serif; font-size: 6pt; margin: 0; padding: 0;">
+                    <!-- Match Header -->
+                    <div style="text-align: center; margin-bottom: 4px;">
+                        <p style="margin: 1px 0; font-size: 8pt; font-weight: bold;">${matchInfo.team1FullName} vs ${matchInfo.team2FullName}</p>
+                        <p style="margin: 0; font-size: 6pt;">Match #${matchInfo.matchNumber} | ${matchInfo.date} | ${matchInfo.time} ${matchInfo.manOfTheMatch ? `| MOTM: ${matchInfo.manOfTheMatch}` : '| MOTM: Not Set'}</p>
+                    </div>
+                    
+                    <!-- Match Officials -->
+                    <div style="margin-bottom: 3px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 5pt;">
+                            <tr>
+                                <th style="border: 1px solid black; padding: 1px; background: #f0f0f0; width: 12%;">Officials</th>
+                                <td style="border: 1px solid black; padding: 1px;">R1: ${matchInfo.referees?.referee1?.name || '____________'}</td>
+                                <td style="border: 1px solid black; padding: 1px;">R2: ${matchInfo.referees?.referee2?.name || '____________'}</td>
+                                <td style="border: 1px solid black; padding: 1px;">R3: ${matchInfo.referees?.referee3?.name || '____________'}</td>
+                                <td style="border: 1px solid black; padding: 1px;">Match Official: ${matchInfo.referees?.matchOfficial?.name || '____________'}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <!-- Score and Fouls Table -->
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 5pt;">
+                        <tr>
+                            <th style="border: 1px solid black; padding: 1px; background: #f0f0f0; text-align: center; font-size: 5pt;">Team</th>
+                            <th style="border: 1px solid black; padding: 1px; background: #f0f0f0; text-align: center; font-size: 5pt;">Score</th>
+                            <th style="border: 1px solid black; padding: 1px; background: #f0f0f0; text-align: center; font-size: 5pt;">1st Half</th>
+                            <th style="border: 1px solid black; padding: 1px; background: #f0f0f0; text-align: center; font-size: 5pt;">2nd Half</th>
+                            <th style="border: 1px solid black; padding: 1px; background: #f0f0f0; text-align: center; font-size: 5pt;">1st H Fouls</th>
+                            <th style="border: 1px solid black; padding: 1px; background: #f0f0f0; text-align: center; font-size: 5pt;">2nd H Fouls</th>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 1px; font-weight: bold; font-size: 5pt;">${matchInfo.team1FullName}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 8pt; font-weight: bold;">${matchInfo.team1Score}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team1FirstHalf}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team1SecondHalf}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team1FirstHalfFouls}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team1SecondHalfFouls}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid black; padding: 1px; font-weight: bold; font-size: 5pt;">${matchInfo.team2FullName}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 8pt; font-weight: bold;">${matchInfo.team2Score}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team2FirstHalf}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team2SecondHalf}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team2FirstHalfFouls}</td>
+                            <td style="border: 1px solid black; padding: 1px; text-align: center; font-size: 5pt;">${matchInfo.team2SecondHalfFouls}</td>
+                        </tr>
+                    </table>
+                    
+                    <!-- Players Tables Side by Side -->
+                    <div style="display: flex; gap: 4px; width: 100%; margin-bottom: 4px;">
+                        ${generatePlayerTable(matchInfo.team1FullName, playersData.team1)}
+                        ${generatePlayerTable(matchInfo.team2FullName, playersData.team2)}
+                    </div>
+                    
+                    <!-- Signatures -->
+                    <div style="margin-top: 2px; display: flex; gap: 8px;">
+                        <div style="flex: 1; border: 1px solid black; padding: 2px; min-height: 18px;">
+                            <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 4pt;">${matchInfo.team1FullName} Captain:</p>
+                            <div style="border-top: 1px solid black; text-align: center; padding-top: 1px; font-size: 4pt;">Signature</div>
+                        </div>
+                        <div style="flex: 1; border: 1px solid black; padding: 2px; min-height: 18px;">
+                            <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 4pt;">${matchInfo.team2FullName} Captain:</p>
+                            <div style="border-top: 1px solid black; text-align: center; padding-top: 1px; font-size: 4pt;">Signature</div>
+                        </div>
+                        <div style="flex: 1; border: 1px solid black; padding: 2px; min-height: 18px;">
+                            <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 4pt;">Match Official:</p>
+                            <div style="border-top: 1px solid black; text-align: center; padding-top: 1px; font-size: 4pt;">Signature</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Man of the Match -->
+                    ${matchInfo.manOfTheMatch ? `
+                    <div style="margin-top: 2px; border: 1px solid black; padding: 1px; text-align: center; background: #f9f9f9;">
+                        <p style="margin: 0; font-weight: bold; font-size: 5pt;">🏆 MAN OF THE MATCH 🏆</p>
+                        <p style="margin: 1px 0 0 0; font-size: 6pt; font-weight: bold;">${matchInfo.manOfTheMatch}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            } catch (error) {
+                console.error('Error generating match summary HTML:', error);
+                return '<div style="color: red; text-align: center; padding: 20px;"><h3>Error generating match summary</h3><p>Please check the console for details.</p></div>';
+            }
+        }
+
+        function generatePlayerTable(teamName, players) {
+            console.log('generatePlayerTable called for:', teamName, 'with players:', players);
+            console.log('Players type:', typeof players, 'Array?', Array.isArray(players), 'Length:', players?.length);
+            
+            if (!players || players.length === 0) {
+                console.log('No players found for team:', teamName);
+                return `
+                    <div style="flex: 1;">
+                        <h3 style="margin: 10px 0; font-size: 12pt; text-align: center;">${teamName}</h3>
+                        <p style="text-align: center; font-style: italic;">No player data available</p>
+                        <p style="text-align: center; font-size: 8pt; color: #666;">Debug: ${players ? 'Empty array' : 'Null/undefined'}</p>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div style="flex: 1;">
+                    <h3 style="margin: 1px 0; font-size: 6pt; text-align: center; font-weight: bold;">${teamName}</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 4pt;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; font-size: 4pt;">Name</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 15px; font-size: 4pt;">Jersey</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 8px; font-size: 4pt;">P</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 8px; font-size: 4pt;">Y1</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 8px; font-size: 4pt;">Y2</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 8px; font-size: 4pt;">R</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G1</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G2</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G3</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G4</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G5</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G6</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G7</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G8</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G9</th>
+                                <th style="border: 1px solid black; padding: 0.5px; background: #f0f0f0; width: 7px; font-size: 4pt;">G10</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${players.map(player => {
+                                console.log(`Rendering player ${player.name}: goals=${player.goals}, type=${typeof player.goals}`);
+                                const goalCells = Array.from({length: 10}, (_, i) => {
+                                    const hasGoal = player.goals > i;
+                                    console.log(`  Goal column ${i+1}: player.goals(${player.goals}) > ${i} = ${hasGoal}`);
+                                    return `<td style="border: 1px solid black; padding: 0.5px; text-align: center; font-size: 4pt;">${hasGoal ? '✓' : ''}</td>`;
+                                }).join('');
+                                
+                                return `
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 0.5px; font-size: 4pt;">${player.name}</td>
+                                    <td style="border: 1px solid black; padding: 0.5px; text-align: center; font-size: 4pt;">${player.jerseyNumber || ''}</td>
+                                    <td style="border: 1px solid black; padding: 0.5px; text-align: center; font-size: 4pt;">${player.isSelected ? '✓' : ''}</td>
+                                    <td style="border: 1px solid black; padding: 0.5px; text-align: center; font-size: 4pt;">${player.yellowCard1 ? '✓' : ''}</td>
+                                    <td style="border: 1px solid black; padding: 0.5px; text-align: center; font-size: 4pt;">${player.yellowCard2 ? '✓' : ''}</td>
+                                    <td style="border: 1px solid black; padding: 0.5px; text-align: center; font-size: 4pt;">${player.redCard ? '✓' : ''}</td>
+                                    ${goalCells}
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        async function getMatchInfoFromFirebase() {
+            console.log('Getting match info from Firebase...');
+            
+            try {
+                // Get match ID
+                const urlParams = new URLSearchParams(window.location.search);
+                const matchId = urlParams.get('match');
+                
+                if (!matchId) {
+                    console.error('No match ID found');
+                    return null;
+                }
+                
+                // Parse match to get team names
+                const matchData = parseMatchId(matchId);
+                if (!matchData) {
+                    console.error('Could not parse match ID');
+                    return null;
+                }
+                
+                const team1Name = matchData.teams[0];
+                const team2Name = matchData.teams[1];
+                
+                // Get actual team names from teamLists
+                let team1FullName = team1Name;
+                let team2FullName = team2Name;
+                
+                try {
+                    const teamListsSnapshot = await database.ref('teamLists').once('value');
+                    const teamLists = teamListsSnapshot.val() || {};
+                    
+                    console.log('Team mapping - looking for teams:', team1Name, team2Name);
+                    console.log('Available team data:', Object.keys(teamLists).length, 'teams');
+                    
+                    // Find actual team names
+                    for (const [submissionId, teamData] of Object.entries(teamLists)) {
+                        if (teamData && teamData.group === team1Name) {
+                            team1FullName = `${teamData.teamName} - ${team1Name}`;
+                            console.log('Found team1 mapping:', team1FullName);
+                        }
+                        if (teamData && teamData.group === team2Name) {
+                            team2FullName = `${teamData.teamName} - ${team2Name}`;
+                            console.log('Found team2 mapping:', team2FullName);
+                        }
+                    }
+                    
+                    console.log('Final team names:', { team1FullName, team2FullName });
+                } catch (error) {
+                    console.warn('Could not get team names from Firebase:', error);
+                }
+                
+                // Get match data from Firebase
+                const eventsSnapshot = await database.ref(`matchEvents/${matchId}`).once('value');
+                const matchEvents = eventsSnapshot.val() || {};
+                
+                // Get scores from Firebase
+                const scoresSnapshot = await database.ref(`matchScores/${matchId}`).once('value');
+                const matchScores = scoresSnapshot.val() || {};
+                
+                // Get goals from Firebase  
+                const goalsSnapshot = await database.ref(`matchGoals/${matchId}`).once('value');
+                const matchGoals = goalsSnapshot.val() || {};
+                
+                // Get fouls from Firebase - need to get all match fouls first
+                const allFoulsSnapshot = await database.ref('matchFouls').once('value');
+                const allMatchFouls = allFoulsSnapshot.val() || {};
+                
+                // Get referee info from Firebase
+                const refereesSnapshot = await database.ref(`referees/${matchId}`).once('value');
+                const referees = refereesSnapshot.val() || {};
+                
+                // Get man of the match from Firebase - correct path is matchMotm
+                console.log('Looking for MOTM with path:', `matchMotm/${matchId}`);
+                const motmSnapshot = await database.ref(`matchMotm/${matchId}`).once('value');
+                const manOfTheMatchData = motmSnapshot.val() || null;
+                console.log('Raw MOTM snapshot data:', manOfTheMatchData);
+                
+                // Extract player name from MOTM data
+                let manOfTheMatch = null;
+                if (manOfTheMatchData && manOfTheMatchData.playerName) {
+                    manOfTheMatch = manOfTheMatchData.playerName;
+                    console.log('Man of the Match:', manOfTheMatch, 'from team:', manOfTheMatchData.teamName);
+                } else {
+                    console.log('No Man of the Match data found for match:', matchId, 'Raw data:', manOfTheMatchData);
+                }
+                
+                // Extract fouls for this specific match
+                const matchFouls = allMatchFouls[matchId] || {};
+                
+                console.log('Firebase match data:', {
+                    matchEvents: Object.keys(matchEvents),
+                    matchScores: matchScores,
+                    matchGoals: matchGoals,
+                    allMatchFouls: Object.keys(allMatchFouls),
+                    matchFouls: matchFouls
+                });
+                
+                // Get scores - try multiple sources
+                let team1Score = matchScores?.team1 || 0;
+                let team2Score = matchScores?.team2 || 0;
+                
+                // If no scores in matchScores, try to get from DOM or calculate from goals
+                if (team1Score === 0 && team2Score === 0) {
+                    // Try to get from current DOM
+                    const team1ScoreElement = document.querySelector('#score-team1');
+                    const team2ScoreElement = document.querySelector('#score-team2');
+                    
+                    if (team1ScoreElement && team2ScoreElement) {
+                        team1Score = parseInt(team1ScoreElement.textContent) || 0;
+                        team2Score = parseInt(team2ScoreElement.textContent) || 0;
+                    }
+                }
+                
+                // Get fouls from the match-specific data
+                let team1Fouls = matchFouls?.current?.team1 || 0;
+                let team2Fouls = matchFouls?.current?.team2 || 0;
+                let team1FirstHalfFouls = matchFouls?.firstHalf?.team1 || 0;
+                let team2FirstHalfFouls = matchFouls?.firstHalf?.team2 || 0;
+                
+                // Calculate second half fouls
+                let team1SecondHalfFouls = team1Fouls - team1FirstHalfFouls;
+                let team2SecondHalfFouls = team2Fouls - team2FirstHalfFouls;
+                
+                console.log('Fouls calculated:', {
+                    team1: { total: team1Fouls, firstHalf: team1FirstHalfFouls, secondHalf: team1SecondHalfFouls },
+                    team2: { total: team2Fouls, firstHalf: team2FirstHalfFouls, secondHalf: team2SecondHalfFouls }
+                });
+                
+                console.log('Match info calculated:', {
+                    team1Name, team2Name, team1FullName, team2FullName, team1Score, team2Score, team1Fouls, team2Fouls
+                });
+                
+                // Prepare final result object with all match info including MOTM
+                return {
+                    team1Name,
+                    team2Name,
+                    team1FullName: team1FullName,
+                    team2FullName: team2FullName,
+                    team1Score: team1Score.toString(),
+                    team2Score: team2Score.toString(),
+                    team1Fouls: team1Fouls.toString(),
+                    team2Fouls: team2Fouls.toString(),
+                    team1FirstHalf: matchScores.firstHalf.team1.toString(),
+                    team1SecondHalf: matchScores.secondHalf.team1.toString(),
+                    team2FirstHalf: matchScores.firstHalf.team2.toString(),
+                    team2SecondHalf: matchScores.secondHalf.team2.toString(),
+                    team1FirstHalfFouls: team1FirstHalfFouls.toString(),
+                    team1SecondHalfFouls: team1SecondHalfFouls.toString(),
+                    team2FirstHalfFouls: team2FirstHalfFouls.toString(),
+                    team2SecondHalfFouls: team2SecondHalfFouls.toString(),
+                    matchNumber: matchData.matchNumber || '1',
+                    date: matchData.date || 'TBD',
+                    time: matchData.time || 'TBD',
+                    referees: referees,
+                    manOfTheMatch: manOfTheMatch
+                };
+                
+                console.log('Final match info - MOTM value:', manOfTheMatch);
+                
+            } catch (error) {
+                console.error('Error getting match info from Firebase:', error);
+                return null;
+            }
+        }
+
+        async function getPlayersTableData() {
+            console.log('Getting players table data from Firebase...');
+            
+            try {
+                // Get match ID
+                const urlParams = new URLSearchParams(window.location.search);
+                const matchId = urlParams.get('match');
+                
+                if (!matchId) {
+                    console.error('No match ID found');
+                    return { team1: [], team2: [] };
+                }
+                
+                console.log('Match ID:', matchId);
+                
+                // Parse match to get team names
+                const matchData = parseMatchId(matchId);
+                if (!matchData) {
+                    console.error('Could not parse match ID');
+                    return { team1: [], team2: [] };
+                }
+                
+                const team1Name = matchData.teams[0];
+                const team2Name = matchData.teams[1];
+                console.log('Team names from match:', team1Name, team2Name);
+                
+                // Get team lists from Firebase
+                const teamListsSnapshot = await database.ref('teamLists').once('value');
+                const teamLists = teamListsSnapshot.val() || {};
+                
+                // Get match events from Firebase
+                const eventsSnapshot = await database.ref(`matchEvents/${matchId}`).once('value');
+                const matchEvents = eventsSnapshot.val() || {};
+                
+                // Get selected players from Firebase
+                const playersSnapshot = await database.ref(`matchPlayers/${matchId}`).once('value');
+                const selectedPlayers = playersSnapshot.val() || {};
+                
+                console.log('Firebase data loaded:', {
+                    teamLists: Object.keys(teamLists),
+                    matchEvents: Object.keys(matchEvents),
+                    selectedPlayers: selectedPlayers
+                });
+                
+                // Debug: Show actual match events structure
+                console.log('Match events structure:', matchEvents);
+                console.log('Sample match event:', Object.entries(matchEvents)[0]);
+                
+                // Debug: Show ALL match event actions to see what we're working with
+                console.log('All match event actions:', Object.entries(matchEvents).map(([key, event]) => ({
+                    key: key,
+                    action: event.action,
+                    type: event.type || 'no type',
+                    eventType: event.eventType || 'no eventType'
+                })));
+                
+                // Get additional goal and score data
+                const goalsSnapshot = await database.ref(`matchGoals/${matchId}`).once('value');
+                const matchGoals = goalsSnapshot.val() || {};
+                console.log('Match goals data:', matchGoals);
+                
+                const scoresSnapshot = await database.ref(`matchScores/${matchId}`).once('value');
+                const matchScores = scoresSnapshot.val() || {};
+                console.log('Match scores data:', matchScores);
+                
+                // Find team data by team names
+                let team1Data = null;
+                let team2Data = null;
+                
+                for (const [submissionId, teamData] of Object.entries(teamLists)) {
+                    if (teamData.teamName === team1Name) {
+                        team1Data = teamData;
+                    } else if (teamData.teamName === team2Name) {
+                        team2Data = teamData;
+                    }
+                }
+                
+                // If no exact match, use the teams that have actual data (for demo/placeholder matches)
+                if (!team1Data || !team2Data) {
+                    console.log('No exact team name match. Available teams:', Object.values(teamLists).map(t => t.teamName));
+                    const availableTeams = Object.values(teamLists).filter(team => team.players && team.players.length > 0);
+                    
+                    if (!team1Data && availableTeams.length > 0) {
+                        team1Data = availableTeams[0];
+                        console.log('Using fallback team1:', team1Data.teamName);
+                    }
+                    if (!team2Data && availableTeams.length > 1) {
+                        team2Data = availableTeams[1];
+                        console.log('Using fallback team2:', team2Data.teamName);
+                    }
+                }
+                
+                console.log('Found team data:', {
+                    team1: team1Data ? team1Data.teamName : 'Not found',
+                    team2: team2Data ? team2Data.teamName : 'Not found'
+                });
+                
+                // Store actual team names for return
+                const team1ActualName = team1Data ? team1Data.teamName : null;
+                const team2ActualName = team2Data ? team2Data.teamName : null;
+                
+                // Process team 1 players
+                const team1Players = [];
+                if (team1Data && team1Data.players) {
+                    team1Data.players.forEach((player, index) => {
+                        const playerKey = `team1-player-${index}`;
+                        const isSelected = selectedPlayers[playerKey] > 0;
+                        
+                        // Get goals from matchGoals data
+                        let goals = 0;
+                        const playerGoalKey = `team1-player-${index}`;
+                        
+                        // Try multiple possible goal data sources
+                        if (matchGoals && matchGoals[playerGoalKey]) {
+                            goals = matchGoals[playerGoalKey];
+                            console.log(`Found goals for ${playerGoalKey}: ${goals}`);
+                        } else {
+                            // Try alternative goal tracking - count goal events
+                            for (const eventKey in matchEvents) {
+                                if (eventKey.startsWith(`team1-player-${index}-`)) {
+                                    const event = matchEvents[eventKey];
+                                    // Check multiple possible goal indicators
+                                    if (event && (
+                                        event.action === 'goal' || 
+                                        event.type === 'goal' || 
+                                        event.eventType === 'goal' ||
+                                        eventKey.includes('goal')
+                                    )) {
+                                        goals++;
+                                        console.log(`Found goal event for team1-player-${index}:`, event);
+                                    }
+                                }
+                            }
+                            if (goals > 0) {
+                                console.log(`Counted goals from events for team1-player-${index}: ${goals}`);
+                            }
+                        }
+                        
+                        // Get cards from match events
+                        let yellowCard1 = false;
+                        let yellowCard2 = false;
+                        let redCard = false;
+                        
+                        // Check all events for this player for cards
+                        const playerEvents = [];
+                        for (const eventKey in matchEvents) {
+                            if (eventKey.startsWith(`team1-player-${index}-`)) {
+                                const event = matchEvents[eventKey];
+                                playerEvents.push({key: eventKey, action: event.action});
+                                if (event.action === 'yellow') {
+                                    if (!yellowCard1) {
+                                        yellowCard1 = true;
+                                    } else {
+                                        yellowCard2 = true;
+                                    }
+                                } else if (event.action === 'red') {
+                                    redCard = true;
+                                }
+                            }
+                        }
+                        
+                        if (goals > 0 || playerEvents.length > 0) {
+                            console.log(`Team1 Player ${index} (${player.name}): Goals: ${goals}, Events:`, playerEvents);
+                        }
+                        
+                        team1Players.push({
+                            name: player.name || `Player ${index + 1}`,
+                            jerseyNumber: player.jerseyNumber || '',
+                            isSelected: isSelected,
+                            yellowCard1: yellowCard1,
+                            yellowCard2: yellowCard2,
+                            redCard: redCard,
+                            goals: goals
+                        });
+                    });
+                }
+                
+                // Process team 2 players
+                const team2Players = [];
+                if (team2Data && team2Data.players) {
+                    team2Data.players.forEach((player, index) => {
+                        const playerKey = `team2-player-${index}`;
+                        const isSelected = selectedPlayers[playerKey] > 0;
+                        
+                        // Get goals from matchGoals data
+                        let goals = 0;
+                        const playerGoalKey = `team2-player-${index}`;
+                        
+                        // Try multiple possible goal data sources
+                        if (matchGoals && matchGoals[playerGoalKey]) {
+                            goals = matchGoals[playerGoalKey];
+                            console.log(`Found goals for ${playerGoalKey}: ${goals}`);
+                        } else {
+                            // Try alternative goal tracking - count goal events
+                            for (const eventKey in matchEvents) {
+                                if (eventKey.startsWith(`team2-player-${index}-`)) {
+                                    const event = matchEvents[eventKey];
+                                    // Check multiple possible goal indicators
+                                    if (event && (
+                                        event.action === 'goal' || 
+                                        event.type === 'goal' || 
+                                        event.eventType === 'goal' ||
+                                        eventKey.includes('goal')
+                                    )) {
+                                        goals++;
+                                        console.log(`Found goal event for team2-player-${index}:`, event);
+                                    }
+                                }
+                            }
+                            if (goals > 0) {
+                                console.log(`Counted goals from events for team2-player-${index}: ${goals}`);
+                            }
+                        }
+                        
+                        // Get cards from match events
+                        let yellowCard1 = false;
+                        let yellowCard2 = false;
+                        let redCard = false;
+                        
+                        // Check all events for this player for cards
+                        const playerEvents = [];
+                        for (const eventKey in matchEvents) {
+                            if (eventKey.startsWith(`team2-player-${index}-`)) {
+                                const event = matchEvents[eventKey];
+                                playerEvents.push({key: eventKey, action: event.action});
+                                if (event.action === 'yellow') {
+                                    if (!yellowCard1) {
+                                        yellowCard1 = true;
+                                    } else {
+                                        yellowCard2 = true;
+                                    }
+                                } else if (event.action === 'red') {
+                                    redCard = true;
+                                }
+                            }
+                        }
+                        
+                        if (goals > 0 || playerEvents.length > 0) {
+                            console.log(`Team2 Player ${index} (${player.name}): Goals: ${goals}, Events:`, playerEvents);
+                        }
+                        
+                        team2Players.push({
+                            name: player.name || `Player ${index + 1}`,
+                            jerseyNumber: player.jerseyNumber || '',
+                            isSelected: isSelected,
+                            yellowCard1: yellowCard1,
+                            yellowCard2: yellowCard2,
+                            redCard: redCard,
+                            goals: goals
+                        });
+                    });
+                }
+                
+                console.log('Processed player data:', { 
+                    team1Count: team1Players.length, 
+                    team2Count: team2Players.length,
+                    team1Sample: team1Players[0],
+                    team2Sample: team2Players[0]
+                });
+                
+                // Log goal summary
+                const team1Goals = team1Players.filter(p => p.goals > 0);
+                const team2Goals = team2Players.filter(p => p.goals > 0);
+                console.log('Goal summary:', {
+                    team1GoalScorers: team1Goals.map(p => `${p.name}: ${p.goals} goals`),
+                    team2GoalScorers: team2Goals.map(p => `${p.name}: ${p.goals} goals`)
+                });
+                
+                // Debug: Show all players with their goal counts for table generation
+                console.log('All team1 players for table:', team1Players.map(p => ({
+                    name: p.name, 
+                    goals: p.goals,
+                    jerseyNumber: p.jerseyNumber
+                })));
+                console.log('All team2 players for table:', team2Players.map(p => ({
+                    name: p.name, 
+                    goals: p.goals,
+                    jerseyNumber: p.jerseyNumber
+                })));
+                
+                return { 
+                    team1: team1Players, 
+                    team2: team2Players,
+                    team1ActualName: team1ActualName,
+                    team2ActualName: team2ActualName
+                };
+                
+            } catch (error) {
+                console.error('Error getting player data from Firebase:', error);
+                return { team1: [], team2: [], team1ActualName: null, team2ActualName: null };
+            }
+        }
+
+        function getMatchEventsSummary() {
+            const events = [];
+            
+            // Get goals from score displays with null checks
+            const team1ScoreElement = document.getElementById('team1-score');
+            const team2ScoreElement = document.getElementById('team2-score');
+            const team1Score = team1ScoreElement ? parseInt(team1ScoreElement.textContent) || 0 : 0;
+            const team2Score = team2ScoreElement ? parseInt(team2ScoreElement.textContent) || 0 : 0;
+            
+            // Get team names with null checks
+            const team1NameElement = document.querySelector('.team-section:first-of-type .team-name');
+            const team2NameElement = document.querySelector('.team-section:last-of-type .team-name');
+            const team1Name = team1NameElement ? team1NameElement.textContent : 'Team 1';
+            const team2Name = team2NameElement ? team2NameElement.textContent : 'Team 2';
+            
+            if (team1Score > 0) {
+                for (let i = 0; i < team1Score; i++) {
+                    events.push({
+                        team: team1Name,
+                        description: `Goal scored`,
+                        type: 'GOAL'
+                    });
+                }
+            }
+            
+            if (team2Score > 0) {
+                for (let i = 0; i < team2Score; i++) {
+                    events.push({
+                        team: team2Name,
+                        description: `Goal scored`,
+                        type: 'GOAL'
+                    });
+                }
+            }
+            
+            return events;
+        }
+
+        function getRefereesSummary() {
+            const referees = [];
+            
+            // Get referee inputs with null checks
+            const ref1Element = document.getElementById('first-referee-name');
+            const ref2Element = document.getElementById('second-referee-name');
+            const ref3Element = document.getElementById('third-referee-name');
+            
+            const ref1 = ref1Element ? ref1Element.value.trim() : '';
+            const ref2 = ref2Element ? ref2Element.value.trim() : '';
+            const ref3 = ref3Element ? ref3Element.value.trim() : '';
+            
+            if (ref1) referees.push({ role: 'First Referee', name: ref1 });
+            if (ref2) referees.push({ role: 'Second Referee', name: ref2 });
+            if (ref3) referees.push({ role: 'Third Referee', name: ref3 });
+            
+            return referees;
+        }
+
+        function getSelectedPlayersSummary() {
+            const team1Players = [];
+            const team2Players = [];
+            
+            // Get selected players for team 1
+            const team1Checkboxes = document.querySelectorAll('input[data-team="team1"].player-checkbox:checked');
+            team1Checkboxes.forEach(checkbox => {
+                const playerRow = checkbox.closest('.player-row');
+                const playerName = playerRow.querySelector('.player-name').textContent;
+                team1Players.push(playerName);
+            });
+            
+            // Get selected players for team 2
+            const team2Checkboxes = document.querySelectorAll('input[data-team="team2"].player-checkbox:checked');
+            team2Checkboxes.forEach(checkbox => {
+                const playerRow = checkbox.closest('.player-row');
+                const playerName = playerRow.querySelector('.player-name').textContent;
+                team2Players.push(playerName);
+            });
+            
+            return { team1: team1Players, team2: team2Players };
         }
     </script>
 
@@ -4400,6 +6076,18 @@
         </button>
         <button class="signatures-toggle-btn motm-btn" onclick="openMotmDialog()">
             🏆 Man of the Match
+        </button>
+        <button class="signatures-toggle-btn" onclick="clearTeamSelections('team1')" title="Clear Team A player selections">
+            🔄 Clear Team A
+        </button>
+        <button class="signatures-toggle-btn" onclick="clearTeamSelections('team2')" title="Clear Team B player selections">
+            🔄 Clear Team B  
+        </button>
+        <button class="signatures-toggle-btn" onclick="clearAllSelections()" title="Clear all player selections">
+            ❌ Clear All Players
+        </button>
+        <button class="signatures-toggle-btn print-btn" id="print-summary-btn" onclick="printMatchSummary()">
+            🖨️ Print Match Summary
         </button>
         <!-- PDF button hidden for now -->
         <button class="signatures-toggle-btn print-btn" onclick="generateMatchSheetPDF()" style="display: none;">
