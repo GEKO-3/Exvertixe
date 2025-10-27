@@ -35,6 +35,31 @@
             --success-color: #44ff44;
             --warning-color: #ffaa00;
             --error-color: #ff4444;
+            --modal-bg: rgba(26, 29, 33, 0.95);
+            --modal-content-bg: #1a1d21;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --backdrop-filter: blur(20px);
+        }
+
+        [data-theme="light"] {
+            --primary-color: #0288d1;
+            --secondary-color: #0277bd;
+            --accent-color: #e64a19;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --group-a: #e64a19;
+            --group-b: #26a69a;
+            --group-c: #1976d2;
+            --group-d: #66bb6a;
+            --success-color: #2e7d32;
+            --warning-color: #f57c00;
+            --error-color: #d32f2f;
+            --modal-bg: rgba(255, 255, 255, 0.95);
+            --modal-content-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --backdrop-filter: blur(10px);
         }
 
         * {
@@ -45,14 +70,26 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: 
-                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
-                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            background: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body:not([data-theme="light"]) {
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+        }
+
+        [data-theme="light"] body {
+            background: 
+                radial-gradient(ellipse at top, rgba(2, 136, 209, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(230, 74, 25, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #fafafa 100%);
         }
 
         .container {
@@ -70,6 +107,12 @@
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] .header {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
         }
 
         .tournament-title {
@@ -92,6 +135,10 @@
             letter-spacing: 1px;
         }
 
+        [data-theme="light"] .subtitle {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
         .matches-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -107,6 +154,12 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
+        }
+
+        [data-theme="light"] .match-tile {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
         }
 
         .match-tile:hover {
@@ -156,6 +209,10 @@
             position: relative;
         }
 
+        [data-theme="light"] .match-separator {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
         .match-separator::before {
             content: '';
             position: absolute;
@@ -167,6 +224,10 @@
             transform: translateY(-50%);
         }
 
+        [data-theme="light"] .match-separator::before {
+            background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.15), transparent);
+        }
+
         .match-date-time {
             background: rgba(255, 255, 255, 0.1);
             padding: 8px 15px;
@@ -175,6 +236,11 @@
             font-weight: 600;
             color: var(--text-color);
             white-space: nowrap;
+        }
+
+        [data-theme="light"] .match-date-time {
+            background: rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
         }
 
         .teams-container {
@@ -194,6 +260,11 @@
             border-radius: 12px;
         }
 
+        [data-theme="light"] .team {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+        }
+
         .team.team-right {
             flex-direction: row-reverse;
         }
@@ -211,6 +282,10 @@
             font-weight: 600;
             font-size: 1rem;
             color: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="light"] .team-name {
+            color: var(--text-color);
         }
 
         .vs-separator {
@@ -253,6 +328,10 @@
             background: rgba(0, 0, 0, 0.2);
         }
 
+        [data-theme="light"] .match-details {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
         .match-tile.expanded .match-details {
             max-height: 300px;
         }
@@ -260,6 +339,10 @@
         .match-details-content {
             padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="light"] .match-details-content {
+            border-top: 1px solid var(--border-color);
         }
 
         .match-actions {
@@ -331,6 +414,10 @@
             font-style: italic;
         }
 
+        [data-theme="light"] .tbd-text {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
@@ -388,9 +475,10 @@
 </head>
 <body>
     <div class="container">
-        <div id="version-info" style="position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.8); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; z-index: 1000; border: 1px solid var(--primary-color);">
+        <div id="version-info" style="position: fixed; top: 10px; right: 10px; background: var(--modal-content-bg); backdrop-filter: var(--backdrop-filter); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; z-index: 1000; border: 1px solid var(--primary-color); display: flex; align-items: center; gap: 8px;">
             <span id="app-version" style="color: var(--primary-color); font-weight: bold;">v4.0</span>
-            <button onclick="clearAppCache()" style="margin-left: 10px; padding: 4px 8px; font-size: 0.7rem; background: var(--primary-color); border: none; border-radius: 4px; color: white; cursor: pointer;" title="Clear cache and refresh">🔄</button>
+            <button id="theme-toggle" onclick="toggleTheme()" style="padding: 4px 8px; font-size: 0.7rem; background: var(--secondary-color); border: none; border-radius: 4px; color: white; cursor: pointer; transition: all 0.3s ease;" title="Toggle light/dark mode">🌙</button>
+            <button onclick="clearAppCache()" style="padding: 4px 8px; font-size: 0.7rem; background: var(--primary-color); border: none; border-radius: 4px; color: white; cursor: pointer;" title="Clear cache and refresh">🔄</button>
         </div>
         <div class="header">
             <h1 class="tournament-title">FMSC 2025</h1>
@@ -403,6 +491,34 @@
     </div>
 
     <script>
+        // Theme Management
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('fmsc-theme') || 'dark';
+            applyTheme(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('fmsc-theme', newTheme);
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('theme-toggle').textContent = '☀️';
+                document.getElementById('theme-toggle').title = 'Switch to dark mode';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                document.getElementById('theme-toggle').textContent = '🌙';
+                document.getElementById('theme-toggle').title = 'Switch to light mode';
+            }
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
@@ -659,6 +775,16 @@
             
             console.log('======================');
         };
+
+        // Clear app cache function
+        function clearAppCache() {
+            if (confirm('Clear all cached data and refresh the app?')) {
+                // Clear localStorage
+                localStorage.clear();
+                // Reload the page
+                window.location.reload(true);
+            }
+        }
 
         // Call debug function on load (remove in production)
         window.addEventListener('load', () => {

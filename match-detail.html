@@ -41,6 +41,34 @@
             --substitution-color: #7b68ee;
             --save-color: #32cd32;
             --foul-color: #ff8c00;
+            --modal-bg: rgba(26, 29, 33, 0.95);
+            --modal-content-bg: #1a1d21;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --backdrop-filter: blur(20px);
+        }
+
+        [data-theme="light"] {
+            --primary-color: #0288d1;
+            --secondary-color: #0277bd;
+            --accent-color: #e64a19;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --success-color: #2e7d32;
+            --warning-color: #f57c00;
+            --error-color: #d32f2f;
+            --goal-color: #2e7d32;
+            --yellow-color: #f9a825;
+            --red-color: #d32f2f;
+            --own-goal-color: #ff8f00;
+            --substitution-color: #5e35b1;
+            --save-color: #43a047;
+            --foul-color: #ff8f00;
+            --modal-bg: rgba(255, 255, 255, 0.95);
+            --modal-content-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --backdrop-filter: blur(10px);
         }
 
         * {
@@ -51,14 +79,26 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: 
-                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
-                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            background: var(--bg-color);
             color: var(--text-color);
             min-height: 100vh;
             padding: 20px;
             overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body:not([data-theme="light"]) {
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+        }
+
+        [data-theme="light"] {
+            background: 
+                radial-gradient(ellipse at top, rgba(2, 136, 209, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(230, 74, 25, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #f5f5f5 0%, #ffffff 50%, #fafafa 100%);
         }
 
         .container {
@@ -71,11 +111,11 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
-            background: rgba(26, 29, 33, 0.3);
-            backdrop-filter: blur(20px);
+            background: var(--card-bg);
+            backdrop-filter: var(--backdrop-filter);
             border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
         }
 
         .match-title {
@@ -180,12 +220,12 @@
         }
 
         .team-section {
-            background: rgba(26, 29, 33, 0.4);
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 25px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
         }
 
         .team-header {
@@ -262,12 +302,12 @@
         }
 
         .fouls-container {
-            background: rgba(26, 29, 33, 0.4);
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 25px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
             margin-bottom: 30px;
         }
 
@@ -337,12 +377,12 @@
         }
 
         .timeouts-container {
-            background: rgba(26, 29, 33, 0.4);
+            background: var(--card-bg);
             border-radius: 20px;
             padding: 25px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
             margin-bottom: 30px;
         }
 
@@ -595,8 +635,15 @@
             gap: 15px;
             padding: 15px;
             background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
             border-radius: 12px;
             transition: all 0.3s ease;
+        }
+
+        /* Light mode specific styles for player rows */
+        [data-theme="light"] .player-row {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
         }
 
         .player-checkbox-section {
@@ -633,6 +680,11 @@
             font-size: 0.9rem;
         }
 
+        [data-theme="light"] .selection-counter {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
         .selection-counter.at-limit {
             background: rgba(255, 107, 53, 0.2);
             border: 1px solid var(--accent-color);
@@ -662,13 +714,27 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
+        [data-theme="light"] .player-row:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
         .official-row {
             background: rgba(255, 255, 255, 0.03);
             border-left: 3px solid var(--secondary-color);
         }
 
+        [data-theme="light"] .official-row {
+            background: rgba(0, 0, 0, 0.01);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--secondary-color);
+        }
+
         .official-row:hover {
             background: rgba(255, 255, 255, 0.06);
+        }
+
+        [data-theme="light"] .official-row:hover {
+            background: rgba(0, 0, 0, 0.03);
         }
 
         .section-title {
@@ -680,6 +746,10 @@
             border-bottom: 2px solid rgba(255, 255, 255, 0.1);
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        [data-theme="light"] .section-title {
+            border-bottom: 2px solid var(--border-color);
         }
 
         .section-title:first-child {
@@ -729,7 +799,7 @@
 
         .action-btn {
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
             color: var(--text-color);
             padding: 8px 12px;
             border-radius: 8px;
@@ -741,9 +811,19 @@
             text-align: center;
         }
 
+        /* Light mode specific styles for action buttons */
+        [data-theme="light"] .action-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
         .action-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
+        }
+
+        [data-theme="light"] .action-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .dropdown-menu {
@@ -751,12 +831,12 @@
             top: 100%;
             left: 0;
             background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             min-width: 120px;
             z-index: 1000;
             display: none;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 25px var(--shadow-color);
         }
 
         .dropdown-menu.active {
@@ -769,7 +849,7 @@
             transition: all 0.3s ease;
             font-size: 0.9rem;
             font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .dropdown-item:last-child {
@@ -778,6 +858,10 @@
 
         .dropdown-item:hover {
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="light"] .dropdown-item:hover {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .dropdown-item.goal {
@@ -864,9 +948,19 @@
             position: relative;
         }
 
+        /* Light mode specific styles for primary action buttons */
+        [data-theme="light"] .primary-action-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
         .primary-action-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
+        }
+
+        [data-theme="light"] .primary-action-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .primary-action-btn.active {
@@ -922,10 +1016,20 @@
             text-align: center;
         }
 
+        /* Light mode specific styles for plus button */
+        [data-theme="light"] .plus-action-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px dashed var(--border-color);
+        }
+
         .plus-action-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             border-color: var(--accent-color);
             transform: translateY(-1px);
+        }
+
+        [data-theme="light"] .plus-action-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .plus-action-btn.has-events {
@@ -1184,21 +1288,21 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
+            background-color: var(--modal-bg);
+            backdrop-filter: var(--backdrop-filter);
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            background: var(--modal-content-bg);
             border-radius: 20px;
             width: 90%;
             max-width: 900px;
             max-height: 95vh;
             overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 60px var(--shadow-color);
             animation: modalSlideIn 0.3s ease;
             position: relative;
         }
@@ -1539,14 +1643,27 @@
             outline: none;
         }
 
+        [data-theme="light"] .referee-input {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--border-color);
+        }
+
         .referee-input:focus {
             border-color: var(--primary-color);
             background: rgba(255, 255, 255, 0.15);
             box-shadow: 0 0 0 3px rgba(3, 189, 237, 0.1);
         }
 
+        [data-theme="light"] .referee-input:focus {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
         .referee-input::placeholder {
             color: rgba(255, 255, 255, 0.5);
+        }
+
+        [data-theme="light"] .referee-input::placeholder {
+            color: rgba(0, 0, 0, 0.5);
         }
 
         /* Man of the Match Styles */
@@ -1675,6 +1792,8 @@
 <body>
     <a href="match-management.html" class="back-btn">← Back to Matches</a>
     
+    <button id="theme-toggle" onclick="toggleTheme()" style="position: fixed; top: 20px; right: 20px; background: var(--modal-content-bg); backdrop-filter: var(--backdrop-filter); border: 1px solid var(--primary-color); color: var(--text-color); padding: 10px; border-radius: 10px; cursor: pointer; z-index: 1000; transition: all 0.3s ease; font-size: 1.2rem;" title="Toggle light/dark mode">🌙</button>
+    
     <div class="container">
         <div class="header">
             <h1 class="match-title" id="match-title">Loading Match...</h1>
@@ -1722,6 +1841,34 @@
     </div>
 
     <script>
+        // Theme Management
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('fmsc-theme') || 'dark';
+            applyTheme(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('fmsc-theme', newTheme);
+        }
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('theme-toggle').textContent = '☀️';
+                document.getElementById('theme-toggle').title = 'Switch to dark mode';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                document.getElementById('theme-toggle').textContent = '🌙';
+                document.getElementById('theme-toggle').title = 'Switch to light mode';
+            }
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', initializeTheme);
+
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
