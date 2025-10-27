@@ -298,6 +298,54 @@
             margin: 0 15px;
         }
 
+        .match-score {
+            text-align: center;
+            margin: 0 15px;
+        }
+
+        .match-score .score {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--success-color);
+            display: block;
+            line-height: 1;
+        }
+
+        .match-score .finished-label {
+            font-size: 0.7rem;
+            color: var(--success-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .match-status {
+            text-align: center;
+            margin: 0 15px;
+        }
+
+        .match-status .status-label {
+            font-size: 0.9rem;
+            color: var(--warning-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 8px;
+            border: 1px solid var(--warning-color);
+            border-radius: 4px;
+            background: rgba(255, 193, 7, 0.1);
+        }
+
+        .finished-match {
+            border-left: 4px solid var(--success-color) !important;
+        }
+
+        .ongoing-match {
+            border-left: 4px solid var(--warning-color) !important;
+        }
+
         .match-type {
             text-align: center;
             margin-top: 15px;
@@ -434,8 +482,16 @@
             }
 
             .teams-container {
-                flex-direction: column;
-                gap: 15px;
+                flex-direction: row;
+                gap: 10px;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .team {
+                flex: 1;
+                min-width: 0; /* Allow flex items to shrink */
+                padding: 10px;
             }
 
             .team.team-right {
@@ -443,8 +499,42 @@
             }
 
             .vs-separator {
-                transform: rotate(90deg);
-                margin: 10px 0;
+                font-size: 1.2rem;
+                margin: 0 8px;
+            }
+
+            .match-score {
+                margin: 0 8px;
+            }
+
+            .match-score .score {
+                font-size: 1.5rem;
+            }
+
+            .match-score .finished-label {
+                font-size: 0.6rem;
+            }
+
+            .match-status {
+                margin: 0 8px;
+            }
+
+            .match-status .status-label {
+                font-size: 0.8rem;
+                padding: 2px 6px;
+            }
+
+            .team-logo {
+                width: 32px;
+                height: 32px;
+            }
+
+            .team-name {
+                font-size: 0.85rem;
+                line-height: 1.2;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
 
@@ -471,6 +561,72 @@
             75% { transform: translate(-10px, 10px); }
             100% { transform: translate(0, 0); }
         }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(3, 189, 237, 0.5);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+
+        .nav-button:active {
+            transform: translateY(0);
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .navigation-buttons {
+                gap: 10px;
+                padding: 0 15px;
+            }
+            
+            .nav-button {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+                min-width: 120px;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -483,6 +639,18 @@
         <div class="header">
             <h1 class="tournament-title">FMSC 2025</h1>
             <p class="subtitle">Match Management</p>
+        </div>
+
+        <div class="navigation-buttons">
+            <a href="top-scorers.html" class="nav-button">
+                🏆 Top Scorers
+            </a>
+            <a href="card-penalties.html" class="nav-button">
+                🟨🟥 Card Penalties
+            </a>
+            <a href="team-standings.html" class="nav-button">
+                📊 Team Standings
+            </a>
         </div>
 
         <div class="matches-grid" id="matches-grid">
@@ -537,6 +705,9 @@
 
         let teams = {};
         let drawAssignments = {};
+        let matchStates = {};
+        let matchScores = {};
+        let matchEvents = {};
 
         // Match schedule data - Updated for October 26-28, 2025
         // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
@@ -575,6 +746,50 @@
             teams = snapshot.val() || {};
             renderMatches();
         });
+
+        // Listen for match states changes
+        database.ref('matchState').on('value', (snapshot) => {
+            matchStates = snapshot.val() || {};
+            renderMatches();
+        });
+
+        // Listen for match scores changes
+        database.ref('matchScores').on('value', (snapshot) => {
+            matchScores = snapshot.val() || {};
+            renderMatches();
+        });
+
+        // Listen for match events changes
+        database.ref('matchEvents').on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            renderMatches();
+        });
+
+        // Calculate final score from match events
+        function calculateFinalScore(matchId) {
+            const events = matchEvents[matchId] || {};
+            let team1Score = 0;
+            let team2Score = 0;
+
+            Object.values(events).forEach(event => {
+                if (event.eventType === 'goal') {
+                    if (event.teamKey === 'team1') {
+                        team1Score++;
+                    } else if (event.teamKey === 'team2') {
+                        team2Score++;
+                    }
+                } else if (event.eventType === 'own-goal') {
+                    // Own goal counts for the opposing team
+                    if (event.teamKey === 'team1') {
+                        team2Score++;
+                    } else if (event.teamKey === 'team2') {
+                        team1Score++;
+                    }
+                }
+            });
+
+            return { team1: team1Score, team2: team2Score };
+        }
 
         function getTeamData(position) {
             if (!drawAssignments[position] || !teams[drawAssignments[position]]) {
@@ -641,10 +856,46 @@
                 matchSchedule[date].forEach((match, index) => {
                     const matchTile = document.createElement('div');
                     matchTile.className = 'match-tile';
-                    matchTile.dataset.matchId = generateMatchId(date, match);
+                    const matchId = generateMatchId(date, match);
+                    matchTile.dataset.matchId = matchId;
 
                     const team1Element = createTeamElement(match.teams[0]);
                     const team2Element = createTeamElement(match.teams[1], true);
+
+                    // Check if match is finished and has a score
+                    const matchState = matchStates[matchId];
+                    const matchScore = matchScores[matchId];
+                    const isFinished = matchState && matchState.state === 'finished';
+                    
+                    let separatorContent = '<span class="vs-separator">VS</span>';
+                    let matchStatus = '';
+                    
+                    if (isFinished) {
+                        let score1 = 0;
+                        let score2 = 0;
+                        
+                        // First try to get scores from saved match scores
+                        if (matchScore && matchScore.current) {
+                            score1 = matchScore.current.team1 || 0;
+                            score2 = matchScore.current.team2 || 0;
+                        } else {
+                            // Fallback to calculating from events
+                            const calculatedScore = calculateFinalScore(matchId);
+                            score1 = calculatedScore.team1;
+                            score2 = calculatedScore.team2;
+                        }
+                        
+                        separatorContent = `<div class="match-score">
+                            <span class="score">${score1} - ${score2}</span>
+                            <span class="finished-label">FINISHED</span>
+                        </div>`;
+                        matchTile.classList.add('finished-match');
+                    } else if (matchState && matchState.state && matchState.state !== 'not-started') {
+                        separatorContent = `<div class="match-status">
+                            <span class="status-label">${matchState.state.toUpperCase()}</span>
+                        </div>`;
+                        matchTile.classList.add('ongoing-match');
+                    }
 
                     matchTile.innerHTML = `
                         <div class="match-header" onclick="toggleMatch(this)">
@@ -658,7 +909,7 @@
                             </div>
                             <div class="teams-container">
                                 ${team1Element.outerHTML}
-                                <span class="vs-separator">VS</span>
+                                ${separatorContent}
                                 ${team2Element.outerHTML}
                             </div>
                         </div>

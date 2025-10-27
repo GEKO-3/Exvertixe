@@ -33,7 +33,7 @@
             --error-color: #ff4444;
             --yellow-card: #ffff00;
             --red-card: #ff0000;
-            --paid-color: #666;
+
         }
 
         * {
@@ -152,15 +152,7 @@
             transform: translateY(-2px);
         }
 
-        .card-item.paid {
-            background: rgba(102, 102, 102, 0.2);
-            opacity: 0.6;
-            border-color: var(--paid-color);
-        }
 
-        .card-item.paid:hover {
-            background: rgba(102, 102, 102, 0.25);
-        }
 
         .card-icons {
             display: flex;
@@ -255,54 +247,38 @@
             margin-left: auto;
         }
 
-        .fine-amount {
-            font-family: 'Bebas Neue', cursive;
-            font-size: 1.5rem;
-            color: var(--error-color);
-            text-align: center;
-            min-width: 60px;
+        .match-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: right;
+            min-width: 140px;
+            max-width: 200px;
+            flex-shrink: 0;
         }
 
-        .fine-amount.paid {
-            color: var(--paid-color);
-            text-decoration: line-through;
+        .match-number {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
 
-        .pay-btn {
-            background: var(--success-color);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
+        .match-date {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .match-teams {
+            font-size: 0.75rem;
+            color: var(--primary-color);
             font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .pay-btn:hover {
-            background: #55ff55;
-            transform: scale(1.05);
-        }
-
-        .pay-btn:disabled {
-            background: var(--paid-color);
-            color: #999;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .paid-label {
-            background: var(--success-color);
-            color: #000;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            line-height: 1.2;
+            word-wrap: break-word;
+            hyphens: auto;
         }
 
         .loading-container {
@@ -333,84 +309,11 @@
             font-style: italic;
         }
 
-        /* Payment Confirmation Dialog */
-        .payment-dialog {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
 
-        .dialog-content {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-        }
-
-        .dialog-title {
-            font-family: 'Bebas Neue', cursive;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .dialog-message {
-            margin-bottom: 25px;
-            line-height: 1.5;
-        }
-
-        .dialog-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .dialog-btn {
-            padding: 10px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .dialog-btn.confirm {
-            background: var(--success-color);
-            color: #000;
-        }
-
-        .dialog-btn.confirm:hover {
-            background: #55ff55;
-        }
-
-        .dialog-btn.cancel {
-            background: var(--error-color);
-            color: white;
-        }
-
-        .dialog-btn.cancel:hover {
-            background: #ff5555;
-        }
 
         @media (max-width: 768px) {
             .card-item {
                 padding: 15px;
-                flex-wrap: wrap;
             }
             
             .card-icons {
@@ -418,19 +321,22 @@
                 min-width: 60px;
             }
             
-            .card-actions {
-                margin-left: 0;
-                margin-top: 10px;
-                width: 100%;
-                justify-content: space-between;
-            }
-            
             .player-name {
                 font-size: 1rem;
             }
             
-            .fine-amount {
-                font-size: 1.2rem;
+            .match-info {
+                text-align: right;
+                min-width: 120px;
+                max-width: 150px;
+            }
+            
+            .match-teams {
+                font-size: 0.7rem;
+            }
+            
+            .match-number, .match-date {
+                font-size: 0.7rem;
             }
             
             .page-title {
@@ -440,7 +346,7 @@
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-btn">← Back to Home</a>
+    <a href="match-management.html" class="back-btn">← Back to Home</a>
     
     <div class="container">
         <div class="header">
@@ -449,7 +355,7 @@
         </div>
 
         <div class="cards-container">
-            <div class="cards-title">🟨🟥 CARD PENALTIES & FINES</div>
+            <div class="cards-title">🟨🟥 CARD PENALTIES</div>
             
             <div class="cards-list" id="cards-list">
                 <div class="loading-container">
@@ -460,19 +366,7 @@
         </div>
     </div>
 
-    <!-- Payment Confirmation Dialog -->
-    <div class="payment-dialog" id="payment-dialog">
-        <div class="dialog-content">
-            <div class="dialog-title">Confirm Payment</div>
-            <div class="dialog-message" id="dialog-message">
-                Are you sure you want to mark this fine as paid?
-            </div>
-            <div class="dialog-buttons">
-                <button class="dialog-btn confirm" onclick="confirmPayment()">Confirm Payment</button>
-                <button class="dialog-btn cancel" onclick="cancelPayment()">Cancel</button>
-            </div>
-        </div>
-    </div>
+
 
     <script>
         // Firebase Configuration
@@ -523,16 +417,111 @@
         let teams = {};
         let drawAssignments = {};
         let matchEvents = {};
-        let cardPayments = {};
         let playerCards = {};
-        let currentPaymentPlayer = null;
         let teamLists = {};
 
-        // Fine amounts (in NVR)
-        const FINE_AMOUNTS = {
-            yellow: 10,
-            red: 25
-        };
+        // Extract match information from matchId
+        function getMatchInfo(matchId) {
+            const parts = matchId.split('-');
+            if (parts.length >= 3) {
+                // Format: "october26-A1vsA2-400"
+                const datePart = parts[0]; // "october26"
+                const teamsPart = parts[1]; // "A1vsA2"
+                const timePart = parts[2]; // "400"
+                
+                // Parse date
+                const monthNames = {
+                    'january': 'Jan', 'february': 'Feb', 'march': 'Mar', 'april': 'Apr',
+                    'may': 'May', 'june': 'Jun', 'july': 'Jul', 'august': 'Aug',
+                    'september': 'Sep', 'october': 'Oct', 'november': 'Nov', 'december': 'Dec'
+                };
+                
+                let formattedDate = datePart;
+                for (const [full, short] of Object.entries(monthNames)) {
+                    if (datePart.toLowerCase().includes(full)) {
+                        const day = datePart.replace(full.toLowerCase(), '');
+                        formattedDate = `${short} ${day}`;
+                        break;
+                    }
+                }
+                
+                // Parse teams
+                const teamsMatch = teamsPart.match(/^(.+)vs(.+)$/);
+                const team1Pos = teamsMatch ? teamsMatch[1] : '';
+                const team2Pos = teamsMatch ? teamsMatch[2] : '';
+                
+                // Get team names
+                const team1Name = getTeamName(team1Pos);
+                const team2Name = getTeamName(team2Pos);
+                
+                // Determine match number based on schedule
+                const matchNumber = getMatchNumber(team1Pos, team2Pos, datePart);
+                
+                return {
+                    date: formattedDate,
+                    teams: `${team1Name} vs ${team2Name}`,
+                    positions: `${team1Pos} vs ${team2Pos}`,
+                    matchNumber: matchNumber
+                };
+            }
+            
+            return {
+                date: 'Unknown Date',
+                teams: 'Unknown Match',
+                positions: 'Unknown',
+                matchNumber: 'N/A'
+            };
+        }
+
+        function getMatchNumber(team1, team2, datePart) {
+            // Match schedule to determine match numbers (same as match-management.html)
+            const matchSchedule = {
+                'october26': [
+                    { teams: ['A1', 'A2'] },
+                    { teams: ['A3', 'A4'] },
+                    { teams: ['B1', 'B2'] },
+                    { teams: ['C1', 'C2'] },
+                    { teams: ['D1', 'D2'] }
+                ],
+                'october27': [
+                    { teams: ['D1', 'D3'] },
+                    { teams: ['C1', 'C3'] },
+                    { teams: ['B1', 'B3'] },
+                    { teams: ['A1', 'A3'] },
+                    { teams: ['A2', 'A4'] }
+                ],
+                'october28': [
+                    { teams: ['B2', 'B3'] },
+                    { teams: ['C2', 'C3'] },
+                    { teams: ['D2', 'D3'] },
+                    { teams: ['A2', 'A3'] },
+                    { teams: ['A1', 'A4'] }
+                ]
+            };
+            
+            let matchCounter = 1;
+            for (const date of Object.keys(matchSchedule)) {
+                const dayMatches = matchSchedule[date];
+                for (const match of dayMatches) {
+                    if ((match.teams[0] === team1 && match.teams[1] === team2) ||
+                        (match.teams[0] === team2 && match.teams[1] === team1)) {
+                        if (date === datePart.toLowerCase()) {
+                            return matchCounter;
+                        }
+                    }
+                    matchCounter++;
+                }
+            }
+            
+            return 'N/A';
+        }
+
+        function getTeamName(position) {
+            if (drawAssignments[position] && teams[drawAssignments[position]]) {
+                return teams[drawAssignments[position]].teamName;
+            }
+            return position;
+        }
 
         // Get team data for a specific position
         function getTeamData(position) {
@@ -784,74 +773,26 @@
             };
         }
 
-        // Show payment dialog
-        function showPaymentDialog(playerKey) {
-            const player = playerCards[playerKey];
-            const fine = (player.yellow * FINE_AMOUNTS.yellow) + (player.red * FINE_AMOUNTS.red);
-            
-            currentPaymentPlayer = playerKey;
-            
-            const playerDisplayName = player.jerseyNumber !== 'N/A' ? 
-                `${player.playerName} #${player.jerseyNumber}` : 
-                player.playerName;
-            
-            const message = document.getElementById('dialog-message');
-            message.innerHTML = `
-                <strong>${playerDisplayName}</strong><br>
-                ${player.yellow} Yellow Card${player.yellow !== 1 ? 's' : ''} (NVR ${player.yellow * FINE_AMOUNTS.yellow})<br>
-                ${player.red} Red Card${player.red !== 1 ? 's' : ''} (NVR ${player.red * FINE_AMOUNTS.red})<br>
-                <strong>Total Fine: NVR ${fine}</strong>
-            `;
-            
-            document.getElementById('payment-dialog').style.display = 'flex';
-        }
 
-        // Confirm payment
-        function confirmPayment() {
-            if (currentPaymentPlayer) {
-                const paymentData = {
-                    paid: true,
-                    paidAt: new Date().toISOString(),
-                    playerName: playerCards[currentPaymentPlayer].playerName,
-                    fine: (playerCards[currentPaymentPlayer].yellow * FINE_AMOUNTS.yellow) + 
-                          (playerCards[currentPaymentPlayer].red * FINE_AMOUNTS.red)
-                };
-
-                database.ref(`cardPayments/${currentPaymentPlayer}`).set(paymentData)
-                    .then(() => {
-                        console.log('Payment recorded successfully');
-                        cancelPayment();
-                    })
-                    .catch(error => {
-                        console.error('Error recording payment:', error);
-                        alert('Error recording payment. Please try again.');
-                    });
-            }
-        }
-
-        // Cancel payment dialog
-        function cancelPayment() {
-            document.getElementById('payment-dialog').style.display = 'none';
-            currentPaymentPlayer = null;
-        }
 
         // Render cards list
         function renderCards() {
             const container = document.getElementById('cards-list');
             
-            // Convert playerCards to array and sort (unpaid first, then by total fine amount)
+            // Convert playerCards to array and sort by total cards
             const sortedPlayers = Object.keys(playerCards)
                 .map(key => ({
                     key: key,
                     ...playerCards[key],
-                    paid: cardPayments[key] && cardPayments[key].paid,
-                    fine: (playerCards[key].yellow * FINE_AMOUNTS.yellow) + (playerCards[key].red * FINE_AMOUNTS.red)
+                    totalCards: playerCards[key].yellow + playerCards[key].red
                 }))
                 .sort((a, b) => {
-                    // Unpaid first
-                    if (a.paid !== b.paid) return a.paid ? 1 : -1;
-                    // Then by fine amount (highest first)
-                    return b.fine - a.fine;
+                    // Sort by total cards (highest first)
+                    if (a.totalCards !== b.totalCards) return b.totalCards - a.totalCards;
+                    // Then by red cards (highest first)
+                    if (a.red !== b.red) return b.red - a.red;
+                    // Then by yellow cards (highest first)
+                    return b.yellow - a.yellow;
                 });
 
             if (sortedPlayers.length === 0) {
@@ -868,9 +809,10 @@
 
             sortedPlayers.forEach(player => {
                 const teamData = getPlayerTeamData(player.teamKey, player.matchId);
+                const matchInfo = getMatchInfo(player.matchId);
                 
                 const cardItem = document.createElement('div');
-                cardItem.className = `card-item ${player.paid ? 'paid' : ''}`;
+                cardItem.className = 'card-item';
                 
                 const logoHtml = teamData.logo ? 
                     `<img src="logos/${teamData.logo}.jpg" 
@@ -887,11 +829,6 @@
                     cardIconsHtml += `<div class="card-icon red">${player.red > 1 ? `<span class="card-count">${player.red}</span>` : ''}</div>`;
                 }
 
-                const actionHtml = player.paid ? 
-                    `<div class="paid-label">Paid</div>` :
-                    `<div class="fine-amount">NVR ${player.fine}</div>
-                     <button class="pay-btn" onclick="showPaymentDialog('${player.key}')">Pay</button>`;
-
                 cardItem.innerHTML = `
                     <div class="card-icons">
                         ${cardIconsHtml}
@@ -903,8 +840,10 @@
                             <div class="player-team">${teamData.name}</div>
                         </div>
                     </div>
-                    <div class="card-actions">
-                        ${actionHtml}
+                    <div class="match-info">
+                        <div class="match-number">Match ${matchInfo.matchNumber}</div>
+                        <div class="match-date">${matchInfo.date}</div>
+                        <div class="match-teams">${matchInfo.teams}</div>
                     </div>
                 `;
 
@@ -948,21 +887,10 @@
             checkAndRecalculate();
         });
 
-        database.ref('cardPayments').on('value', (snapshot) => {
-            cardPayments = snapshot.val() || {};
-            console.log('Card payments loaded:', cardPayments);
-            // Card payments don't need to trigger recalculation, just re-render
-            if (Object.keys(playerCards).length > 0) {
-                renderCards();
-            }
-        });
+
 
         // Close dialog when clicking outside
-        document.getElementById('payment-dialog').addEventListener('click', (e) => {
-            if (e.target.id === 'payment-dialog') {
-                cancelPayment();
-            }
-        });
+
 
         // Initial render
         calculatePlayerCards();
