@@ -993,8 +993,24 @@
         }
 
         // Get player data from team lists
-        function getPlayerData(teamKey, personKey, matchId) {
+        function getPlayerData(teamKey, personKey, matchId, eventPlayerName = null) {
             try {
+                // Check if this is an official - officials should not be shown in match events
+                if (personKey && personKey.toLowerCase().includes('official')) {
+                    console.log(`Skipping official card event: personKey="${personKey}"`);
+                    return null; // Return null to indicate this should be filtered out
+                }
+                
+                // If event already contains player name, use it
+                if (eventPlayerName && eventPlayerName !== 'N/A' && eventPlayerName.trim() !== '') {
+                    console.log(`Using player name from event: "${eventPlayerName}"`);
+                    return {
+                        name: eventPlayerName,
+                        jersey: personKey || 'N/A',
+                        teamId: null,
+                        teamName: 'From Event Data'
+                    };
+                }
                 const matchParts = matchId.split('-');
                 if (matchParts.length >= 2) {
                     const teamsMatch = matchParts[1].match(/^(.+)vs(.+)$/);
@@ -1010,34 +1026,65 @@
                             if (teamList && teamList.players) {
                                 // Try direct access first
                                 let player = teamList.players[personKey];
+                                console.log(`Looking for player with personKey="${personKey}" in team ${teamId}`);
+                                console.log(`Direct access result:`, player);
                                 
                                 // If not found, try searching by index or different key formats
                                 if (!player) {
                                     const playerKeys = Object.keys(teamList.players);
                                     console.log(`Available player keys for ${teamId}:`, playerKeys);
+                                    console.log(`Available player data:`, Object.fromEntries(
+                                        playerKeys.slice(0, 5).map(key => [key, teamList.players[key]])
+                                    ));
                                     
                                     // Try personKey as index
                                     const playerIndex = parseInt(personKey);
                                     if (!isNaN(playerIndex) && playerKeys[playerIndex]) {
                                         player = teamList.players[playerKeys[playerIndex]];
+                                        console.log(`Found player by index ${playerIndex}:`, player);
                                     }
                                     
-                                    // Try finding by different formats
+                                    // Try finding by different formats - more precise matching
                                     if (!player) {
-                                        player = playerKeys.find(key => key.includes(personKey) || personKey.includes(key));
-                                        if (player) {
-                                            player = teamList.players[player];
+                                        // Extract number from personKey (e.g., "player-10" -> "10")
+                                        const personNumber = personKey.replace(/\D/g, ''); // Remove non-digits
+                                        
+                                        // Try exact number match first
+                                        if (personNumber && playerKeys.includes(personNumber)) {
+                                            player = teamList.players[personNumber];
+                                            console.log(`Found player by exact number match "${personNumber}":`, player);
+                                        }
+                                        
+                                        // Try exact key match
+                                        if (!player) {
+                                            const exactMatch = playerKeys.find(key => key === personKey);
+                                            if (exactMatch) {
+                                                player = teamList.players[exactMatch];
+                                                console.log(`Found player by exact key match "${exactMatch}":`, player);
+                                            }
+                                        }
+                                        
+                                        // Only as last resort, try partial matching but with better logic
+                                        if (!player && personNumber) {
+                                            const partialMatch = playerKeys.find(key => key === personNumber || key.endsWith(personNumber));
+                                            if (partialMatch) {
+                                                player = teamList.players[partialMatch];
+                                                console.log(`Found player by partial number match "${partialMatch}":`, player);
+                                            }
                                         }
                                     }
                                 }
                                 
                                 if (player && player.name) {
+                                    console.log(`Successfully found player: ${player.name} #${player.jerseyNumber || player.jersey || 'N/A'}`);
                                     return {
                                         name: player.name,
                                         jersey: player.jerseyNumber || player.jersey || 'N/A',
                                         teamId: teamId,
                                         teamName: teams[teamId].teamName
                                     };
+                                } else {
+                                    console.log(`Player not found or invalid player data:`, player);
                                 }
                             }
                             
@@ -1049,6 +1096,7 @@
                 console.error('Error getting player data:', error);
             }
             
+            console.log(`Fallback: Could not find player data for personKey="${personKey}"`);
             return {
                 name: `Player ${personKey}`,
                 jersey: 'N/A',
@@ -1071,8 +1119,15 @@
             Object.values(events).forEach(event => {
                 if (event.eventType === 'goal') {
                     console.log('Processing goal event:', event);
-                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
-                    console.log('Player data:', playerData);
+                    console.log(`Goal event details: teamKey="${event.teamKey}", personKey="${event.personKey}", playerName="${event.playerName || event.name || 'N/A'}"`);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId, event.playerName || event.name);
+                    console.log('Retrieved player data:', playerData);
+                    
+                    // Skip if this is an official (should not happen for goals, but just in case)
+                    if (!playerData) {
+                        console.log('Skipping goal for invalid player data');
+                        return;
+                    }
                     
                     const playerKey = `${playerData.name}-${playerData.jersey}`;
                     
@@ -1085,8 +1140,14 @@
                     }
                 } else if (event.eventType === 'own-goal') {
                     console.log('Processing own goal event:', event);
-                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId, event.playerName || event.name);
                     console.log('Own goal player data:', playerData);
+                    
+                    // Skip if this is an official (should not happen for own goals, but just in case)
+                    if (!playerData) {
+                        console.log('Skipping own goal for invalid player data');
+                        return;
+                    }
                     
                     const playerKey = `${playerData.name}-${playerData.jersey}`;
                     
@@ -1099,7 +1160,14 @@
                     }
                 } else if (event.eventType === 'yellow') {
                     console.log('Processing yellow card event:', event);
-                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId, event.playerName || event.name);
+                    
+                    // Skip if this is an official card (playerData will be null)
+                    if (!playerData) {
+                        console.log('Skipping yellow card for official');
+                        return;
+                    }
+                    
                     const playerKey = `${playerData.name}-${playerData.jersey}`;
                     
                     if (event.teamKey === 'team1') {
@@ -1111,7 +1179,14 @@
                     }
                 } else if (event.eventType === 'red') {
                     console.log('Processing red card event:', event);
-                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
+                    const playerData = getPlayerData(event.teamKey, event.personKey, matchId, event.playerName || event.name);
+                    
+                    // Skip if this is an official card (playerData will be null)
+                    if (!playerData) {
+                        console.log('Skipping red card for official');
+                        return;
+                    }
+                    
                     const playerKey = `${playerData.name}-${playerData.jersey}`;
                     
                     if (event.teamKey === 'team1') {

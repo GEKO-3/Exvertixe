@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMSC 2025 - Quarter Finals Draw Control</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#03bded">
+    <link rel="icon" type="image/svg+xml" href="Tounament logo.svg">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #03bded;
+            --secondary-color: #029ac0;
+            --accent-color: #ff6b35;
+            --text-color: #fff;
+            --bg-color: #0a0b0c;
+            --card-bg: #1a1d21;
+            --border-color: #2a2f35;
+            --success-color: #44ff44;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
+            --winner-color: #ffd700;
+            --runner-up-color: #c0c0c0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: 
+                radial-gradient(ellipse at top, rgba(3, 189, 237, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .tournament-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(3, 189, 237, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .control-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            background: rgba(26, 29, 33, 0.9);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .nav-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: rgba(26, 29, 33, 0.6);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .group-standings {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .group {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .group-header {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .team-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+        }
+
+        .team-item.winner {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .team-item.runner-up {
+            background: rgba(192, 192, 192, 0.1);
+            border-color: rgba(192, 192, 192, 0.3);
+        }
+
+        .position-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 25px;
+            height: 20px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .position-indicator.winner {
+            background: var(--winner-color);
+            color: #000;
+        }
+
+        .position-indicator.runner-up {
+            background: var(--runner-up-color);
+            color: #000;
+        }
+
+        .position-indicator.other {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .team-name {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .team-points {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+
+        .draw-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .draw-status {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid;
+            font-weight: 600;
+        }
+
+        .draw-status.not-ready {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .draw-status.ready {
+            background: rgba(68, 255, 68, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .draw-status.completed {
+            background: rgba(3, 189, 237, 0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .draw-button {
+            background: var(--success-color);
+            color: #000;
+            border: none;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(68, 255, 68, 0.3);
+        }
+
+        .draw-button:hover {
+            background: #33cc33;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(68, 255, 68, 0.4);
+        }
+
+        .draw-button:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .clear-button {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .clear-button:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .draw-result {
+            background: rgba(26, 29, 33, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+
+        .qf-match {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .qf-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .qf-teams {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .qf-team {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .qf-vs {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(3, 189, 237, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .requirements {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--warning-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .requirements h4 {
+            color: var(--warning-color);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .requirements ul {
+            margin-left: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .requirements li {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .group-standings {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .tournament-title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="match-management.html" class="back-btn">← Back to Home</a>
+        
+        <div class="header">
+            <h1 class="tournament-title">FYFC 2025</h1>
+            <p class="control-subtitle">Quarter Finals Draw Control</p>
+        </div>
+
+        <div class="navigation">
+            <a href="qf-draw-display.html" class="nav-button">View Draw Display</a>
+            <a href="team-standings.html" class="nav-button">View Standings</a>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Loading tournament data...
+        </div>
+
+        <div class="main-content" id="main-content" style="display: none;">
+            <div class="section">
+                <h2 class="section-title">Group Standings</h2>
+                <div class="group-standings" id="group-standings">
+                    <!-- Groups will be populated here -->
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Draw Control</h2>
+                
+                <div class="requirements">
+                    <h4>Requirements for Quarter Finals Draw:</h4>
+                    <ul>
+                        <li>All group stage matches must be completed</li>
+                        <li>Clear group winners and runners-up identified</li>
+                        <li>Minimum 2 teams qualified from each group</li>
+                    </ul>
+                </div>
+
+                <div class="draw-controls">
+                    <div class="draw-status" id="draw-status">
+                        Checking requirements...
+                    </div>
+                    
+                    <button class="draw-button" id="conduct-draw" onclick="conductDraw()" disabled>
+                        Conduct Quarter Finals Draw
+                    </button>
+                    
+                    <button class="clear-button" id="clear-draw" onclick="clearDraw()" style="display: none;">
+                        Clear Draw & Restart
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="draw-result" id="draw-result" style="display: none;">
+            <h2 class="section-title">Quarter Finals Draw Result</h2>
+            <div id="qf-matches">
+                <!-- Quarter final matches will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Global data storage
+        let teams = {};
+        let drawAssignments = {};
+        let matchEvents = {};
+        let matchScores = {};
+        let matchState = {};
+        let quarterFinalDraw = {};
+        let teamStandings = {};
+
+        // Team name to logo filename mapping
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'LeCrose Sports Club': 'lecrose_sports_club',
+                'Maahinna United': 'maahinna_united',
+                'Outreef Sports Club': 'outreef_sports_club',
+                'Youth Academy': 'youth_academy'
+            };
+            
+            return logoMap[teamName] || teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+        }
+
+        // Get team data from position
+        function getTeamData(position) {
+            if (!drawAssignments[position] || !teams[drawAssignments[position]]) {
+                return null;
+            }
+            
+            const teamId = drawAssignments[position];
+            const team = teams[teamId];
+            
+            return {
+                id: teamId,
+                name: team.teamName,
+                logo: getTeamLogoFilename(team.teamName),
+                position: position
+            };
+        }
+
+        // Calculate match score from various sources
+        function getMatchScore(matchId) {
+            // Try matchScores first
+            if (matchScores[matchId] && typeof matchScores[matchId] === 'object') {
+                const score = matchScores[matchId];
+                if (typeof score.team1Score === 'number' && typeof score.team2Score === 'number') {
+                    return { team1: score.team1Score, team2: score.team2Score };
+                }
+            }
+            
+            // Try matchEvents for goal counting
+            if (matchEvents[matchId]) {
+                const events = matchEvents[matchId];
+                let team1Goals = 0;
+                let team2Goals = 0;
+                
+                Object.values(events).forEach(event => {
+                    if (event.eventType === 'goal') {
+                        if (event.team === 'team1') team1Goals++;
+                        else if (event.team === 'team2') team2Goals++;
+                    }
+                });
+                
+                return { team1: team1Goals, team2: team2Goals };
+            }
+            
+            return { team1: 0, team2: 0 };
+        }
+
+        // Get all group stage matches
+        function getGroupStageMatches() {
+            const matchSchedule = {
+                'October 26': [
+                    { teams: ['A1', 'A2'], type: 'Group A', time: '4:00 PM' },
+                    { teams: ['A3', 'A4'], type: 'Group A', time: '5:00 PM' },
+                    { teams: ['B1', 'B2'], type: 'Group B', time: '8:00 PM' },
+                    { teams: ['C1', 'C2'], type: 'Group C', time: '9:00 PM' },
+                    { teams: ['D1', 'D2'], type: 'Group D', time: '10:00 PM' }
+                ],
+                'October 27': [
+                    { teams: ['A1', 'A3'], type: 'Group A', time: '8:15 PM' },
+                    { teams: ['A2', 'A4'], type: 'Group A', time: '9:15 PM' },
+                    { teams: ['B1', 'B3'], type: 'Group B', time: '10:15 PM' }
+                ],
+                'October 28': [
+                    { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
+                    { teams: ['D1', 'D3'], type: 'Group D', time: '9:15 PM' },
+                    { teams: ['B2', 'B3'], type: 'Group B', time: '10:15 PM' }
+                ],
+                'October 29': [
+                    { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
+                    { teams: ['A2', 'A3'], type: 'Group A', time: '9:15 PM' },
+                    { teams: ['C2', 'C3'], type: 'Group C', time: '10:15 PM' }
+                ],
+                'October 30': [
+                    { teams: ['D2', 'D3'], type: 'Group D', time: '9:15 PM' }
+                ]
+            };
+
+            const matches = [];
+            
+            for (const date of Object.keys(matchSchedule)) {
+                for (const match of matchSchedule[date]) {
+                    const dateParts = date.toLowerCase().split(' ');
+                    const dateStr = `${dateParts[0]}${dateParts[1]}`;
+                    const timeFormatted = match.time.replace(/[^0-9]/g, '');
+                    const matchId = `${dateStr}-${match.teams[0]}vs${match.teams[1]}-${timeFormatted}`;
+                    
+                    matches.push({
+                        id: matchId,
+                        teams: match.teams,
+                        group: match.teams[0].charAt(0),
+                        date: date,
+                        time: match.time
+                    });
+                }
+            }
+            
+            return matches;
+        }
+
+        // Calculate team standings based on match results
+        function calculateStandings() {
+            const standings = {};
+            
+            // Initialize team standings
+            const positions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+            positions.forEach(position => {
+                if (drawAssignments[position]) {
+                    standings[position] = {
+                        position: position,
+                        group: position.charAt(0),
+                        matchesPlayed: 0,
+                        wins: 0,
+                        draws: 0,
+                        losses: 0,
+                        points: 0,
+                        goalsScored: 0,
+                        goalsConceded: 0,
+                        goalDifference: 0
+                    };
+                }
+            });
+
+            // Process all group stage matches
+            const matches = getGroupStageMatches();
+            
+            matches.forEach(match => {
+                const matchId = match.id;
+                const state = matchState[matchId]?.state;
+                
+                // Only process finished matches
+                if (state === 'finished') {
+                    const score = getMatchScore(matchId);
+                    const team1Position = match.teams[0];
+                    const team2Position = match.teams[1];
+                    
+                    if (standings[team1Position] && standings[team2Position]) {
+                        // Update matches played
+                        standings[team1Position].matchesPlayed++;
+                        standings[team2Position].matchesPlayed++;
+                        
+                        // Update goals
+                        standings[team1Position].goalsScored += score.team1;
+                        standings[team1Position].goalsConceded += score.team2;
+                        standings[team2Position].goalsScored += score.team2;
+                        standings[team2Position].goalsConceded += score.team1;
+                        
+                        // Update results
+                        if (score.team1 > score.team2) {
+                            // Team 1 wins
+                            standings[team1Position].wins++;
+                            standings[team1Position].points += 3;
+                            standings[team2Position].losses++;
+                        } else if (score.team2 > score.team1) {
+                            // Team 2 wins
+                            standings[team2Position].wins++;
+                            standings[team2Position].points += 3;
+                            standings[team1Position].losses++;
+                        } else {
+                            // Draw
+                            standings[team1Position].draws++;
+                            standings[team1Position].points += 1;
+                            standings[team2Position].draws++;
+                            standings[team2Position].points += 1;
+                        }
+                        
+                        // Update goal difference
+                        standings[team1Position].goalDifference = 
+                            standings[team1Position].goalsScored - standings[team1Position].goalsConceded;
+                        standings[team2Position].goalDifference = 
+                            standings[team2Position].goalsScored - standings[team2Position].goalsConceded;
+                    }
+                }
+            });
+
+            return standings;
+        }
+
+        // Get qualified teams (winners and runners-up from each group)
+        function getQualifiedTeams() {
+            const standings = calculateStandings();
+            const groups = ['A', 'B', 'C', 'D'];
+            const qualified = {
+                winners: [],
+                runnersUp: []
+            };
+            
+            groups.forEach(groupLetter => {
+                const groupTeams = Object.values(standings)
+                    .filter(team => team.group === groupLetter && drawAssignments[team.position])
+                    .sort((a, b) => {
+                        if (b.points !== a.points) return b.points - a.points;
+                        if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+                        return b.goalsScored - a.goalsScored;
+                    });
+                
+                if (groupTeams.length >= 2) {
+                    qualified.winners.push(groupTeams[0].position);
+                    qualified.runnersUp.push(groupTeams[1].position);
+                }
+            });
+            
+            return qualified;
+        }
+
+        // Check if draw requirements are met
+        function checkDrawRequirements() {
+            const matches = getGroupStageMatches();
+            const totalMatches = matches.length;
+            const finishedMatches = matches.filter(match => 
+                matchState[match.id]?.state === 'finished'
+            ).length;
+            
+            const qualified = getQualifiedTeams();
+            const hasEnoughTeams = qualified.winners.length >= 4 && qualified.runnersUp.length >= 4;
+            const allMatchesComplete = finishedMatches === totalMatches;
+            
+            return {
+                allMatchesComplete,
+                hasEnoughTeams,
+                finishedMatches,
+                totalMatches,
+                qualified
+            };
+        }
+
+        // Update draw status and controls
+        function updateDrawStatus() {
+            const statusElement = document.getElementById('draw-status');
+            const conductButton = document.getElementById('conduct-draw');
+            const clearButton = document.getElementById('clear-draw');
+            const requirements = checkDrawRequirements();
+            const hasExistingDraw = Object.keys(quarterFinalDraw).length > 0;
+            
+            if (hasExistingDraw) {
+                statusElement.textContent = 'Quarter Finals Draw Complete';
+                statusElement.className = 'draw-status completed';
+                conductButton.style.display = 'none';
+                clearButton.style.display = 'block';
+                displayDrawResult();
+            } else if (requirements.allMatchesComplete && requirements.hasEnoughTeams) {
+                statusElement.textContent = 'Ready to Conduct Draw';
+                statusElement.className = 'draw-status ready';
+                conductButton.disabled = false;
+                clearButton.style.display = 'none';
+            } else {
+                let message = 'Requirements not met: ';
+                const issues = [];
+                if (!requirements.allMatchesComplete) {
+                    issues.push(`${requirements.finishedMatches}/${requirements.totalMatches} matches complete`);
+                }
+                if (!requirements.hasEnoughTeams) {
+                    issues.push('need qualified teams from all groups');
+                }
+                message += issues.join(', ');
+                
+                statusElement.textContent = message;
+                statusElement.className = 'draw-status not-ready';
+                conductButton.disabled = true;
+                clearButton.style.display = 'none';
+            }
+        }
+
+        // Display group standings
+        function displayGroupStandings() {
+            const container = document.getElementById('group-standings');
+            const standings = calculateStandings();
+            const groups = ['A', 'B', 'C', 'D'];
+            
+            container.innerHTML = '';
+            
+            groups.forEach(groupLetter => {
+                const groupTeams = Object.values(standings)
+                    .filter(team => team.group === groupLetter)
+                    .sort((a, b) => {
+                        if (b.points !== a.points) return b.points - a.points;
+                        if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference;
+                        return b.goalsScored - a.goalsScored;
+                    });
+                
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group';
+                
+                const header = document.createElement('div');
+                header.className = 'group-header';
+                header.textContent = `GROUP ${groupLetter}`;
+                groupDiv.appendChild(header);
+                
+                groupTeams.forEach((team, index) => {
+                    const teamData = getTeamData(team.position);
+                    const teamDiv = document.createElement('div');
+                    teamDiv.className = 'team-item';
+                    
+                    let positionClass = 'other';
+                    let positionText = (index + 1).toString();
+                    
+                    if (index === 0) {
+                        positionClass = 'winner';
+                        positionText = '🥇';
+                        teamDiv.classList.add('winner');
+                    } else if (index === 1) {
+                        positionClass = 'runner-up';
+                        positionText = '🥈';
+                        teamDiv.classList.add('runner-up');
+                    }
+                    
+                    teamDiv.innerHTML = `
+                        <div class="position-indicator ${positionClass}">${positionText}</div>
+                        <div class="team-name">${teamData ? teamData.name : team.position}</div>
+                        <div class="team-points">${team.points}pts</div>
+                    `;
+                    
+                    groupDiv.appendChild(teamDiv);
+                });
+                
+                container.appendChild(groupDiv);
+            });
+        }
+
+        // Conduct the quarter finals draw
+        function conductDraw() {
+            const requirements = checkDrawRequirements();
+            if (!requirements.allMatchesComplete || !requirements.hasEnoughTeams) {
+                alert('Draw requirements not met!');
+                return;
+            }
+            
+            const qualified = requirements.qualified;
+            console.log('Conducting draw with qualified teams:', qualified);
+            
+            // Shuffle the runners-up for random draw
+            const shuffledRunnersUp = [...qualified.runnersUp].sort(() => Math.random() - 0.5);
+            
+            // Create the draw avoiding same-group matchups
+            const draw = {};
+            const usedRunners = new Set();
+            
+            // Assign winners to first slots and find suitable runners-up
+            qualified.winners.forEach((winner, index) => {
+                const qfNum = index + 1;
+                const winnerGroup = winner.charAt(0);
+                
+                // Find a runner-up from a different group
+                const availableRunners = shuffledRunnersUp.filter(runner => 
+                    !usedRunners.has(runner) && runner.charAt(0) !== winnerGroup
+                );
+                
+                if (availableRunners.length > 0) {
+                    const selectedRunner = availableRunners[0];
+                    draw[`QF${qfNum}`] = {
+                        team1: winner,
+                        team2: selectedRunner
+                    };
+                    usedRunners.add(selectedRunner);
+                } else {
+                    // Fallback: use any available runner-up (shouldn't happen with proper groups)
+                    const fallbackRunner = shuffledRunnersUp.find(runner => !usedRunners.has(runner));
+                    if (fallbackRunner) {
+                        draw[`QF${qfNum}`] = {
+                            team1: winner,
+                            team2: fallbackRunner
+                        };
+                        usedRunners.add(fallbackRunner);
+                    }
+                }
+            });
+            
+            console.log('Generated draw:', draw);
+            
+            // Save to Firebase
+            database.ref('quarterFinalDraw').set(draw)
+                .then(() => {
+                    console.log('Quarter finals draw saved successfully!');
+                    updateDrawStatus();
+                })
+                .catch(error => {
+                    console.error('Error saving draw:', error);
+                    alert('Error saving draw. Please try again.');
+                });
+        }
+
+        // Clear the draw
+        function clearDraw() {
+            if (confirm('Are you sure you want to clear the quarter finals draw? This cannot be undone.')) {
+                database.ref('quarterFinalDraw').remove()
+                    .then(() => {
+                        console.log('Quarter finals draw cleared');
+                        document.getElementById('draw-result').style.display = 'none';
+                        updateDrawStatus();
+                    })
+                    .catch(error => {
+                        console.error('Error clearing draw:', error);
+                        alert('Error clearing draw. Please try again.');
+                    });
+            }
+        }
+
+        // Display draw result
+        function displayDrawResult() {
+            const resultContainer = document.getElementById('draw-result');
+            const matchesContainer = document.getElementById('qf-matches');
+            
+            if (Object.keys(quarterFinalDraw).length === 0) {
+                resultContainer.style.display = 'none';
+                return;
+            }
+            
+            resultContainer.style.display = 'block';
+            matchesContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 4; i++) {
+                const qfData = quarterFinalDraw[`QF${i}`];
+                if (qfData) {
+                    const team1Data = getTeamData(qfData.team1);
+                    const team2Data = getTeamData(qfData.team2);
+                    
+                    const matchDiv = document.createElement('div');
+                    matchDiv.className = 'qf-match';
+                    matchDiv.innerHTML = `
+                        <div class="qf-title">QUARTER FINAL ${i}</div>
+                        <div class="qf-teams">
+                            <div class="qf-team">
+                                ${team1Data ? team1Data.name : qfData.team1}
+                                <br><small>Group ${qfData.team1.charAt(0)} Winner 🥇</small>
+                            </div>
+                            <div class="qf-vs">VS</div>
+                            <div class="qf-team">
+                                ${team2Data ? team2Data.name : qfData.team2}
+                                <br><small>Group ${qfData.team2.charAt(0)} Runner-up 🥈</small>
+                            </div>
+                        </div>
+                    `;
+                    
+                    matchesContainer.appendChild(matchDiv);
+                }
+            }
+        }
+
+        // Firebase listeners
+        function setupFirebaseListeners() {
+            // Listen for team data
+            database.ref('applications').on('value', (snapshot) => {
+                teams = snapshot.val() || {};
+                console.log('Teams updated:', Object.keys(teams).length);
+                displayGroupStandings();
+                updateDrawStatus();
+            });
+
+            // Listen for draw assignments
+            database.ref('drawAssignments').on('value', (snapshot) => {
+                drawAssignments = snapshot.val() || {};
+                console.log('Draw assignments updated:', Object.keys(drawAssignments).length);
+                displayGroupStandings();
+                updateDrawStatus();
+            });
+
+            // Listen for match events
+            database.ref('matchEvents').on('value', (snapshot) => {
+                matchEvents = snapshot.val() || {};
+                console.log('Match events updated:', Object.keys(matchEvents).length);
+                displayGroupStandings();
+                updateDrawStatus();
+            });
+
+            // Listen for match scores
+            database.ref('matchScores').on('value', (snapshot) => {
+                matchScores = snapshot.val() || {};
+                console.log('Match scores updated:', Object.keys(matchScores).length);
+                displayGroupStandings();
+                updateDrawStatus();
+            });
+
+            // Listen for match states
+            database.ref('matchState').on('value', (snapshot) => {
+                matchState = snapshot.val() || {};
+                console.log('Match states updated:', Object.keys(matchState).length);
+                displayGroupStandings();
+                updateDrawStatus();
+            });
+
+            // Listen for quarter final draw
+            database.ref('quarterFinalDraw').on('value', (snapshot) => {
+                quarterFinalDraw = snapshot.val() || {};
+                console.log('Quarter final draw updated:', quarterFinalDraw);
+                updateDrawStatus();
+                if (Object.keys(quarterFinalDraw).length > 0) {
+                    displayDrawResult();
+                }
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupFirebaseListeners();
+            
+            // Hide loading and show content once data is loaded
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('main-content').style.display = 'grid';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
