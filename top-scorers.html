@@ -568,6 +568,7 @@
                 goalScorers = {};
                 let totalGoals = 0;
                 const matchesWithGoals = new Set();
+                const processedGoals = new Set(); // Track processed goals to prevent duplicates
 
                 console.log('Processing match events for goal scorers:', matchEvents);
 
@@ -581,14 +582,25 @@
                         
                         // Only process goal events
                         if (event.eventType === 'goal') {
+                            // Create unique goal identifier to prevent duplicates
+                            const goalId = `${matchId}-${eventKey}-${event.teamKey}-${event.personKey}`;
+                            
+                            if (processedGoals.has(goalId)) {
+                                console.log(`Duplicate goal detected, skipping: ${goalId}`);
+                                return;
+                            }
+                            
+                            processedGoals.add(goalId);
                             totalGoals++;
                             matchesWithGoals.add(matchId);
                             
-                            const playerKey = `${event.teamKey}-${event.personKey}`;
                             const playerData = getPlayerData(event.teamKey, event.personKey, matchId);
                             const teamKey = event.teamKey;
                             
-                            console.log(`Goal found: ${playerData.name} #${playerData.jersey} (${playerKey})`);
+                            // Create unique player key including match context to avoid conflicts
+                            const playerKey = `${playerData.name}-${playerData.jersey}-${playerData.teamName}`;
+                            
+                            console.log(`Goal found: ${playerData.name} #${playerData.jersey} from ${playerData.teamName} (Goal ID: ${goalId})`);
                             
                             // Initialize player if not exists
                             if (!goalScorers[playerKey]) {
@@ -609,6 +621,7 @@
 
                 console.log('Final goal scorers:', goalScorers);
                 console.log(`Total goals: ${totalGoals}, Matches with goals: ${matchesWithGoals.size}`);
+                console.log('Processed goal IDs:', Array.from(processedGoals));
 
                 // Update stats summary
                 document.getElementById('total-goals').textContent = totalGoals;

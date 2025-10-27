@@ -185,6 +185,22 @@
             color: var(--text-color);
         }
 
+        .position-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            width: 28px;
+            height: 20px;
+            border-radius: 10px;
+            margin-right: 10px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(3, 189, 237, 0.3);
+        }
+
         .points-cell {
             font-weight: 700;
             color: var(--success-color);
@@ -346,6 +362,13 @@
             .page-title {
                 font-size: 2rem;
             }
+            
+            .position-badge {
+                width: 24px;
+                height: 18px;
+                font-size: 0.65rem;
+                margin-right: 8px;
+            }
         }
     </style>
 </head>
@@ -506,6 +529,8 @@
         // Get all group stage matches with their IDs
         function getGroupStageMatches() {
             const matches = [];
+            
+            // Add matches from predefined schedule
             for (const date of Object.keys(matchSchedule)) {
                 for (const match of matchSchedule[date]) {
                     matches.push({
@@ -517,6 +542,50 @@
                     });
                 }
             }
+            
+            // Also check for any additional matches in the database that aren't in the schedule
+            // This handles cases where actual matches differ from the predefined schedule
+            const allMatchIds = [
+                ...Object.keys(matchEvents || {}),
+                ...Object.keys(matchScores || {}),
+                ...Object.keys(matchState || {})
+            ];
+            
+            // Get unique match IDs from database
+            const uniqueDbMatches = [...new Set(allMatchIds)];
+            
+            uniqueDbMatches.forEach(matchId => {
+                // Parse match ID to extract teams (format: date-team1vsTeam2-time)
+                const parts = matchId.split('-');
+                if (parts.length === 3) {
+                    const teamsAndTime = parts[1];
+                    const vsIndex = teamsAndTime.indexOf('vs');
+                    if (vsIndex > 0) {
+                        const team1 = teamsAndTime.substring(0, vsIndex);
+                        const team2 = teamsAndTime.substring(vsIndex + 2);
+                        
+                        // Check if this is a valid group stage match (not knockout)
+                        const validPositions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+                        if (validPositions.includes(team1) && validPositions.includes(team2)) {
+                            // Check if we don't already have this match
+                            const existingMatch = matches.find(m => m.id === matchId);
+                            if (!existingMatch) {
+                                console.log(`Found database match not in schedule: ${matchId}`);
+                                matches.push({
+                                    id: matchId,
+                                    teams: [team1, team2],
+                                    group: team1.charAt(0),
+                                    date: parts[0],
+                                    time: parts[2],
+                                    fromDatabase: true
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+            
+            console.log(`Total matches found: ${matches.length} (schedule: ${matches.filter(m => !m.fromDatabase).length}, database: ${matches.filter(m => m.fromDatabase).length})`);
             return matches;
         }
 
@@ -573,11 +642,15 @@
         function getMatchScore(matchId) {
             // First, check if we have saved match scores (preferred method)
             if (matchScores[matchId] && matchScores[matchId].current) {
-                return matchScores[matchId].current;
+                const score = matchScores[matchId].current;
+                console.log(`Using saved scores for ${matchId}: ${score.team1}-${score.team2}`);
+                return score;
             }
             
             // Fallback to calculating from events
-            return calculateMatchScoreFromEvents(matchId);
+            const calculatedScore = calculateMatchScoreFromEvents(matchId);
+            console.log(`Calculated scores from events for ${matchId}: ${calculatedScore.team1}-${calculatedScore.team2}`);
+            return calculatedScore;
         }
 
         // Check if match has been played
@@ -585,14 +658,17 @@
             // Check match state first - only count matches with "finished" status
             if (matchState[matchId] && matchState[matchId].state) {
                 const state = matchState[matchId].state;
-                // Match is played only if it's finished
-                return state === 'finished';
+                const isFinished = state === 'finished';
+                console.log(`Match ${matchId} state: ${state} (${isFinished ? 'FINISHED' : 'NOT FINISHED'})`);
+                return isFinished;
             }
             
             // Fallback: Check if we have match scores
             if (matchScores[matchId] && matchScores[matchId].current) {
                 const scores = matchScores[matchId].current;
-                return scores.team1 > 0 || scores.team2 > 0;
+                const hasScore = scores.team1 > 0 || scores.team2 > 0;
+                console.log(`Match ${matchId} scores: ${scores.team1}-${scores.team2} (${hasScore ? 'HAS SCORE' : 'NO SCORE'})`);
+                return hasScore;
             }
             
             // Fallback: Check if we have match events with goals
@@ -603,26 +679,50 @@
                 matchEventsData[key].eventType === 'own-goal'
             );
             
+            console.log(`Match ${matchId} events: ${eventKeys.length} events (${hasGoals ? 'HAS GOALS' : 'NO GOALS'})`);
             return hasGoals;
         }
 
         // Calculate standings from match data
         function calculateStandings() {
             try {
+                console.log('=== CALCULATING STANDINGS ===');
+                console.log('Available data:', {
+                    matchEvents: Object.keys(matchEvents).length,
+                    matchScores: Object.keys(matchScores).length,
+                    matchState: Object.keys(matchState).length,
+                    teams: Object.keys(teams).length,
+                    drawAssignments: Object.keys(drawAssignments).length
+                });
+                
+                // Show sample of available match IDs for debugging
+                console.log('Sample match IDs from each source:');
+                console.log('- Events:', Object.keys(matchEvents).slice(0, 3));
+                console.log('- Scores:', Object.keys(matchScores).slice(0, 3));
+                console.log('- States:', Object.keys(matchState).slice(0, 3));
+                
                 initializeStandings();
                 
                 const groupStageMatches = getGroupStageMatches();
                 console.log('Processing matches for standings:', groupStageMatches.length, 'matches');
+                console.log('Match list:', groupStageMatches.map(m => `${m.id} (${m.fromDatabase ? 'DB' : 'Schedule'})`));
             
+                let playedMatches = 0;
+                let skippedMatches = 0;
+                
                 // Process each group stage match
                 groupStageMatches.forEach((match) => {
                     const matchId = match.id;
                     
                     // Check if match has been played
                     if (!isMatchPlayed(matchId)) {
-                        console.log(`Match ${matchId} not played yet, skipping`);
+                        skippedMatches++;
+                        console.log(`Match ${matchId} not played yet, skipping (${skippedMatches} skipped total)`);
                         return;
                     }
+                    
+                    playedMatches++;
+                    console.log(`Processing played match ${playedMatches}: ${matchId} ${match.fromDatabase ? '(from DB)' : '(from schedule)'}`);
                     
                     const score = getMatchScore(matchId);
                     const team1Goals = score.team1;
@@ -632,6 +732,12 @@
                     const team2Position = match.teams[1];
                     
                     console.log(`Match result: ${team1Position} ${team1Goals} - ${team2Goals} ${team2Position}`);
+                    
+                    // Validate team positions exist in standings
+                    if (!teamStandings[team1Position] || !teamStandings[team2Position]) {
+                        console.error(`Invalid team positions: ${team1Position}, ${team2Position}`);
+                        return;
+                    }
                     
                     // Update match statistics
                     teamStandings[team1Position].matchesPlayed++;
@@ -669,7 +775,13 @@
                         teamStandings[team2Position].goalsScored - teamStandings[team2Position].goalsConceded;
                 });
                 
-                console.log('Final standings calculated:', teamStandings);
+                console.log(`Match processing complete: ${playedMatches} played, ${skippedMatches} skipped`);
+                console.log('Final standings calculated. Sample:', {
+                    A1: teamStandings['A1'],
+                    B1: teamStandings['B1'],
+                    C1: teamStandings['C1'],
+                    D1: teamStandings['D1']
+                });
             } catch (error) {
                 console.error('Error calculating standings:', error);
                 console.error('Error stack:', error.stack);
@@ -677,17 +789,78 @@
         }
 
         // Refresh function
+        function updateLastRefreshTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            const lastUpdatedElement = document.getElementById('last-updated');
+            if (lastUpdatedElement) {
+                lastUpdatedElement.textContent = `Last updated: ${timeString}`;
+            }
+        }
+
         function refreshStandings() {
             const btn = document.querySelector('.refresh-btn');
             btn.classList.add('refreshing');
             
-            // Force recalculation
-            calculateStandings();
-            renderStandings();
+            console.log('=== MANUAL REFRESH TRIGGERED ===');
             
-            setTimeout(() => {
+            // Clear existing data and force reload from Firebase
+            teams = {};
+            drawAssignments = {};
+            matchEvents = {};
+            matchScores = {};
+            matchState = {};
+            
+            // Force Firebase to re-fetch data
+            database.ref('applications').once('value').then((snapshot) => {
+                teams = snapshot.val() || {};
+                console.log('Force reloaded teams:', Object.keys(teams).length);
+                return database.ref('drawAssignments').once('value');
+            }).then((snapshot) => {
+                drawAssignments = snapshot.val() || {};
+                console.log('Force reloaded draw assignments:', Object.keys(drawAssignments).length);
+                return database.ref('matchEvents').once('value');
+            }).then((snapshot) => {
+                matchEvents = snapshot.val() || {};
+                console.log('Force reloaded match events:', Object.keys(matchEvents).length);
+                return database.ref('matchScores').once('value');
+            }).then((snapshot) => {
+                matchScores = snapshot.val() || {};
+                console.log('Force reloaded match scores:', Object.keys(matchScores).length);
+                return database.ref('matchState').once('value');
+            }).then((snapshot) => {
+                matchState = snapshot.val() || {};
+                console.log('Force reloaded match states:', Object.keys(matchState).length);
+                
+                // Debug: Show what actual match data we have
+                console.log('=== AVAILABLE MATCH DATA AFTER REFRESH ===');
+                console.log('Match States:', Object.keys(matchState));
+                console.log('Match Scores:', Object.keys(matchScores));
+                console.log('Match Events:', Object.keys(matchEvents));
+                
+                // Show sample of finished matches
+                const finishedMatches = Object.keys(matchState).filter(id => 
+                    matchState[id] && matchState[id].state === 'finished'
+                );
+                console.log('Finished matches:', finishedMatches);
+                
+                // Now recalculate and render
+                calculateStandings();
+                renderStandings();
+                updateLastRefreshTime();
+                
+                setTimeout(() => {
+                    btn.classList.remove('refreshing');
+                }, 500);
+            }).catch((error) => {
+                console.error('Error during force refresh:', error);
                 btn.classList.remove('refreshing');
-            }, 500);
+            });
         }
 
         // Get team data by position with better error handling
@@ -726,6 +899,19 @@
             };
         }
 
+        // Get the correct total matches for each team based on group structure
+        function getExpectedMatchesForTeam(position) {
+            const group = position.charAt(0);
+            
+            // Group A has 4 teams, so each team plays 3 matches (round-robin)
+            if (group === 'A') {
+                return 3;
+            }
+            
+            // Groups B, C, D have 3 teams each, so each team plays 2 matches (round-robin)
+            return 2;
+        }
+
         // Get match status for display
         function getMatchStatusForTeam(position) {
             const allMatches = getGroupStageMatches();
@@ -737,7 +923,17 @@
             let ongoing = 0;
             let scheduled = 0;
             
-            teamMatches.forEach(match => {
+            // Remove duplicates - sometimes we get both scheduled and actual matches
+            const uniqueMatchIds = new Set();
+            const uniqueMatches = teamMatches.filter(match => {
+                if (uniqueMatchIds.has(match.id)) {
+                    return false;
+                }
+                uniqueMatchIds.add(match.id);
+                return true;
+            });
+            
+            uniqueMatches.forEach(match => {
                 const state = matchState[match.id]?.state || 'not-started';
                 if (state === 'finished') {
                     completed++;
@@ -748,7 +944,23 @@
                 }
             });
             
-            return { completed, ongoing, scheduled, total: teamMatches.length };
+            // Use the expected number of matches based on group structure
+            const expectedTotal = getExpectedMatchesForTeam(position);
+            
+            console.log(`Team ${position}: Found ${uniqueMatches.length} matches, expected ${expectedTotal}, completed ${completed}`);
+            
+            // Warn about potential data issues
+            if (uniqueMatches.length > expectedTotal) {
+                console.warn(`Team ${position} has more matches (${uniqueMatches.length}) than expected (${expectedTotal})`);
+            }
+            
+            return { 
+                completed, 
+                ongoing, 
+                scheduled, 
+                total: expectedTotal,
+                actualMatches: uniqueMatches.length 
+            };
         }
 
         // Update tournament summary statistics
@@ -890,6 +1102,10 @@
                 groupTeams.forEach((teamStats, index) => {
                     const teamData = getTeamData(teamStats.position);
                     const matchStatus = getMatchStatusForTeam(teamStats.position);
+                    
+                    // Debug: Log the match status for verification
+                    console.log(`Rendering ${teamStats.position}: ${teamStats.matchesPlayed}/${matchStatus.total} (actual matches found: ${matchStatus.actualMatches})`);
+                    
                     const row = document.createElement('tr');
                     
                     // Add position-based styling
@@ -932,11 +1148,12 @@
                     
                     row.innerHTML = `
                         <td class="team-name-cell">
+                            <span class="position-badge">${teamStats.position}</span>
                             ${logoHtml}
                             <span class="team-name">${teamData.name}</span>
                             ${statusIndicator}
                         </td>
-                        <td>${teamStats.matchesPlayed}/${matchStatus.total}</td>
+                        <td>${Math.min(teamStats.matchesPlayed, matchStatus.total)}/${matchStatus.total}</td>
                         <td class="wins-cell">${teamStats.wins}</td>
                         <td class="draws-cell">${teamStats.draws}</td>
                         <td class="losses-cell">${teamStats.losses}</td>
@@ -978,12 +1195,37 @@
 
         // Add error handling to Firebase listeners
         function setupFirebaseListeners() {
+            let dataLoaded = {
+                teams: false,
+                drawAssignments: false,
+                matchEvents: false,
+                matchScores: false,
+                matchState: false
+            };
+
+            function checkAndUpdate(source) {
+                console.log(`Data updated from ${source}`);
+                console.log('Current data state:', {
+                    teams: Object.keys(teams).length,
+                    drawAssignments: Object.keys(drawAssignments).length,
+                    matchEvents: Object.keys(matchEvents).length,
+                    matchScores: Object.keys(matchScores).length,
+                    matchState: Object.keys(matchState).length
+                });
+                
+                // Only recalculate if we have essential data
+                if (Object.keys(teams).length > 0 && Object.keys(drawAssignments).length > 0) {
+                    calculateStandings();
+                    renderStandings();
+                    updateLastRefreshTime();
+                }
+            }
+
             database.ref('applications').on('value', 
                 (snapshot) => {
                     teams = snapshot.val() || {};
-                    console.log('Teams loaded:', Object.keys(teams).length, 'teams');
-                    calculateStandings();
-                    renderStandings();
+                    dataLoaded.teams = true;
+                    checkAndUpdate('teams');
                 },
                 (error) => handleFirebaseError(error, 'teams')
             );
@@ -991,39 +1233,59 @@
             database.ref('drawAssignments').on('value', 
                 (snapshot) => {
                     drawAssignments = snapshot.val() || {};
-                    console.log('Draw assignments loaded:', Object.keys(drawAssignments).length, 'assignments');
-                    calculateStandings();
-                    renderStandings();
+                    dataLoaded.drawAssignments = true;
+                    checkAndUpdate('drawAssignments');
                 },
                 (error) => handleFirebaseError(error, 'drawAssignments')
             );
 
             database.ref('matchEvents').on('value', 
                 (snapshot) => {
-                    matchEvents = snapshot.val() || {};
-                    console.log('Match events loaded for', Object.keys(matchEvents).length, 'matches');
-                    calculateStandings();
-                    renderStandings();
+                    const newMatchEvents = snapshot.val() || {};
+                    const eventCount = Object.keys(newMatchEvents).length;
+                    const oldEventCount = Object.keys(matchEvents).length;
+                    
+                    matchEvents = newMatchEvents;
+                    dataLoaded.matchEvents = true;
+                    
+                    if (eventCount !== oldEventCount) {
+                        console.log(`Match events changed: ${oldEventCount} -> ${eventCount}`);
+                    }
+                    checkAndUpdate('matchEvents');
                 },
                 (error) => handleFirebaseError(error, 'matchEvents')
             );
 
             database.ref('matchScores').on('value', 
                 (snapshot) => {
-                    matchScores = snapshot.val() || {};
-                    console.log('Match scores loaded for', Object.keys(matchScores).length, 'matches');
-                    calculateStandings();
-                    renderStandings();
+                    const newMatchScores = snapshot.val() || {};
+                    const scoreCount = Object.keys(newMatchScores).length;
+                    const oldScoreCount = Object.keys(matchScores).length;
+                    
+                    matchScores = newMatchScores;
+                    dataLoaded.matchScores = true;
+                    
+                    if (scoreCount !== oldScoreCount) {
+                        console.log(`Match scores changed: ${oldScoreCount} -> ${scoreCount}`);
+                    }
+                    checkAndUpdate('matchScores');
                 },
                 (error) => handleFirebaseError(error, 'matchScores')
             );
 
             database.ref('matchState').on('value', 
                 (snapshot) => {
-                    matchState = snapshot.val() || {};
-                    console.log('Match states loaded for', Object.keys(matchState).length, 'matches');
-                    calculateStandings();
-                    renderStandings();
+                    const newMatchState = snapshot.val() || {};
+                    const stateCount = Object.keys(newMatchState).length;
+                    const oldStateCount = Object.keys(matchState).length;
+                    
+                    matchState = newMatchState;
+                    dataLoaded.matchState = true;
+                    
+                    if (stateCount !== oldStateCount) {
+                        console.log(`Match states changed: ${oldStateCount} -> ${stateCount}`);
+                    }
+                    checkAndUpdate('matchState');
                 },
                 (error) => handleFirebaseError(error, 'matchState')
             );
@@ -1038,6 +1300,17 @@
 
         // Initial render with loading state
         renderStandings();
+        
+        // Auto-refresh every 30 seconds to ensure data is up to date
+        setInterval(() => {
+            console.log('Auto-refresh: checking for updates...');
+            calculateStandings();
+            renderStandings();
+            updateLastRefreshTime();
+        }, 30000);
+        
+        // Initial last updated time
+        updateLastRefreshTime();
     </script>
 </body>
 </html>
