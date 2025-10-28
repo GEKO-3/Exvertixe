@@ -50,75 +50,81 @@
             background-attachment: fixed;
             color: var(--text-color);
             min-height: 100vh;
-            padding: 20px;
+            padding: 25px;
             overflow: auto;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
-            position: relative;
+            height: calc(100vh - 50px);
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
         }
 
         .tournament-title {
             font-family: 'Bebas Neue', cursive;
-            font-size: 4rem;
+            font-size: 4.5rem;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 20px rgba(3, 189, 237, 0.5);
-            margin-bottom: 10px;
-            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(3, 189, 237, 0.7);
+            margin: 0;
+            letter-spacing: 4px;
+            position: relative;
         }
 
-        .draw-subtitle {
-            font-size: 1.5rem;
-            opacity: 0.9;
-            font-weight: 300;
-            color: rgba(255, 255, 255, 0.8);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
+        .sync-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 15px;
+            height: 15px;
+            background: var(--success-color);
+            border-radius: 50%;
+            opacity: 0;
+            animation: syncPulse 0.8s ease-in-out;
         }
 
-        .draw-status {
-            font-size: 1rem;
-            color: var(--accent-color);
-            background: rgba(255, 107, 53, 0.1);
-            padding: 8px 20px;
-            border-radius: 20px;
-            display: inline-block;
-            border: 1px solid rgba(255, 107, 53, 0.3);
-            backdrop-filter: blur(10px);
+        @keyframes syncPulse {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(1); }
         }
 
-        .draw-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 40px;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
+        .qf-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 40px;
+            flex: 1;
+            align-content: center;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .quarter-final {
-            background: rgba(26, 29, 33, 0.6);
-            border-radius: 15px;
-            padding: 25px;
+            background: rgba(26, 29, 33, 0.8);
+            border-radius: 20px;
+            padding: 35px;
             backdrop-filter: blur(20px);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
+            min-height: 200px;
         }
 
         .quarter-final::before {
@@ -133,53 +139,65 @@
         }
 
         .quarter-final:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 64px rgba(3, 189, 237, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 16px 48px rgba(3, 189, 237, 0.3);
             border-color: rgba(3, 189, 237, 0.4);
         }
 
         .qf-title {
             font-family: 'Bebas Neue', cursive;
-            font-size: 1.6rem;
-            text-align: left;
+            font-size: 2.2rem;
+            text-align: center;
             color: var(--primary-color);
+            margin-bottom: 8px;
+            letter-spacing: 3px;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .qf-datetime {
+            text-align: center;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
             margin-bottom: 20px;
-            letter-spacing: 2px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            padding-left: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
 
         .teams-container {
             display: flex;
             flex-direction: row;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
             justify-content: space-between;
+            overflow: hidden;
+            width: 100%;
         }
 
         .team-slot {
             flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 15px;
+            border: 3px solid rgba(255, 255, 255, 0.15);
             transition: all 0.3s ease;
             position: relative;
             min-height: 80px;
+            max-height: 120px;
             display: flex;
             align-items: center;
+            overflow: hidden;
         }
 
         .team-slot.winner {
             background: rgba(255, 215, 0, 0.1);
             border-color: rgba(255, 215, 0, 0.3);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
         }
 
         .team-slot.runner-up {
             background: rgba(192, 192, 192, 0.1);
             border-color: rgba(192, 192, 192, 0.3);
-            box-shadow: 0 0 20px rgba(192, 192, 192, 0.2);
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.2);
         }
 
         .team-slot.empty {
@@ -190,8 +208,18 @@
         .team-content {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
             width: 100%;
+            padding: 2px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .team-content:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
         }
 
         .team-logo {
@@ -200,7 +228,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid var(--primary-color);
-            box-shadow: 0 0 12px rgba(3, 189, 237, 0.4);
+            box-shadow: 0 0 10px rgba(3, 189, 237, 0.5);
             flex-shrink: 0;
         }
 
@@ -220,22 +248,43 @@
 
         .team-info {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .team-name {
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--text-color);
             margin-bottom: 3px;
             line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .team-position {
-            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .position-group {
+            font-size: 0.75rem;
             color: var(--primary-color);
-            font-weight: 500;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .position-status {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1;
         }
 
         .position-badge {
@@ -263,15 +312,16 @@
 
         .vs-separator {
             font-family: 'Bebas Neue', cursive;
-            font-size: 1.8rem;
+            font-size: 2.5rem;
             color: var(--accent-color);
-            text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+            text-shadow: 0 0 15px rgba(255, 107, 53, 0.7);
             margin: 0 15px;
             text-align: center;
             min-width: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 900;
         }
 
         .loading-team {
@@ -316,9 +366,10 @@
 
         .empty-slot {
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.6);
             font-style: italic;
-            font-size: 1rem;
+            font-size: 1.4rem;
+            font-weight: 500;
             padding: 15px;
             width: 100%;
             display: flex;
@@ -372,31 +423,7 @@
         }
 
         .legend-color.group-a { background: var(--group-a); }
-        .legend-color.group-b { background: var(--group-b); }
-        .legend-color.group-c { background: var(--group-c); }
-        .legend-color.group-d { background: var(--group-d); }
 
-        .back-btn {
-            position: absolute;
-            top: -10px;
-            left: 0;
-            background: rgba(26, 29, 33, 0.9);
-            color: var(--text-color);
-            text-decoration: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .back-btn:hover {
-            background: var(--primary-color);
-            transform: translateY(-2px);
-            color: white;
-        }
 
         /* Floating particles animation */
         body::before {
@@ -461,52 +488,122 @@
             .team-name {
                 font-size: 1rem;
             }
+
+            .position-group {
+                font-size: 0.65rem;
+            }
+
+            .position-status {
+                font-size: 0.6rem;
+            }
             
             .group-legend {
                 grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Logo overlay styles */
+        .logo-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: none;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .logo-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .team-logo-large {
+            max-width: 400px;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(3, 189, 237, 0.5);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .team-name-display {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+        }
+
+        .team-info-display {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .close-overlay {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-color);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-overlay:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .team-logo-large {
+                max-width: 250px;
+                max-height: 250px;
+            }
+            
+            .team-name-display {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="match-management.html" class="back-btn">← Back to Home</a>
-        
         <div class="header">
-            <h1 class="tournament-title">FYFC 2025</h1>
-            <p class="draw-subtitle">Quarter Finals Draw</p>
-            <div class="draw-status" id="draw-status">Draw Not Conducted</div>
+            <h1 class="tournament-title">FYFC 2025 - QUARTER FINALS</h1>
         </div>
 
-        <div class="draw-info">
-            <h3>Draw Format</h3>
-            <p><strong>Group Winners:</strong> Automatically seeded into Quarter Final 1-4 first slots (marked with 🥇)</p>
-            <p><strong>Group Runners-up:</strong> Drawn randomly into remaining slots, avoiding same group opponents (marked with 🥈)</p>
-            <p><strong>Match Format:</strong> Single elimination - Winner advances to Semi Finals</p>
-            
-            <div class="group-legend">
-                <div class="legend-item">
-                    <div class="legend-color group-a"></div>
-                    <span>Group A</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color group-b"></div>
-                    <span>Group B</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color group-c"></div>
-                    <span>Group C</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color group-d"></div>
-                    <span>Group D</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="draw-grid">
+        <div class="qf-grid">
             <div class="quarter-final">
                 <h2 class="qf-title">QUARTER FINAL 1</h2>
+                <div class="qf-datetime">29 October 8:00 PM</div>
                 <div class="teams-container">
                     <div class="team-slot winner" id="qf1-team1">
                         <div class="empty-slot">Group Winner TBD</div>
@@ -520,6 +617,7 @@
 
             <div class="quarter-final">
                 <h2 class="qf-title">QUARTER FINAL 2</h2>
+                <div class="qf-datetime">29 October 9:00 PM</div>
                 <div class="teams-container">
                     <div class="team-slot winner" id="qf2-team1">
                         <div class="empty-slot">Group Winner TBD</div>
@@ -533,6 +631,7 @@
 
             <div class="quarter-final">
                 <h2 class="qf-title">QUARTER FINAL 3</h2>
+                <div class="qf-datetime">29 October 10:00 PM</div>
                 <div class="teams-container">
                     <div class="team-slot winner" id="qf3-team1">
                         <div class="empty-slot">Group Winner TBD</div>
@@ -546,6 +645,7 @@
 
             <div class="quarter-final">
                 <h2 class="qf-title">QUARTER FINAL 4</h2>
+                <div class="qf-datetime">29 October 11:00 PM</div>
                 <div class="teams-container">
                     <div class="team-slot winner" id="qf4-team1">
                         <div class="empty-slot">Group Winner TBD</div>
@@ -556,6 +656,16 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Logo overlay -->
+    <div class="logo-overlay" id="logo-overlay">
+        <div class="logo-display">
+            <button class="close-overlay" onclick="hideTeamLogo()">×</button>
+            <img class="team-logo-large" id="team-logo-large" alt="Team Logo">
+            <div class="team-name-display" id="team-name-display"></div>
+            <div class="team-info-display" id="team-info-display"></div>
         </div>
     </div>
 
@@ -607,19 +717,92 @@
 
         // Get team data from position
         function getTeamData(position) {
-            if (!drawAssignments[position] || !teams[drawAssignments[position]]) {
+            console.log(`QF DISPLAY: getTeamData called with position: ${position}`);
+            console.log(`QF DISPLAY: drawAssignments[${position}] =`, drawAssignments[position]);
+            
+            if (!drawAssignments[position]) {
+                console.log(`QF DISPLAY: No assignment found for position ${position}`);
                 return null;
             }
             
             const teamId = drawAssignments[position];
-            const team = teams[teamId];
+            console.log(`QF DISPLAY: teamId for ${position} is:`, teamId);
             
-            return {
+            if (!teams[teamId]) {
+                console.log(`QF DISPLAY: No team data found for teamId ${teamId}`);
+                return null;
+            }
+            
+            const team = teams[teamId];
+            console.log(`QF DISPLAY: Team data found:`, team);
+            
+            const result = {
                 id: teamId,
                 name: team.teamName,
                 logo: getTeamLogoFilename(team.teamName),
                 position: position
             };
+            
+            console.log(`QF DISPLAY: Returning team data:`, result);
+            return result;
+        }
+
+        // Logo display functions
+        function showTeamLogo(teamData) {
+            console.log('showTeamLogo called with:', teamData);
+            
+            const overlay = document.getElementById('logo-overlay');
+            const logo = document.getElementById('team-logo-large');
+            const teamNameDisplay = document.getElementById('team-name-display');
+            const teamInfoDisplay = document.getElementById('team-info-display');
+
+            if (!overlay || !logo || !teamNameDisplay || !teamInfoDisplay) {
+                console.error('Logo overlay elements not found!');
+                return;
+            }
+
+            if (!teamData) {
+                console.error('Team data not provided');
+                return;
+            }
+
+            const logoFileName = teamData.logo;
+            console.log('Logo filename:', logoFileName);
+            
+            logo.style.display = 'block';
+            logo.src = `logos/${logoFileName}.jpg`;
+            
+            logo.onerror = () => {
+                console.log('JPG failed, trying PNG');
+                logo.src = `logos/${logoFileName}.png`;
+                logo.onerror = () => {
+                    console.log('Both JPG and PNG failed, hiding logo');
+                    logo.style.display = 'none';
+                    teamNameDisplay.style.fontSize = '4rem';
+                    teamNameDisplay.style.color = 'var(--primary-color)';
+                };
+            };
+
+            teamNameDisplay.textContent = teamData.name;
+            teamInfoDisplay.textContent = `Position: ${teamData.position}`;
+
+            // Show overlay with animation
+            overlay.style.display = 'flex';
+            overlay.offsetHeight; // Force reflow
+            overlay.style.opacity = '1';
+        }
+
+        function hideTeamLogo() {
+            console.log('hideTeamLogo called');
+            const overlay = document.getElementById('logo-overlay');
+            
+            if (!overlay) return;
+            
+            overlay.style.opacity = '0';
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
         }
 
         // Create team display element
@@ -651,7 +834,17 @@
                 
                 const positionElement = document.createElement('div');
                 positionElement.className = 'team-position';
-                positionElement.textContent = `Group ${teamData.position.charAt(0)} ${isWinner ? 'Winner' : 'Runner-up'}`;
+                
+                const groupLine = document.createElement('div');
+                groupLine.className = 'position-group';
+                groupLine.textContent = `GROUP ${teamData.position.charAt(0)}`;
+                
+                const statusLine = document.createElement('div');
+                statusLine.className = 'position-status';
+                statusLine.textContent = isWinner ? 'WINNER' : 'RUNNER-UP';
+                
+                positionElement.appendChild(groupLine);
+                positionElement.appendChild(statusLine);
                 
                 const badgeElement = document.createElement('div');
                 badgeElement.className = `position-badge ${isWinner ? '' : 'runner-up'}`;
@@ -663,6 +856,11 @@
                 teamElement.appendChild(logoElement);
                 teamElement.appendChild(infoElement);
                 teamElement.appendChild(badgeElement);
+                
+                // Add click handler to show logo overlay
+                teamElement.style.cursor = 'pointer';
+                teamElement.onclick = () => showTeamLogo(teamData);
+                teamElement.title = `Click to view ${teamData.name} logo`;
             } else {
                 teamElement.innerHTML = `
                     <div class="loading-team">
@@ -682,75 +880,150 @@
             return teamElement;
         }
 
-        // Update quarter final display
-        function updateQuarterFinalDisplay() {
-            console.log('Updating quarter final display with:', quarterFinalDraw);
+        // Show sync indicator
+        function showSyncIndicator() {
+            const title = document.querySelector('.tournament-title');
+            let indicator = title.querySelector('.sync-indicator');
             
-            // Update status
-            const statusElement = document.getElementById('draw-status');
-            const hasDrawData = Object.keys(quarterFinalDraw).length > 0;
-            statusElement.textContent = hasDrawData ? 'Draw Complete' : 'Draw Not Conducted';
-            statusElement.style.background = hasDrawData ? 'rgba(68, 255, 68, 0.1)' : 'rgba(255, 107, 53, 0.1)';
-            statusElement.style.borderColor = hasDrawData ? 'rgba(68, 255, 68, 0.3)' : 'rgba(255, 107, 53, 0.3)';
-            statusElement.style.color = hasDrawData ? '#44ff44' : '#ff6b35';
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.className = 'sync-indicator';
+                title.appendChild(indicator);
+            }
+            
+            // Trigger animation
+            indicator.style.animation = 'none';
+            indicator.offsetHeight; // Force reflow
+            indicator.style.animation = 'syncPulse 0.8s ease-in-out';
+        }
+
+        // Update quarter final display - SIMPLIFIED LIKE MAIN DRAW
+        function updateQuarterFinalDisplay() {
+            console.log('QF DISPLAY: updateQuarterFinalDisplay() called');
+            console.log('QF DISPLAY: quarterFinalDraw data:', quarterFinalDraw);
+            console.log('QF DISPLAY: teams data keys:', Object.keys(teams));
+            console.log('QF DISPLAY: drawAssignments keys:', Object.keys(drawAssignments));
             
             // Update each quarter final
             for (let i = 1; i <= 4; i++) {
+                console.log(`QF DISPLAY: Processing QF${i}`);
+                
                 const team1Element = document.getElementById(`qf${i}-team1`);
                 const team2Element = document.getElementById(`qf${i}-team2`);
                 
-                const qfData = quarterFinalDraw[`QF${i}`];
+                console.log(`QF DISPLAY: Elements found - team1: ${!!team1Element}, team2: ${!!team2Element}`);
                 
-                if (qfData && qfData.team1 && qfData.team2) {
-                    const team1Data = getTeamData(qfData.team1);
-                    const team2Data = getTeamData(qfData.team2);
+                const qfData = quarterFinalDraw[`QF${i}`];
+                console.log(`QF DISPLAY: QF${i} data:`, qfData);
+                
+                if (qfData) {
+                    // Handle team1
+                    if (qfData.team1) {
+                        console.log(`QF DISPLAY: QF${i} team1: ${qfData.team1}`);
+                        const team1Data = getTeamData(qfData.team1);
+                        console.log(`QF DISPLAY: Team1 data:`, team1Data);
+                        
+                        if (team1Data) {
+                            team1Element.innerHTML = '';
+                            team1Element.appendChild(createTeamElement(team1Data, true));
+                            console.log(`QF DISPLAY: QF${i} team1 updated successfully`);
+                        } else {
+                            team1Element.innerHTML = '<div class="empty-slot">Group Winner TBD</div>';
+                        }
+                    } else {
+                        team1Element.innerHTML = '<div class="empty-slot">Group Winner TBD</div>';
+                    }
                     
-                    team1Element.innerHTML = '';
-                    team1Element.appendChild(createTeamElement(team1Data, true));
-                    
-                    team2Element.innerHTML = '';
-                    team2Element.appendChild(createTeamElement(team2Data, false));
+                    // Handle team2
+                    if (qfData.team2) {
+                        console.log(`QF DISPLAY: QF${i} team2: ${qfData.team2}`);
+                        const team2Data = getTeamData(qfData.team2);
+                        console.log(`QF DISPLAY: Team2 data:`, team2Data);
+                        
+                        if (team2Data) {
+                            team2Element.innerHTML = '';
+                            team2Element.appendChild(createTeamElement(team2Data, false));
+                            console.log(`QF DISPLAY: QF${i} team2 updated successfully`);
+                        } else {
+                            team2Element.innerHTML = '<div class="empty-slot">Group Runner-up TBD</div>';
+                        }
+                    } else {
+                        team2Element.innerHTML = '<div class="empty-slot">Group Runner-up TBD</div>';
+                    }
                 } else {
-                    // Show empty state
+                    console.log(`QF DISPLAY: QF${i} no data - showing empty state`);
+                    // Show empty state for both
                     team1Element.innerHTML = '<div class="empty-slot">Group Winner TBD</div>';
                     team2Element.innerHTML = '<div class="empty-slot">Group Runner-up TBD</div>';
                 }
             }
         }
 
-        // Firebase listeners
+        // Firebase listeners - COPIED FROM WORKING MAIN DRAW DISPLAY
         function setupFirebaseListeners() {
-            // Listen for team data
-            database.ref('applications').on('value', (snapshot) => {
-                teams = snapshot.val() || {};
-                console.log('Teams updated:', Object.keys(teams).length);
+            console.log('QF DISPLAY: Setting up Firebase listeners');
+            
+            // Primary listener - quarter finals draw
+            database.ref('quarterFinalDraw').on('value', (snapshot) => {
+                console.log('QF DISPLAY: quarterFinalDraw updated', snapshot.val());
+                quarterFinalDraw = snapshot.val() || {};
                 updateQuarterFinalDisplay();
+            }, (error) => {
+                console.error('QF DISPLAY: Error listening to quarterFinalDraw:', error);
+            });
+
+            // Listen for changes in team data
+            database.ref('applications').on('value', (snapshot) => {
+                console.log('QF DISPLAY: applications updated');
+                teams = snapshot.val() || {};
+                console.log('QF DISPLAY: Teams loaded:', Object.keys(teams).length);
+                updateQuarterFinalDisplay();
+            }, (error) => {
+                console.error('QF DISPLAY: Error listening to applications:', error);
             });
 
             // Listen for draw assignments
             database.ref('drawAssignments').on('value', (snapshot) => {
+                console.log('QF DISPLAY: drawAssignments updated');
                 drawAssignments = snapshot.val() || {};
-                console.log('Draw assignments updated:', Object.keys(drawAssignments).length);
+                console.log('QF DISPLAY: Assignments loaded:', Object.keys(drawAssignments).length);
                 updateQuarterFinalDisplay();
+            }, (error) => {
+                console.error('QF DISPLAY: Error listening to drawAssignments:', error);
             });
 
-            // Listen for quarter final draw
-            database.ref('quarterFinalDraw').on('value', (snapshot) => {
-                quarterFinalDraw = snapshot.val() || {};
-                console.log('Quarter final draw updated:', quarterFinalDraw);
-                updateQuarterFinalDisplay();
-            });
-
-            // Listen for team standings updates
-            database.ref('teamStandings').on('value', (snapshot) => {
-                teamStandings = snapshot.val() || {};
-                console.log('Team standings updated:', Object.keys(teamStandings).length);
-            });
         }
 
-        // Initialize on page load
+        // Manual test function - call this from console to test updates
+        window.testUpdate = function() {
+            console.log('🧪 MANUAL TEST UPDATE');
+            updateQuarterFinalDisplay();
+        };
+
+        // Manual test function to simulate Firebase data
+        window.testWithData = function() {
+            console.log('🧪 TESTING WITH FAKE DATA');
+            quarterFinalDraw = {
+                'QF1': { team1: 'A1', team2: 'B2' },
+                'QF2': { team1: 'B1', team2: 'A2' }
+            };
+            updateQuarterFinalDisplay();
+        };
+
+        // Initialize on page load - COPIED FROM WORKING MAIN DRAW
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('QF DISPLAY: Starting initialization');
+            console.log('QF DISPLAY: Firebase database reference:', database);
             setupFirebaseListeners();
+            
+            // Test Firebase connection
+            database.ref('.info/connected').on('value', function(snapshot) {
+                if (snapshot.val() === true) {
+                    console.log('QF DISPLAY: Firebase connection established');
+                } else {
+                    console.log('QF DISPLAY: Firebase connection lost');
+                }
+            });
         });
     </script>
 </body>
