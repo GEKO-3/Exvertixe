@@ -1184,66 +1184,105 @@
 
         function calculateStandings() {
             try {
+                console.log('=== QF DISPLAY: CALCULATING STANDINGS ===');
+                console.log('QF DISPLAY: Available data:', {
+                    matchEvents: Object.keys(matchEvents).length,
+                    matchScores: Object.keys(matchScores).length,
+                    matchState: Object.keys(matchState).length,
+                    teams: Object.keys(teams).length,
+                    drawAssignments: Object.keys(drawAssignments).length
+                });
+                
+                // Show sample of available match IDs for debugging
+                console.log('QF DISPLAY: Sample match IDs from each source:');
+                console.log('- Events:', Object.keys(matchEvents).slice(0, 3));
+                console.log('- Scores:', Object.keys(matchScores).slice(0, 3));
+                console.log('- States:', Object.keys(matchState).slice(0, 3));
+                
                 initializeStandings();
                 
-                // Get all matches and process them
-                const matches = getGroupStageMatches();
-                console.log(`Processing matches for standings: ${matches.length} matches`);
+                const groupStageMatches = getGroupStageMatches();
+                console.log('QF DISPLAY: Processing matches for standings:', groupStageMatches.length, 'matches');
+                console.log('QF DISPLAY: Match list:', groupStageMatches.map(m => `${m.id} (${m.fromDatabase ? 'DB' : 'Schedule'})`));
+            
+                let playedMatches = 0;
+                let skippedMatches = 0;
                 
-                let playedCount = 0;
-                let skippedCount = 0;
-                
-                matches.forEach((match, index) => {
+                // Process each group stage match
+                groupStageMatches.forEach((match) => {
                     const matchId = match.id;
                     
-                    if (isMatchPlayed(matchId)) {
-                        playedCount++;
-                        console.log(`Processing played match ${playedCount}: ${matchId}`);
+                    // Check if match has been played
+                    if (!isMatchPlayed(matchId)) {
+                        skippedMatches++;
+                        console.log(`QF DISPLAY: Match ${matchId} not played yet, skipping (${skippedMatches} skipped total)`);
+                        return;
+                    }
+                    
+                    playedMatches++;
+                    console.log(`QF DISPLAY: Processing played match ${playedMatches}: ${matchId} ${match.fromDatabase ? '(from DB)' : '(from schedule)'}`);
+                    
+                    const score = getMatchScore(matchId);
+                    const team1Goals = score.team1;
+                    const team2Goals = score.team2;
+                    
+                    const team1Position = match.teams[0];
+                    const team2Position = match.teams[1];
                         
-                        const scores = getMatchScore(matchId);
-                        const team1 = match.teams[0];
-                        const team2 = match.teams[1];
+                        // Validate team positions exist in standings
+                        if (!teamStandings[team1Position] || !teamStandings[team2Position]) {
+                            console.error(`QF DISPLAY: Invalid team positions: ${team1Position}, ${team2Position}`);
+                            return;
+                        }
                         
-                        // Update stats for both teams
-                        teamStandings[team1].played++;
-                        teamStandings[team2].played++;
-                        teamStandings[team1].goalsFor += scores.team1;
-                        teamStandings[team1].goalsAgainst += scores.team2;
-                        teamStandings[team2].goalsFor += scores.team2;
-                        teamStandings[team2].goalsAgainst += scores.team1;
+                        // Update match statistics
+                        teamStandings[team1Position].played++;
+                        teamStandings[team2Position].played++;
                         
-                        // Determine winner
-                        if (scores.team1 > scores.team2) {
-                            teamStandings[team1].wins++;
-                            teamStandings[team1].points += 3;
-                            teamStandings[team2].losses++;
-                        } else if (scores.team2 > scores.team1) {
-                            teamStandings[team2].wins++;
-                            teamStandings[team2].points += 3;
-                            teamStandings[team1].losses++;
+                        teamStandings[team1Position].goalsFor += team1Goals;
+                        teamStandings[team1Position].goalsAgainst += team2Goals;
+                        
+                        teamStandings[team2Position].goalsFor += team2Goals;
+                        teamStandings[team2Position].goalsAgainst += team1Goals;
+                        
+                        // Determine match result
+                        if (team1Goals > team2Goals) {
+                            // Team 1 wins
+                            teamStandings[team1Position].wins++;
+                            teamStandings[team1Position].points += 3;
+                            teamStandings[team2Position].losses++;
+                        } else if (team2Goals > team1Goals) {
+                            // Team 2 wins
+                            teamStandings[team2Position].wins++;
+                            teamStandings[team2Position].points += 3;
+                            teamStandings[team1Position].losses++;
                         } else {
-                            teamStandings[team1].draws++;
-                            teamStandings[team2].draws++;
-                            teamStandings[team1].points += 1;
-                            teamStandings[team2].points += 1;
+                            // Draw
+                            teamStandings[team1Position].draws++;
+                            teamStandings[team1Position].points += 1;
+                            teamStandings[team2Position].draws++;
+                            teamStandings[team2Position].points += 1;
                         }
                         
                         // Calculate goal difference
-                        teamStandings[team1].goalDifference = teamStandings[team1].goalsFor - teamStandings[team1].goalsAgainst;
-                        teamStandings[team2].goalDifference = teamStandings[team2].goalsFor - teamStandings[team2].goalsAgainst;
-                        
-                        console.log(`Match result: ${team1} ${scores.team1} - ${scores.team2} ${team2}`);
-                    } else {
-                        skippedCount++;
-                    }
+                        teamStandings[team1Position].goalDifference = 
+                            teamStandings[team1Position].goalsFor - teamStandings[team1Position].goalsAgainst;
+                        teamStandings[team2Position].goalDifference = 
+                            teamStandings[team2Position].goalsFor - teamStandings[team2Position].goalsAgainst;
                 });
                 
-                console.log(`Match processing complete: ${playedCount} played, ${skippedCount} skipped`);
-                console.log('Final standings calculated. Sample:', { A1: teamStandings['A1'], B1: teamStandings['B1'], C1: teamStandings['C1'], D1: teamStandings['D1'] });
+                console.log(`QF DISPLAY: Match processing complete: ${playedMatches} played, ${skippedMatches} skipped`);
+                console.log('QF DISPLAY: Final standings calculated. Sample:', {
+                    A1: teamStandings['A1'],
+                    B1: teamStandings['B1'],
+                    C1: teamStandings['C1'],
+                    D1: teamStandings['D1']
+                });
                 
                 return teamStandings;
             } catch (error) {
-                console.error('Error calculating standings:', error);
+                console.error('QF DISPLAY: Error calculating standings:', error);
+                console.error('QF DISPLAY: Error stack:', error.stack);
                 return teamStandings;
             }
         }
@@ -1251,19 +1290,63 @@
         function getGroupStageMatches() {
             const matches = [];
             
+            // Add matches from predefined schedule
             for (const date of Object.keys(matchSchedule)) {
                 for (const match of matchSchedule[date]) {
-                    const matchId = generateMatchId(date, match);
                     matches.push({
-                        id: matchId,
+                        id: generateMatchId(date, match),
                         teams: match.teams,
-                        type: match.type,
-                        time: match.time,
+                        group: match.teams[0].charAt(0),
                         date: date,
+                        time: match.time,
                         fromDatabase: false
                     });
                 }
             }
+            
+            // Also check for any additional matches in the database that aren't in the schedule
+            // This handles cases where actual matches differ from the predefined schedule
+            const allMatchIds = [
+                ...Object.keys(matchEvents || {}),
+                ...Object.keys(matchScores || {}),
+                ...Object.keys(matchState || {})
+            ];
+            
+            // Get unique match IDs from database
+            const uniqueDbMatches = [...new Set(allMatchIds)];
+            
+            uniqueDbMatches.forEach(matchId => {
+                // Parse match ID to extract teams (format: date-team1vsTeam2-time)
+                const parts = matchId.split('-');
+                if (parts.length === 3) {
+                    const teamsAndTime = parts[1];
+                    const vsIndex = teamsAndTime.indexOf('vs');
+                    if (vsIndex > 0) {
+                        const team1 = teamsAndTime.substring(0, vsIndex);
+                        const team2 = teamsAndTime.substring(vsIndex + 2);
+                        
+                        // Check if this is a valid group stage match (not knockout)
+                        const validPositions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+                        if (validPositions.includes(team1) && validPositions.includes(team2)) {
+                            // Check if we don't already have this match
+                            const existingMatch = matches.find(m => m.id === matchId);
+                            if (!existingMatch) {
+                                console.log(`QF DISPLAY: Found database match not in schedule: ${matchId}`);
+                                matches.push({
+                                    id: matchId,
+                                    teams: [team1, team2],
+                                    group: team1.charAt(0),
+                                    date: parts[0],
+                                    time: parts[2],
+                                    fromDatabase: true
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+            
+            console.log(`QF DISPLAY: Total matches found: ${matches.length} (schedule: ${matches.filter(m => !m.fromDatabase).length}, database: ${matches.filter(m => m.fromDatabase).length})`);
             return matches;
         }
 
@@ -1281,10 +1364,21 @@
         }
 
         function getMatchScore(matchId) {
+            // First, check if we have saved match scores (preferred method)
             if (matchScores[matchId] && matchScores[matchId].current) {
-                return matchScores[matchId].current;
+                const score = matchScores[matchId].current;
+                console.log(`QF DISPLAY: Using saved scores for ${matchId}: ${score.team1}-${score.team2}`);
+                return score;
             }
             
+            // Fallback to calculating from events
+            const calculatedScore = calculateMatchScoreFromEvents(matchId);
+            console.log(`QF DISPLAY: Calculated scores from events for ${matchId}: ${calculatedScore.team1}-${calculatedScore.team2}`);
+            return calculatedScore;
+        }
+
+        // Helper function to calculate scores from events (like team-standings.html)
+        function calculateMatchScoreFromEvents(matchId) {
             const matchEventsData = matchEvents[matchId] || {};
             let team1Goals = 0;
             let team2Goals = 0;
@@ -1308,15 +1402,23 @@
         }
 
         function isMatchPlayed(matchId) {
+            // Check match state first - only count matches with "finished" status
             if (matchState[matchId] && matchState[matchId].state) {
                 const state = matchState[matchId].state;
-                return state === 'finished' || state === 'FINISHED';
+                const isFinished = state === 'finished';
+                console.log(`QF DISPLAY: Match ${matchId} state: ${state} (${isFinished ? 'FINISHED' : 'NOT FINISHED'})`);
+                return isFinished;
             }
             
+            // Fallback: Check if we have match scores
             if (matchScores[matchId] && matchScores[matchId].current) {
-                return true;
+                const scores = matchScores[matchId].current;
+                const hasScore = scores.team1 > 0 || scores.team2 > 0;
+                console.log(`QF DISPLAY: Match ${matchId} scores: ${scores.team1}-${scores.team2} (${hasScore ? 'HAS SCORE' : 'NO SCORE'})`);
+                return hasScore;
             }
             
+            // Fallback: Check if we have match events with goals
             const matchEventsData = matchEvents[matchId] || {};
             const eventKeys = Object.keys(matchEventsData);
             const hasGoals = eventKeys.some(key => 
@@ -1324,6 +1426,7 @@
                 matchEventsData[key].eventType === 'own-goal'
             );
             
+            console.log(`QF DISPLAY: Match ${matchId} events: ${eventKeys.length} events (${hasGoals ? 'HAS GOALS' : 'NO GOALS'})`);
             return hasGoals;
         }
 
@@ -1534,6 +1637,51 @@
             }
         }
 
+        // Data loading validation like team-standings.html
+        const dataLoaded = {
+            teams: false,
+            drawAssignments: false,
+            matchEvents: false,
+            matchScores: false,
+            matchState: false
+        };
+
+        function checkAndUpdateStandings(source) {
+            console.log(`QF DISPLAY: Data updated from ${source}`);
+            console.log('QF DISPLAY: Current data state:', {
+                teams: Object.keys(teams).length,
+                drawAssignments: Object.keys(drawAssignments).length,
+                matchEvents: Object.keys(matchEvents).length,
+                matchScores: Object.keys(matchScores).length,
+                matchState: Object.keys(matchState).length,
+                currentMode: currentDisplayMode
+            });
+            
+            // Update standings if we're showing group standings (be more aggressive)
+            if (currentDisplayMode && currentDisplayMode.startsWith('group-')) {
+                if (Object.keys(teams).length > 0 && Object.keys(drawAssignments).length > 0) {
+                    console.log('QF DISPLAY: Essential data available, refreshing group standings');
+                    displayCurrentMode();
+                } else {
+                    console.log('QF DISPLAY: Missing essential data, attempting refresh anyway:', {
+                        hasTeams: Object.keys(teams).length > 0,
+                        hasDrawAssignments: Object.keys(drawAssignments).length > 0
+                    });
+                    // Try to refresh anyway - sometimes data loads work
+                    displayCurrentMode();
+                }
+            }
+        }
+
+        // Manual refresh function that can be called from console
+        window.forceRefreshQFDisplay = function() {
+            console.log('QF DISPLAY: Manual refresh triggered');
+            updateQuarterFinalDisplay();
+            if (currentDisplayMode && currentDisplayMode.startsWith('group-')) {
+                displayCurrentMode();
+            }
+        };
+
         // Firebase listeners - COPIED FROM WORKING MAIN DRAW DISPLAY
         function setupFirebaseListeners() {
             console.log('QF DISPLAY: Setting up Firebase listeners');
@@ -1552,8 +1700,10 @@
                 console.log('QF DISPLAY: applications updated');
                 applications = snapshot.val() || {};
                 teams = applications; // Keep teams as alias for compatibility
+                dataLoaded.teams = true;
                 console.log('QF DISPLAY: Teams loaded:', Object.keys(applications).length);
-                updateQuarterFinalDisplay();
+                updateQuarterFinalDisplay(); // Always update QF display for team changes
+                checkAndUpdateStandings('teams'); // Check if we should update standings too
             }, (error) => {
                 console.error('QF DISPLAY: Error listening to applications:', error);
             });
@@ -1562,8 +1712,10 @@
             database.ref('drawAssignments').on('value', (snapshot) => {
                 console.log('QF DISPLAY: drawAssignments updated');
                 drawAssignments = snapshot.val() || {};
+                dataLoaded.drawAssignments = true;
                 console.log('QF DISPLAY: Assignments loaded:', Object.keys(drawAssignments).length);
-                updateQuarterFinalDisplay();
+                updateQuarterFinalDisplay(); // Always update QF display for assignment changes
+                checkAndUpdateStandings('drawAssignments'); // Check if we should update standings too
             }, (error) => {
                 console.error('QF DISPLAY: Error listening to drawAssignments:', error);
             });
@@ -1588,10 +1740,9 @@
             // Listen for match events (for standings calculation)
             database.ref('matchEvents').on('value', (snapshot) => {
                 matchEvents = snapshot.val() || {};
+                dataLoaded.matchEvents = true;
                 console.log('QF DISPLAY: Match events loaded');
-                if (currentDisplayMode !== 'quarter-finals' && currentDisplayMode !== 'quarterFinals') {
-                    displayCurrentMode(); // Refresh standings if currently showing
-                }
+                checkAndUpdateStandings('matchEvents');
             }, (error) => {
                 console.error('QF DISPLAY: Error listening to matchEvents:', error);
             });
@@ -1599,10 +1750,9 @@
             // Listen for match scores (for standings calculation)
             database.ref('matchScores').on('value', (snapshot) => {
                 matchScores = snapshot.val() || {};
+                dataLoaded.matchScores = true;
                 console.log('QF DISPLAY: Match scores loaded');
-                if (currentDisplayMode !== 'quarter-finals' && currentDisplayMode !== 'quarterFinals') {
-                    displayCurrentMode(); // Refresh standings if currently showing
-                }
+                checkAndUpdateStandings('matchScores');
             }, (error) => {
                 console.error('QF DISPLAY: Error listening to matchScores:', error);
             });
@@ -1610,10 +1760,9 @@
             // Listen for match state (for standings calculation)
             database.ref('matchState').on('value', (snapshot) => {
                 matchState = snapshot.val() || {};
+                dataLoaded.matchState = true;
                 console.log('QF DISPLAY: Match state loaded');
-                if (currentDisplayMode !== 'quarter-finals' && currentDisplayMode !== 'quarterFinals') {
-                    displayCurrentMode(); // Refresh standings if currently showing
-                }
+                checkAndUpdateStandings('matchState');
             }, (error) => {
                 console.error('QF DISPLAY: Error listening to matchState:', error);
             });
@@ -1853,6 +2002,58 @@
             clearOldDisplayModeData();
             
             setupFirebaseListeners();
+            
+            // Initial data loading - give Firebase listeners time to connect
+            setTimeout(() => {
+                console.log('QF DISPLAY: Initial data check after Firebase setup');
+                
+                // Force fetch latest data to ensure we have current information
+                console.log('QF DISPLAY: Force fetching latest Firebase data...');
+                Promise.all([
+                    database.ref('applications').once('value'),
+                    database.ref('drawAssignments').once('value'),
+                    database.ref('matchScores').once('value'),
+                    database.ref('matchState').once('value'),
+                    database.ref('matchEvents').once('value'),
+                    database.ref('qfDisplayMode').once('value')
+                ]).then(([teamsSnap, assignSnap, scoresSnap, stateSnap, eventsSnap, modeSnap]) => {
+                    console.log('QF DISPLAY: Initial data fetch completed');
+                    applications = teamsSnap.val() || {};
+                    teams = applications;
+                    drawAssignments = assignSnap.val() || {};
+                    matchScores = scoresSnap.val() || {};
+                    matchState = stateSnap.val() || {};
+                    matchEvents = eventsSnap.val() || {};
+                    
+                    const newMode = modeSnap.val() || 'quarter-finals';
+                    if (typeof newMode === 'string') {
+                        currentDisplayMode = newMode;
+                    }
+                    
+                    console.log('QF DISPLAY: Data loaded, updating display');
+                    updateQuarterFinalDisplay();
+                    
+                    // If we're in group standings mode, update those too
+                    if (currentDisplayMode && currentDisplayMode.startsWith('group-')) {
+                        console.log('QF DISPLAY: Initial group standings calculation');
+                        displayCurrentMode();
+                    }
+                }).catch(error => {
+                    console.error('QF DISPLAY: Error fetching initial data:', error);
+                });
+            }, 1000);
+            
+            // Auto-refresh every 30 seconds to ensure data is up to date
+            setInterval(() => {
+                console.log('QF DISPLAY: Auto-refresh - checking for updates...');
+                // Force refresh of current display mode if showing group standings
+                if (currentDisplayMode && currentDisplayMode.startsWith('group-')) {
+                    console.log('QF DISPLAY: Auto-refreshing group standings');
+                    checkAndUpdateStandings('auto-refresh');
+                }
+                // Also refresh QF display
+                updateQuarterFinalDisplay();
+            }, 30000);
             
             // Test Firebase connection
             database.ref('.info/connected').on('value', function(snapshot) {
