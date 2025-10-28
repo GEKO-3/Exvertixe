@@ -131,6 +131,61 @@
             color: white;
         }
 
+        .display-control {
+            background: rgba(26, 29, 33, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .display-control-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .display-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .display-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .display-btn:hover {
+            background: rgba(3, 189, 237, 0.1);
+            border-color: rgba(3, 189, 237, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .display-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.3);
+        }
+
+        .display-btn.active:hover {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
         .instructions {
             background: rgba(26, 29, 33, 0.8);
             border-radius: 15px;
@@ -665,6 +720,17 @@
 
         <div class="navigation">
             <a href="qf-draw-display.html" class="nav-button">View Draw Display</a>
+        </div>
+
+        <div class="display-control">
+            <h3 class="display-control-title">Display Control</h3>
+            <div class="display-buttons">
+                <button class="display-btn" onclick="setDisplayMode('group-A')">1 - Group A Standings</button>
+                <button class="display-btn" onclick="setDisplayMode('group-B')">2 - Group B Standings</button>
+                <button class="display-btn" onclick="setDisplayMode('group-C')">3 - Group C Standings</button>
+                <button class="display-btn" onclick="setDisplayMode('group-D')">4 - Group D Standings</button>
+                <button class="display-btn active" onclick="setDisplayMode('quarter-finals')">5 - Quarter Finals Draw</button>
+            </div>
         </div>
 
         <div class="instructions">
@@ -1368,7 +1434,24 @@
             }
         }
 
-
+        // Display control functions
+        function setDisplayMode(mode) {
+            console.log('Setting display mode to:', mode);
+            
+            // Update button states
+            document.querySelectorAll('.display-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Save display mode to Firebase - save just the mode string, not an object
+            database.ref('qfDisplayMode').set(mode).then(() => {
+                console.log('Display mode saved to Firebase:', mode);
+            }).catch(error => {
+                console.error('Error saving display mode:', error);
+            });
+        }
 
         // Clear function
 
@@ -1459,6 +1542,39 @@
                 console.log('Quarter final draw updated:', quarterFinalDraw);
                 checkAndUpdate('quarterFinalDraw');
             });
+
+            // Listen for display mode changes
+            database.ref('qfDisplayMode').on('value', (snapshot) => {
+                const displayMode = snapshot.val();
+                if (displayMode) {
+                    updateDisplayButtonStates(displayMode);
+                }
+            });
+        }
+
+        function updateDisplayButtonStates(activeMode) {
+            document.querySelectorAll('.display-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Map modes to button text patterns
+            const modeToButton = {
+                'group-A': '1 - Group A',
+                'group-B': '2 - Group B', 
+                'group-C': '3 - Group C',
+                'group-D': '4 - Group D',
+                'quarter-finals': '5 - Quarter Finals'
+            };
+            
+            const targetText = modeToButton[activeMode];
+            if (targetText) {
+                const targetBtn = Array.from(document.querySelectorAll('.display-btn')).find(btn => 
+                    btn.textContent.includes(targetText)
+                );
+                if (targetBtn) {
+                    targetBtn.classList.add('active');
+                }
+            }
         }
 
         // Initialize page

@@ -2699,6 +2699,12 @@
             matchEvents = snapshot.val() || {};
             updateScores();
             updatePlayerButtons();
+            
+            // Check if there are any foul events and update foul counts
+            const hasFoulEvents = Object.values(matchEvents).some(event => event.eventType === 'foul');
+            if (hasFoulEvents) {
+                updateFoulsFromEvents();
+            }
         });
 
         // Listen for match fouls
@@ -3223,6 +3229,7 @@
                                     <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
                                     <div class="dropdown-item Red" data-action="red">🟥 Red</div>
                                     <div class="dropdown-item own-goal" data-action="own-goal">⚽ Own Goal</div>
+                                    <div class="dropdown-item foul" data-action="foul">⚠️ Foul</div>
                                     <div class="dropdown-item" data-action="clear">❌ Clear</div>
                                 </div>
                             </div>
@@ -3266,6 +3273,7 @@
                                 <div class="dropdown-menu">
                                     <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
                                     <div class="dropdown-item Red" data-action="red">🟥 Red</div>
+                                    <div class="dropdown-item foul" data-action="foul">⚠️ Foul</div>
                                     <div class="dropdown-item" data-action="clear">❌ Clear</div>
                                 </div>
                             </div>
@@ -3311,6 +3319,12 @@
                     // Update local cache and refresh button display
                     matchEvents[eventKey] = eventData;
                     updatePlayerButtons();
+                    updateScores();
+                    
+                    // Update fouls if this is a foul event
+                    if (eventType === 'foul') {
+                        updateFoulsFromEvents();
+                    }
                 })
                 .catch(error => {
                     console.error('Error adding event:', error);
@@ -3324,6 +3338,7 @@
 
         function clearEvent(teamKey, personKey, slot) {
             const eventKey = `${teamKey}-${personKey}-${slot}`;
+            const wasFound = matchEvents[eventKey];
             
             database.ref(`matchEvents/${currentMatchId}/${eventKey}`).remove()
                 .then(() => {
@@ -3331,6 +3346,12 @@
                     // Update local cache and refresh button display
                     delete matchEvents[eventKey];
                     updatePlayerButtons();
+                    updateScores();
+                    
+                    // Update fouls if this was a foul event
+                    if (wasFound && wasFound.eventType === 'foul') {
+                        updateFoulsFromEvents();
+                    }
                 })
                 .catch(error => {
                     console.error('Error clearing event:', error);
@@ -3367,7 +3388,7 @@
                     <div class="dropdown-item yellow" data-action="yellow">🟨 Yellow</div>
                     <div class="dropdown-item Red" data-action="red">� Red</div>
                     <div class="dropdown-item own-goal" data-action="own-goal">⚽ Own Goal</div>
-
+                    <div class="dropdown-item foul" data-action="foul">⚠️ Foul</div>
                     <div class="dropdown-item" data-action="clear">❌ Clear</div>
                 </div>
             `;
@@ -3490,6 +3511,66 @@
             // Update match scores and calculate half scores
             matchScores.current = { team1: team1Goals, team2: team2Goals };
             calculateScoresByHalf();
+        }
+
+        function updateFoulsFromEvents() {
+            let team1FoulsTotal = 0;
+            let team2FoulsTotal = 0;
+            let team1FoulsFirstHalf = 0;
+            let team2FoulsFirstHalf = 0;
+            let team1FoulsSecondHalf = 0;
+            let team2FoulsSecondHalf = 0;
+
+            // Count fouls from events
+            Object.values(matchEvents).forEach(event => {
+                if (event.eventType === 'foul') {
+                    const isTeam1 = event.teamKey === 'team1';
+                    const isFirstHalf = currentMatchState === 'first-half' || 
+                                      (currentMatchState === 'halftime' || currentMatchState === 'second-half') && 
+                                      (event.timestamp < (matchStartTime + (45 * 60 * 1000))); // Rough first half estimation
+
+                    if (isTeam1) {
+                        team1FoulsTotal++;
+                        if (isFirstHalf) {
+                            team1FoulsFirstHalf++;
+                        } else {
+                            team1FoulsSecondHalf++;
+                        }
+                    } else {
+                        team2FoulsTotal++;
+                        if (isFirstHalf) {
+                            team2FoulsFirstHalf++;
+                        } else {
+                            team2FoulsSecondHalf++;
+                        }
+                    }
+                }
+            });
+
+            // Update matchFouls structure but preserve existing fouls from manual buttons
+            // Only update if we're using event-based fouls
+            const existingTeam1Current = matchFouls.current?.team1 || 0;
+            const existingTeam2Current = matchFouls.current?.team2 || 0;
+            
+            // If event-based fouls exceed manual fouls, use event-based count
+            matchFouls.current.team1 = Math.max(team1FoulsTotal, existingTeam1Current);
+            matchFouls.current.team2 = Math.max(team2FoulsTotal, existingTeam2Current);
+            
+            // Update half-specific fouls (additive to existing)
+            matchFouls.firstHalf.team1 = Math.max(team1FoulsFirstHalf, matchFouls.firstHalf?.team1 || 0);
+            matchFouls.firstHalf.team2 = Math.max(team2FoulsFirstHalf, matchFouls.firstHalf?.team2 || 0);
+            matchFouls.secondHalf.team1 = Math.max(team1FoulsSecondHalf, matchFouls.secondHalf?.team1 || 0);
+            matchFouls.secondHalf.team2 = Math.max(team2FoulsSecondHalf, matchFouls.secondHalf?.team2 || 0);
+
+            // Save to Firebase and update displays
+            database.ref(`matchFouls/${currentMatchId}`).set(matchFouls)
+                .then(() => {
+                    console.log('Fouls updated from events:', matchFouls);
+                    updateFoulDisplays();
+                })
+                .catch(error => {
+                    console.error('Error updating fouls from events:', error);
+                });
         }
 
         function adjustFouls(teamKey, change) {

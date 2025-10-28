@@ -27,6 +27,9 @@
             --bg-color: #0a0b0c;
             --card-bg: #1a1d21;
             --border-color: #2a2f35;
+            --success-color: #44ff44;
+            --warning-color: #ffaa00;
+            --error-color: #ff4444;
             --group-a: #ff6b35;
             --group-b: #4ecdc4;
             --group-c: #45b7d1;
@@ -99,13 +102,15 @@
         }
 
         .qf-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 40px;
-            flex: 1;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            grid-template-rows: 1fr 1fr !important;
+            gap: 30px;
+            width: 100%;
+            height: 85vh;
             align-content: center;
-            max-width: 1800px;
+            justify-content: center;
+            max-width: 95vw;
             margin: 0 auto;
             padding: 20px;
         }
@@ -203,6 +208,26 @@
         .team-slot.empty {
             border-style: dashed;
             opacity: 0.6;
+        }
+
+        /* Right-side teams (team2) - reverse layout */
+        [id$="-team2"] {
+            flex-direction: row-reverse;
+            text-align: right;
+        }
+
+        [id$="-team2"] .team-info {
+            text-align: right;
+            align-items: flex-end;
+        }
+
+        [id$="-team2"] .team-name {
+            text-align: right;
+        }
+
+        [id$="-team2"] .position-group,
+        [id$="-team2"] .position-status {
+            text-align: right;
         }
 
         .team-content {
@@ -450,6 +475,25 @@
             100% { transform: translate(0, 0); }
         }
 
+        /* Display mode control */
+        .qf-grid[style*="display: none"] {
+            display: none !important;
+        }
+        
+        .group-standings[style*="display: none"] {
+            display: none !important;
+        }
+
+        /* Force horizontal layout for TV display */
+        @media (min-width: 1024px) {
+            .qf-grid {
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-rows: 1fr 1fr !important;
+                height: 80vh;
+                gap: 40px;
+            }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .tournament-title {
@@ -582,6 +626,324 @@
             transform: scale(1.1);
         }
 
+        /* Group Standings Styles */
+        .group-standings {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .group-section {
+            background: rgba(26, 29, 33, 0.4);
+            border-radius: 20px;
+            padding: 40px 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 85vw;
+            width: 85vw;
+            margin: 0 auto;
+            overflow: visible;
+            transform: translateY(25vh);
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            table-layout: fixed;
+            min-width: 800px;
+        }
+
+        .standings-header h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .standings-table th,
+        .standings-table td {
+            padding: 18px 8px;
+            text-align: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Column width optimization */
+        .standings-table th:nth-child(1),
+        .standings-table td:nth-child(1) {
+            width: 25%;
+            text-align: left;
+        }
+        
+        .standings-table th:nth-child(2),
+        .standings-table td:nth-child(2) {
+            width: 6%;
+        }
+        
+        .standings-table th:nth-child(3),
+        .standings-table td:nth-child(3),
+        .standings-table th:nth-child(4),
+        .standings-table td:nth-child(4),
+        .standings-table th:nth-child(5),
+        .standings-table td:nth-child(5) {
+            width: 6%;
+        }
+        
+        .standings-table th:nth-child(6),
+        .standings-table td:nth-child(6) {
+            width: 7%;
+        }
+        
+        .standings-table th:nth-child(7),
+        .standings-table td:nth-child(7),
+        .standings-table th:nth-child(8),
+        .standings-table td:nth-child(8),
+        .standings-table th:nth-child(9),
+        .standings-table td:nth-child(9) {
+            width: 6%;
+        }
+
+        .standings-table th {
+            background: rgba(3, 189, 237, 0.3);
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid rgba(3, 189, 237, 0.4);
+        }
+
+        .standings-table td {
+            font-weight: 500;
+            font-size: 1.3rem;
+        }
+
+        .standings-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .team-name-cell {
+            text-align: left !important;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            padding-left: 12px !important;
+            overflow: visible;
+            white-space: nowrap;
+        }
+
+        .team-logo-small {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .team-name {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-left: 12px;
+            text-align: left;
+            flex: 1;
+            font-size: 1.2rem;
+            overflow: visible;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .position-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            width: 38px;
+            height: 26px;
+            border-radius: 12px;
+            margin-right: 12px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(3, 189, 237, 0.3);
+        }
+
+        .points-cell {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .wins-cell {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .draws-cell {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .losses-cell {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+
+        .goal-diff-positive {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .goal-diff-negative {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .goal-diff-zero {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Position-based styling */
+        .position-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, transparent 100%);
+            border-left: 3px solid #FFD700;
+        }
+
+        .position-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.1) 0%, transparent 100%);
+            border-left: 3px solid #C0C0C0;
+        }
+
+        /* Additional color coding for better visibility */
+        .matches-played-cell {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .goals-for-cell {
+            color: rgba(68, 255, 68, 0.8);
+            font-weight: 500;
+        }
+
+        .goals-against-cell {
+            color: rgba(255, 68, 68, 0.8);
+            font-weight: 500;
+        }
+
+        .fallback-logo {
+            display: none !important;
+        }
+
+        /* Header color coding - more specific selectors with direct colors */
+        .standings-table th.header-wins {
+            color: #44ff44 !important;
+        }
+
+        .standings-table th.header-draws {
+            color: #ffaa00 !important;
+        }
+
+        .standings-table th.header-losses {
+            color: #ff4444 !important;
+        }
+
+        .standings-table th.header-points {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        .standings-table th.header-goals-for {
+            color: rgba(68, 255, 68, 0.9) !important;
+        }
+
+        .standings-table th.header-goals-against {
+            color: rgba(255, 68, 68, 0.9) !important;
+        }
+
+        .standings-table th.header-goal-diff {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        .standings-grid {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto auto auto;
+            gap: 20px 30px;
+            align-items: center;
+        }
+
+        .standings-grid-header {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(3, 189, 237, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .standings-position {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--accent-color);
+            text-align: center;
+            width: 50px;
+        }
+
+        .standings-team {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .standings-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 10px rgba(3, 189, 237, 0.5);
+        }
+
+        .standings-team-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .standings-stat {
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .standings-points {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .qualified {
+            background: rgba(68, 255, 68, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid rgba(68, 255, 68, 0.3);
+        }
+
         @media (max-width: 768px) {
             .team-logo-large {
                 max-width: 250px;
@@ -590,6 +952,23 @@
             
             .team-name-display {
                 font-size: 2rem;
+            }
+
+            .standings-table {
+                padding: 20px;
+            }
+
+            .standings-header {
+                font-size: 2rem;
+            }
+
+            .standings-grid {
+                grid-template-columns: auto 1fr auto auto auto;
+                gap: 10px 15px;
+            }
+
+            .standings-team-name {
+                font-size: 1rem;
             }
         }
     </style>
@@ -600,7 +979,8 @@
             <h1 class="tournament-title">FYFC 2025 - QUARTER FINALS</h1>
         </div>
 
-        <div class="qf-grid">
+        <!-- Quarter Finals Grid (default view) -->
+        <div class="qf-grid" id="qf-grid">
             <div class="quarter-final">
                 <h2 class="qf-title">QUARTER FINAL 1</h2>
                 <div class="qf-datetime">29 October 8:00 PM</div>
@@ -657,6 +1037,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- Group Standings View -->
+        <div class="group-standings" id="group-standings" style="display: none;">
+            <div class="standings-table" id="standings-table">
+                <!-- Standings will be populated here -->
+            </div>
+        </div>
     </div>
 
     <!-- Logo overlay -->
@@ -691,6 +1078,11 @@
         let drawAssignments = {};
         let quarterFinalDraw = {};
         let teamStandings = {};
+        let matchEvents = {};
+        let matchScores = {};
+        let matchState = {};
+        let applications = {};
+        let currentDisplayMode = 'quarter-finals';
 
         // Team name to logo filename mapping
         function getTeamLogoFilename(teamName) {
@@ -745,6 +1137,194 @@
             
             console.log(`QF DISPLAY: Returning team data:`, result);
             return result;
+        }
+
+        // Match schedule and standings calculation (copied from control page)
+        const matchSchedule = {
+            'October 26': [
+                { teams: ['A1', 'A2'], type: 'Group A', time: '4:00 PM' },
+                { teams: ['A3', 'A4'], type: 'Group A', time: '5:00 PM' },
+                { teams: ['B1', 'B2'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['C1', 'C2'], type: 'Group C', time: '9:00 PM' },
+                { teams: ['D1', 'D2'], type: 'Group D', time: '10:00 PM' }
+            ],
+            'October 27': [
+                { teams: ['A1', 'A3'], type: 'Group A', time: '9:00 PM' },
+                { teams: ['A2', 'A4'], type: 'Group A', time: '10:00 PM' },
+                { teams: ['B1', 'B3'], type: 'Group B', time: '8:00 PM' },
+                { teams: ['C1', 'C3'], type: 'Group C', time: '5:00 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '4:00 PM' }
+            ],
+            'October 28': [
+                { teams: ['C1', 'C3'], type: 'Group C', time: '8:15 PM' },
+                { teams: ['D1', 'D3'], type: 'Group D', time: '9:15 PM' },
+                { teams: ['B2', 'B3'], type: 'Group B', time: '10:15 PM' }
+            ],
+            'October 29': [
+                { teams: ['A1', 'A4'], type: 'Group A', time: '8:15 PM' },
+                { teams: ['A2', 'A3'], type: 'Group A', time: '9:15 PM' },
+                { teams: ['C2', 'C3'], type: 'Group C', time: '10:15 PM' }
+            ],
+            'October 30': [
+                { teams: ['D2', 'D3'], type: 'Group D', time: '9:15 PM' }
+            ]
+        };
+
+        function initializeStandings() {
+            teamStandings = {};
+            const allPositions = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'D3'];
+            
+            allPositions.forEach(position => {
+                teamStandings[position] = {
+                    played: 0, wins: 0, draws: 0, losses: 0,
+                    goalsFor: 0, goalsAgainst: 0, goalDifference: 0, points: 0
+                };
+            });
+        }
+
+        function calculateStandings() {
+            try {
+                initializeStandings();
+                
+                // Get all matches and process them
+                const matches = getGroupStageMatches();
+                console.log(`Processing matches for standings: ${matches.length} matches`);
+                
+                let playedCount = 0;
+                let skippedCount = 0;
+                
+                matches.forEach((match, index) => {
+                    const matchId = match.id;
+                    
+                    if (isMatchPlayed(matchId)) {
+                        playedCount++;
+                        console.log(`Processing played match ${playedCount}: ${matchId}`);
+                        
+                        const scores = getMatchScore(matchId);
+                        const team1 = match.teams[0];
+                        const team2 = match.teams[1];
+                        
+                        // Update stats for both teams
+                        teamStandings[team1].played++;
+                        teamStandings[team2].played++;
+                        teamStandings[team1].goalsFor += scores.team1;
+                        teamStandings[team1].goalsAgainst += scores.team2;
+                        teamStandings[team2].goalsFor += scores.team2;
+                        teamStandings[team2].goalsAgainst += scores.team1;
+                        
+                        // Determine winner
+                        if (scores.team1 > scores.team2) {
+                            teamStandings[team1].wins++;
+                            teamStandings[team1].points += 3;
+                            teamStandings[team2].losses++;
+                        } else if (scores.team2 > scores.team1) {
+                            teamStandings[team2].wins++;
+                            teamStandings[team2].points += 3;
+                            teamStandings[team1].losses++;
+                        } else {
+                            teamStandings[team1].draws++;
+                            teamStandings[team2].draws++;
+                            teamStandings[team1].points += 1;
+                            teamStandings[team2].points += 1;
+                        }
+                        
+                        // Calculate goal difference
+                        teamStandings[team1].goalDifference = teamStandings[team1].goalsFor - teamStandings[team1].goalsAgainst;
+                        teamStandings[team2].goalDifference = teamStandings[team2].goalsFor - teamStandings[team2].goalsAgainst;
+                        
+                        console.log(`Match result: ${team1} ${scores.team1} - ${scores.team2} ${team2}`);
+                    } else {
+                        skippedCount++;
+                    }
+                });
+                
+                console.log(`Match processing complete: ${playedCount} played, ${skippedCount} skipped`);
+                console.log('Final standings calculated. Sample:', { A1: teamStandings['A1'], B1: teamStandings['B1'], C1: teamStandings['C1'], D1: teamStandings['D1'] });
+                
+                return teamStandings;
+            } catch (error) {
+                console.error('Error calculating standings:', error);
+                return teamStandings;
+            }
+        }
+
+        function getGroupStageMatches() {
+            const matches = [];
+            
+            for (const date of Object.keys(matchSchedule)) {
+                for (const match of matchSchedule[date]) {
+                    const matchId = generateMatchId(date, match);
+                    matches.push({
+                        id: matchId,
+                        teams: match.teams,
+                        type: match.type,
+                        time: match.time,
+                        date: date,
+                        fromDatabase: false
+                    });
+                }
+            }
+            return matches;
+        }
+
+        function generateMatchId(date, match) {
+            const dateParts = date.toLowerCase().split(' ');
+            const month = dateParts[0];
+            const day = dateParts[1];
+            const dateStr = `${month}${day}`;
+            
+            const team1 = match.teams[0];
+            const team2 = match.teams[1];
+            const timeFormatted = match.time.replace(/[^0-9]/g, '');
+            
+            return `${dateStr}-${team1}vs${team2}-${timeFormatted}`;
+        }
+
+        function getMatchScore(matchId) {
+            if (matchScores[matchId] && matchScores[matchId].current) {
+                return matchScores[matchId].current;
+            }
+            
+            const matchEventsData = matchEvents[matchId] || {};
+            let team1Goals = 0;
+            let team2Goals = 0;
+            
+            Object.values(matchEventsData).forEach(event => {
+                const isTeam1 = event.teamKey === 'team1';
+                
+                switch (event.eventType) {
+                    case 'goal':
+                        if (isTeam1) team1Goals++;
+                        else team2Goals++;
+                        break;
+                    case 'own-goal':
+                        if (isTeam1) team2Goals++;
+                        else team1Goals++;
+                        break;
+                }
+            });
+            
+            return { team1: team1Goals, team2: team2Goals };
+        }
+
+        function isMatchPlayed(matchId) {
+            if (matchState[matchId] && matchState[matchId].state) {
+                const state = matchState[matchId].state;
+                return state === 'finished' || state === 'FINISHED';
+            }
+            
+            if (matchScores[matchId] && matchScores[matchId].current) {
+                return true;
+            }
+            
+            const matchEventsData = matchEvents[matchId] || {};
+            const eventKeys = Object.keys(matchEventsData);
+            const hasGoals = eventKeys.some(key => 
+                matchEventsData[key].eventType === 'goal' || 
+                matchEventsData[key].eventType === 'own-goal'
+            );
+            
+            return hasGoals;
         }
 
         // Logo display functions
@@ -846,16 +1426,11 @@
                 positionElement.appendChild(groupLine);
                 positionElement.appendChild(statusLine);
                 
-                const badgeElement = document.createElement('div');
-                badgeElement.className = `position-badge ${isWinner ? '' : 'runner-up'}`;
-                badgeElement.textContent = isWinner ? '🥇' : '🥈';
-                
                 infoElement.appendChild(nameElement);
                 infoElement.appendChild(positionElement);
                 
                 teamElement.appendChild(logoElement);
                 teamElement.appendChild(infoElement);
-                teamElement.appendChild(badgeElement);
                 
                 // Add click handler to show logo overlay
                 teamElement.style.cursor = 'pointer';
@@ -975,8 +1550,9 @@
             // Listen for changes in team data
             database.ref('applications').on('value', (snapshot) => {
                 console.log('QF DISPLAY: applications updated');
-                teams = snapshot.val() || {};
-                console.log('QF DISPLAY: Teams loaded:', Object.keys(teams).length);
+                applications = snapshot.val() || {};
+                teams = applications; // Keep teams as alias for compatibility
+                console.log('QF DISPLAY: Teams loaded:', Object.keys(applications).length);
                 updateQuarterFinalDisplay();
             }, (error) => {
                 console.error('QF DISPLAY: Error listening to applications:', error);
@@ -990,6 +1566,56 @@
                 updateQuarterFinalDisplay();
             }, (error) => {
                 console.error('QF DISPLAY: Error listening to drawAssignments:', error);
+            });
+
+            // Listen for display mode changes
+            database.ref('qfDisplayMode').on('value', (snapshot) => {
+                const newMode = snapshot.val() || 'quarter-finals';
+                console.log('QF DISPLAY: Display mode changed to:', newMode);
+                console.log('QF DISPLAY: Previous mode was:', currentDisplayMode);
+                
+                // Only proceed if we got a valid string mode
+                if (typeof newMode === 'string') {
+                    currentDisplayMode = newMode;
+                    displayCurrentMode();
+                } else {
+                    console.warn('QF DISPLAY: Invalid mode format received:', newMode);
+                }
+            }, (error) => {
+                console.error('QF DISPLAY: Error listening to qfDisplayMode:', error);
+            });
+
+            // Listen for match events (for standings calculation)
+            database.ref('matchEvents').on('value', (snapshot) => {
+                matchEvents = snapshot.val() || {};
+                console.log('QF DISPLAY: Match events loaded');
+                if (currentDisplayMode !== 'quarter-finals' && currentDisplayMode !== 'quarterFinals') {
+                    displayCurrentMode(); // Refresh standings if currently showing
+                }
+            }, (error) => {
+                console.error('QF DISPLAY: Error listening to matchEvents:', error);
+            });
+
+            // Listen for match scores (for standings calculation)
+            database.ref('matchScores').on('value', (snapshot) => {
+                matchScores = snapshot.val() || {};
+                console.log('QF DISPLAY: Match scores loaded');
+                if (currentDisplayMode !== 'quarter-finals' && currentDisplayMode !== 'quarterFinals') {
+                    displayCurrentMode(); // Refresh standings if currently showing
+                }
+            }, (error) => {
+                console.error('QF DISPLAY: Error listening to matchScores:', error);
+            });
+
+            // Listen for match state (for standings calculation)
+            database.ref('matchState').on('value', (snapshot) => {
+                matchState = snapshot.val() || {};
+                console.log('QF DISPLAY: Match state loaded');
+                if (currentDisplayMode !== 'quarter-finals' && currentDisplayMode !== 'quarterFinals') {
+                    displayCurrentMode(); // Refresh standings if currently showing
+                }
+            }, (error) => {
+                console.error('QF DISPLAY: Error listening to matchState:', error);
             });
 
         }
@@ -1010,10 +1636,222 @@
             updateQuarterFinalDisplay();
         };
 
+        // Display mode handling functions
+        function displayCurrentMode() {
+            console.log('Displaying mode:', currentDisplayMode);
+            
+            // Get the correct elements
+            const qfElement = document.getElementById('qf-grid');
+            const standingsElement = document.getElementById('group-standings');
+            
+            console.log('Elements found:', {
+                qfElement: qfElement,
+                standingsElement: standingsElement,
+                qfCurrentDisplay: qfElement ? qfElement.style.display : 'not found',
+                standingsCurrentDisplay: standingsElement ? standingsElement.style.display : 'not found'
+            });
+            
+            if (!qfElement || !standingsElement) {
+                console.error('Required elements not found:', {
+                    qfElement: !!qfElement,
+                    standingsElement: !!standingsElement
+                });
+                return;
+            }
+            
+            if (currentDisplayMode === 'quarter-finals' || currentDisplayMode === 'quarterFinals') {
+                // Show quarter finals draw
+                console.log('Showing quarter finals, hiding standings');
+                qfElement.style.display = 'grid';
+                qfElement.style.visibility = 'visible';
+                standingsElement.style.display = 'none';
+                standingsElement.style.visibility = 'hidden';
+            } else {
+                // Show group standings
+                console.log('Showing group standings, hiding quarter finals');
+                qfElement.style.display = 'none';
+                qfElement.style.visibility = 'hidden';
+                standingsElement.style.display = 'block';
+                standingsElement.style.visibility = 'visible';
+                
+                // Generate and display the appropriate standings
+                const standings = calculateStandings();
+                // Extract group letter from mode (group-A -> A, group-B -> B, etc.)
+                const group = currentDisplayMode.replace('group-', '');
+                displayGroupStandings(group, standings);
+            }
+            
+            console.log('After mode switch:', {
+                qfDisplay: qfElement.style.display,
+                qfVisibility: qfElement.style.visibility,
+                standingsDisplay: standingsElement.style.display,
+                standingsVisibility: standingsElement.style.visibility
+            });
+        }
+
+        function displayGroupStandings(group, standings) {
+            console.log(`Displaying standings for Group ${group}`);
+            console.log('Available data:', {
+                drawAssignments: Object.keys(drawAssignments).length,
+                teams: Object.keys(teams).length,
+                applications: Object.keys(applications).length
+            });
+            
+            // Get teams for this group
+            const groupTeams = getGroupTeams(group);
+            console.log(`Group ${group} teams:`, groupTeams);
+            
+            // Sort teams by standings
+            const sortedTeams = groupTeams.map(position => {
+                const teamName = getTeamName(position);
+                const teamData = getTeamDataForStandings(position);
+                console.log(`Processing ${position}: teamName=${teamName}, teamData=`, teamData);
+                
+                return {
+                    position: position,
+                    stats: standings[position],
+                    teamName: teamName,
+                    teamData: teamData
+                };
+            }).sort((a, b) => {
+                // Sort by points (desc), then goal difference (desc), then goals for (desc)
+                if (b.stats.points !== a.stats.points) {
+                    return b.stats.points - a.stats.points;
+                }
+                if (b.stats.goalDifference !== a.stats.goalDifference) {
+                    return b.stats.goalDifference - a.stats.goalDifference;
+                }
+                return b.stats.goalsFor - a.stats.goalsFor;
+            });
+            
+            // Generate HTML matching team-standings.html structure
+            let html = `
+                <div class="group-section">
+                    <div class="standings-header">
+                        <h1>GROUP ${group.toUpperCase()} STANDINGS</h1>
+                    </div>
+                    <table class="standings-table">
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th>MP</th>
+                                <th class="header-wins">W</th>
+                                <th class="header-draws">D</th>
+                                <th class="header-losses">L</th>
+                                <th class="header-points">P</th>
+                                <th class="header-goals-for">GS</th>
+                                <th class="header-goals-against">GC</th>
+                                <th class="header-goal-diff">GD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            sortedTeams.forEach((team, index) => {
+                // Position-based styling classes
+                let positionClass = '';
+                if (index === 0) positionClass = 'position-1';
+                else if (index === 1) positionClass = 'position-2';
+                
+                // Goal difference styling
+                let goalDiffClass = 'goal-diff-zero';
+                if (team.stats.goalDifference > 0) goalDiffClass = 'goal-diff-positive';
+                else if (team.stats.goalDifference < 0) goalDiffClass = 'goal-diff-negative';
+                
+                // Team logo with fallback
+                const logoFilename = getTeamLogoFilename(team.teamName || team.position);
+                let logoHtml;
+                if (team.teamName) {
+                    logoHtml = `<img src="logos/${logoFilename}.jpg" 
+                                    alt="${team.teamName}" 
+                                    class="team-logo-small"
+                                    onerror="this.src='logos/${logoFilename}.png'; this.onerror=function(){
+                                        this.style.display='none'; 
+                                        this.nextElementSibling.style.display='flex';
+                                    }">
+                               <div class="team-logo-small fallback-logo" style="display: none; width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999;">
+                                   ${team.position}
+                               </div>`;
+                } else {
+                    logoHtml = `<div class="team-logo-small" style="width: 30px; height: 30px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #999;">${team.position}</div>`;
+                }
+                
+                html += `
+                    <tr class="${positionClass}">
+                        <td class="team-name-cell">
+                            ${logoHtml}
+                            <span class="team-name">${team.teamName || team.position}</span>
+                        </td>
+                        <td class="matches-played-cell">${team.stats.played}</td>
+                        <td class="wins-cell">${team.stats.wins}</td>
+                        <td class="draws-cell">${team.stats.draws}</td>
+                        <td class="losses-cell">${team.stats.losses}</td>
+                        <td class="points-cell"><strong>${team.stats.points}</strong></td>
+                        <td class="goals-for-cell">${team.stats.goalsFor}</td>
+                        <td class="goals-against-cell">${team.stats.goalsAgainst}</td>
+                        <td class="${goalDiffClass}">${team.stats.goalDifference >= 0 ? '+' : ''}${team.stats.goalDifference}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('group-standings').innerHTML = html;
+        }
+        
+        function getTeamDataForStandings(position) {
+            const teamId = drawAssignments?.[position];
+            if (teamId && teams?.[teamId]) {
+                return {
+                    name: teams[teamId].teamName,
+                    logo: getTeamLogoFilename(teams[teamId].teamName)
+                };
+            }
+            return { name: position, logo: null };
+        }
+
+        function getGroupTeams(group) {
+            switch (group.toUpperCase()) {
+                case 'A': return ['A1', 'A2', 'A3', 'A4'];
+                case 'B': return ['B1', 'B2', 'B3'];
+                case 'C': return ['C1', 'C2', 'C3'];
+                case 'D': return ['D1', 'D2', 'D3'];
+                default: return [];
+            }
+        }
+
+        function getTeamName(position) {
+            const teamId = drawAssignments?.[position];
+            if (teamId && teams?.[teamId]) {
+                return teams[teamId].teamName;
+            }
+            return position; // Fallback to position if team not found
+        }
+
+        // Clear old Firebase data format (one-time fix)
+        function clearOldDisplayModeData() {
+            database.ref('qfDisplayMode').once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && typeof data === 'object' && data.mode) {
+                    // Old format detected, migrate to new format
+                    console.log('Migrating old display mode format to new format');
+                    database.ref('qfDisplayMode').set(data.mode);
+                }
+            });
+        }
+
         // Initialize on page load - COPIED FROM WORKING MAIN DRAW
         document.addEventListener('DOMContentLoaded', function() {
             console.log('QF DISPLAY: Starting initialization');
             console.log('QF DISPLAY: Firebase database reference:', database);
+            
+            // Clear old data format
+            clearOldDisplayModeData();
+            
             setupFirebaseListeners();
             
             // Test Firebase connection
