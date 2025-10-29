@@ -338,6 +338,51 @@
             background: rgba(255, 193, 7, 0.1);
         }
 
+        /* Knockout Stage Styling */
+        .knockout-team {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(3, 189, 237, 0.1));
+            border: 1px solid var(--accent-color);
+            position: relative;
+        }
+
+        .knockout-team::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            opacity: 0.05;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .knockout-loading {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(3, 189, 237, 0.2));
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .knockout-placeholder {
+            color: var(--accent-color);
+            font-weight: 600;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        [data-theme="light"] .knockout-placeholder {
+            color: var(--secondary-color);
+        }
+
+        /* Quarter Finals specific styling */
+        .match-tile:has(.knockout-team) .match-group:contains("Quarter Final") {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .finished-match {
             border-left: 4px solid var(--success-color) !important;
         }
@@ -874,6 +919,8 @@
         let matchEvents = {};
         let teamLists = {};
         let matchMotm = {};
+        let quarterFinalDraw = {};
+        let knockoutResults = {};
 
         // Match schedule data - Updated for October 26-28, 2025
         // Group A: 4 teams, Group B: 3 teams, Group C: 3 teams, Group D: 3 teams
@@ -898,6 +945,19 @@
                 { teams: ['D2', 'D3'], type: 'Group D', time: '8:00 PM' },
                 { teams: ['A2', 'A3'], type: 'Group A', time: '9:00 PM' },
                 { teams: ['A1', 'A4'], type: 'Group A', time: '10:00 PM' }
+            ],
+            'October 29': [
+                { teams: ['QF1_TEAM1', 'QF1_TEAM2'], type: 'Quarter Final 1', time: '4:00 PM', isKnockout: true, knockoutId: 'QF1' },
+                { teams: ['QF2_TEAM1', 'QF2_TEAM2'], type: 'Quarter Final 2', time: '5:00 PM', isKnockout: true, knockoutId: 'QF2' },
+                { teams: ['QF3_TEAM1', 'QF3_TEAM2'], type: 'Quarter Final 3', time: '8:00 PM', isKnockout: true, knockoutId: 'QF3' },
+                { teams: ['QF4_TEAM1', 'QF4_TEAM2'], type: 'Quarter Final 4', time: '9:00 PM', isKnockout: true, knockoutId: 'QF4' }
+            ],
+            'October 30': [
+                { teams: ['SF1_TEAM1', 'SF1_TEAM2'], type: 'Semi Final 1', time: '8:00 PM', isKnockout: true, knockoutId: 'SF1', dependsOn: ['QF1', 'QF2'] },
+                { teams: ['SF2_TEAM1', 'SF2_TEAM2'], type: 'Semi Final 2', time: '9:00 PM', isKnockout: true, knockoutId: 'SF2', dependsOn: ['QF3', 'QF4'] }
+            ],
+            'October 31': [
+                { teams: ['FINAL_TEAM1', 'FINAL_TEAM2'], type: 'Final', time: '8:00 PM', isKnockout: true, knockoutId: 'FINAL', dependsOn: ['SF1', 'SF2'] }
             ]
         };
 
@@ -942,6 +1002,194 @@
             matchMotm = snapshot.val() || {};
             renderMatches();
         });
+
+        // Listen for quarter final draw changes
+        database.ref('quarterFinalDraw').on('value', (snapshot) => {
+            quarterFinalDraw = snapshot.val() || {};
+            updateKnockoutMatches();
+            renderMatches();
+        });
+
+        // Listen for knockout results changes
+        database.ref('knockoutResults').on('value', (snapshot) => {
+            knockoutResults = snapshot.val() || {};
+            updateKnockoutMatches();
+            renderMatches();
+        });
+
+        // Update knockout matches based on results
+        function updateKnockoutMatches() {
+            console.log('Updating knockout matches...');
+            console.log('Quarter Final Draw:', quarterFinalDraw);
+            console.log('Knockout Results:', knockoutResults);
+            
+            // Update match schedule with actual team names based on QF draw and results
+            updateMatchScheduleWithKnockoutTeams();
+        }
+
+        // Function to get actual team names for knockout matches
+        function updateMatchScheduleWithKnockoutTeams() {
+            // Update Quarter Finals with actual teams from quarterFinalDraw
+            for (const date in matchSchedule) {
+                matchSchedule[date].forEach(match => {
+                    if (match.isKnockout) {
+                        updateKnockoutMatchTeams(match, date);
+                    }
+                });
+            }
+        }
+
+        // Update individual knockout match with actual team names
+        function updateKnockoutMatchTeams(match, date) {
+            switch (match.knockoutId) {
+                case 'QF1':
+                case 'QF2':
+                case 'QF3':
+                case 'QF4':
+                    updateQuarterFinalMatch(match);
+                    break;
+                case 'SF1':
+                    updateSemiFinalMatch(match, ['QF1', 'QF2']);
+                    break;
+                case 'SF2':
+                    updateSemiFinalMatch(match, ['QF3', 'QF4']);
+                    break;
+                case 'FINAL':
+                    updateFinalMatch(match);
+                    break;
+            }
+        }
+
+        // Update quarter final match with teams from quarterFinalDraw
+        function updateQuarterFinalMatch(match) {
+            const qfData = quarterFinalDraw[match.knockoutId];
+            if (qfData) {
+                match.actualTeams = [
+                    qfData.team1 || `${match.knockoutId}_TEAM1`,
+                    qfData.team2 || `${match.knockoutId}_TEAM2`
+                ];
+                console.log(`Updated ${match.knockoutId} with teams:`, match.actualTeams);
+            }
+        }
+
+        // Update semi-final match with winners from quarter finals
+        function updateSemiFinalMatch(match, dependentQFs) {
+            const [qf1Id, qf2Id] = dependentQFs;
+            const qf1Winner = getMatchWinner(qf1Id);
+            const qf2Winner = getMatchWinner(qf2Id);
+            
+            match.actualTeams = [
+                qf1Winner || `${qf1Id}_WINNER`,
+                qf2Winner || `${qf2Id}_WINNER`
+            ];
+            console.log(`Updated ${match.knockoutId} with teams:`, match.actualTeams);
+        }
+
+        // Update final match with winners from semi finals
+        function updateFinalMatch(match) {
+            const sf1Winner = getMatchWinner('SF1');
+            const sf2Winner = getMatchWinner('SF2');
+            
+            match.actualTeams = [
+                sf1Winner || 'SF1_WINNER',
+                sf2Winner || 'SF2_WINNER'
+            ];
+            console.log(`Updated FINAL with teams:`, match.actualTeams);
+        }
+
+        // Get winner of a knockout match
+        function getMatchWinner(knockoutId) {
+            // Look for finished match in knockoutResults or matchStates
+            const matchId = getKnockoutMatchId(knockoutId);
+            if (!matchId) return null;
+            
+            // Check if match is finished
+            if (matchStates[matchId] && matchStates[matchId].state === 'finished') {
+                // Get final score
+                let finalScore;
+                if (matchScores[matchId] && matchScores[matchId].current) {
+                    finalScore = matchScores[matchId].current;
+                } else {
+                    finalScore = calculateFinalScore(matchId);
+                }
+                
+                // Determine winner
+                if (finalScore.team1 > finalScore.team2) {
+                    return getKnockoutTeam1(knockoutId);
+                } else if (finalScore.team2 > finalScore.team1) {
+                    return getKnockoutTeam2(knockoutId);
+                }
+                // If tied, could implement penalty shootout logic here
+            }
+            
+            return null;
+        }
+
+        // Get the actual team1 for a knockout match
+        function getKnockoutTeam1(knockoutId) {
+            if (knockoutId.startsWith('QF')) {
+                return quarterFinalDraw[knockoutId]?.team1;
+            } else if (knockoutId === 'SF1') {
+                return getMatchWinner('QF1');
+            } else if (knockoutId === 'SF2') {
+                return getMatchWinner('QF3');
+            } else if (knockoutId === 'FINAL') {
+                return getMatchWinner('SF1');
+            }
+            return null;
+        }
+
+        // Get the actual team2 for a knockout match
+        function getKnockoutTeam2(knockoutId) {
+            if (knockoutId.startsWith('QF')) {
+                return quarterFinalDraw[knockoutId]?.team2;
+            } else if (knockoutId === 'SF1') {
+                return getMatchWinner('QF2');
+            } else if (knockoutId === 'SF2') {
+                return getMatchWinner('QF4');
+            } else if (knockoutId === 'FINAL') {
+                return getMatchWinner('SF2');
+            }
+            return null;
+        }
+
+        // Generate match ID for knockout matches
+        function getKnockoutMatchId(knockoutId) {
+            // Find the match in the schedule
+            for (const date in matchSchedule) {
+                const match = matchSchedule[date].find(m => m.knockoutId === knockoutId);
+                if (match) {
+                    return generateMatchId(date, match);
+                }
+            }
+            return null;
+        }
+
+        // Check if a match ID belongs to a knockout match
+        function isKnockoutMatch(matchId) {
+            for (const date in matchSchedule) {
+                const match = matchSchedule[date].find(m => {
+                    return m.isKnockout && generateMatchId(date, m) === matchId;
+                });
+                if (match) return true;
+            }
+            return false;
+        }
+
+        // Get knockout stage type from match ID
+        function getKnockoutStage(matchId) {
+            for (const date in matchSchedule) {
+                const match = matchSchedule[date].find(m => {
+                    return m.isKnockout && generateMatchId(date, m) === matchId;
+                });
+                if (match) {
+                    if (match.knockoutId.startsWith('QF')) return 'Quarter Final';
+                    if (match.knockoutId.startsWith('SF')) return 'Semi Final';
+                    if (match.knockoutId === 'FINAL') return 'Final';
+                }
+            }
+            return 'Group Stage';
+        }
 
         // Calculate final score from match events
         function calculateFinalScore(matchId) {
@@ -1299,10 +1547,10 @@
             };
         }
 
-        function createTeamElement(position, isRight = false) {
+        function createTeamElement(position, isRight = false, isKnockout = false) {
             const teamData = getTeamData(position);
             const teamElement = document.createElement('div');
-            teamElement.className = `team ${isRight ? 'team-right' : ''}`;
+            teamElement.className = `team ${isRight ? 'team-right' : ''} ${isKnockout ? 'knockout-team' : ''}`;
             
             if (teamData && teamData.name) {
                 const logoElement = document.createElement('img');
@@ -1321,14 +1569,30 @@
                 teamElement.appendChild(logoElement);
                 teamElement.appendChild(nameElement);
             } else {
+                // Handle knockout placeholders differently
+                let placeholderText = position;
+                let placeholderClass = 'tbd-text';
+                
+                if (isKnockout) {
+                    placeholderClass += ' knockout-placeholder';
+                    // Make placeholder text more descriptive for knockout stages
+                    if (position.includes('WINNER')) {
+                        placeholderText = position.replace('_', ' ').toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+                    } else if (position.includes('QF') && position.includes('TEAM')) {
+                        placeholderText = 'Awaiting QF Draw';
+                    }
+                }
+                
                 teamElement.innerHTML = `
-                    <div class="loading-team">
+                    <div class="loading-team ${isKnockout ? 'knockout-loading' : ''}">
+                        ${isKnockout ? '' : `
                         <div class="loading-dots">
                             <div class="loading-dot"></div>
                             <div class="loading-dot"></div>
                             <div class="loading-dot"></div>
                         </div>
-                        <span class="tbd-text">${position}</span>
+                        `}
+                        <span class="${placeholderClass}">${placeholderText}</span>
                     </div>
                 `;
             }
@@ -1338,8 +1602,17 @@
 
         function generateMatchId(date, match) {
             const dateStr = date.replace(/\s+/g, '').toLowerCase();
-            const team1 = match.teams[0];
-            const team2 = match.teams[1];
+            
+            // For knockout matches, use actual teams if available
+            let team1, team2;
+            if (match.isKnockout && match.actualTeams) {
+                team1 = match.actualTeams[0];
+                team2 = match.actualTeams[1];
+            } else {
+                team1 = match.teams[0];
+                team2 = match.teams[1];
+            }
+            
             return `${dateStr}-${team1}vs${team2}-${match.time.replace(/[^0-9]/g, '')}`;
         }
 
@@ -1355,8 +1628,18 @@
                     const matchId = generateMatchId(date, match);
                     matchTile.dataset.matchId = matchId;
 
-                    const team1Element = createTeamElement(match.teams[0]);
-                    const team2Element = createTeamElement(match.teams[1], true);
+                    // Use actual teams for knockout matches, fallback to placeholder teams
+                    let team1Name, team2Name;
+                    if (match.isKnockout && match.actualTeams) {
+                        team1Name = match.actualTeams[0];
+                        team2Name = match.actualTeams[1];
+                    } else {
+                        team1Name = match.teams[0];
+                        team2Name = match.teams[1];
+                    }
+                    
+                    const team1Element = createTeamElement(team1Name, false, match.isKnockout);
+                    const team2Element = createTeamElement(team2Name, true, match.isKnockout);
 
                     // Check if match is finished and has a score
                     const matchState = matchStates[matchId];
@@ -1433,7 +1716,31 @@
         }
 
         // Initial render
+        updateKnockoutMatches(); // Set up knockout matches first
         renderMatches();
+
+        // Debug functions for console testing
+        window.testKnockoutSystem = function() {
+            console.log('=== KNOCKOUT SYSTEM DEBUG ===');
+            console.log('Quarter Final Draw:', quarterFinalDraw);
+            console.log('Knockout Results:', knockoutResults);
+            console.log('Match Schedule (Knockout Days):');
+            
+            ['October 29', 'October 30', 'October 31'].forEach(date => {
+                if (matchSchedule[date]) {
+                    console.log(`${date}:`, matchSchedule[date]);
+                }
+            });
+        };
+
+        window.simulateQFWinner = function(qfId, winnerTeam) {
+            console.log(`Simulating ${qfId} winner: ${winnerTeam}`);
+            // This would normally be handled by match results, but for testing:
+            if (!knockoutResults[qfId]) knockoutResults[qfId] = {};
+            knockoutResults[qfId].winner = winnerTeam;
+            updateKnockoutMatches();
+            renderMatches();
+        };
 
         // Register Service Worker for PWA - Match Management Specific
         if ('serviceWorker' in navigator) {
