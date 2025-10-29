@@ -3397,23 +3397,101 @@
             let team1FoulsSecondHalf = 0;
             let team2FoulsSecondHalf = 0;
 
-            // Count fouls from events by half
+            // First, get the second half start timestamp from match state data
+            database.ref(`matchState/${currentMatchId}`).once('value').then(snapshot => {
+                const stateData = snapshot.val();
+                let secondHalfStartTime = null;
+                
+                // Find when second half started
+                if (stateData && stateData.state === 'second-half' || currentMatchState === 'second-half' || currentMatchState === 'finished') {
+                    secondHalfStartTime = stateData?.timestamp;
+                    console.log('Second half start timestamp:', secondHalfStartTime);
+                }
+                
+                // Count fouls from events using timestamps
+                Object.values(matchEvents).forEach(event => {
+                    if (event.eventType === 'foul') {
+                        console.log('Processing foul event:', event);
+                        const isTeam1 = event.teamKey === 'team1';
+                        
+                        // Determine which half the event belongs to based on timestamp
+                        let isFirstHalf = true; // Default to first half
+                        
+                        if (event.timestamp && secondHalfStartTime) {
+                            // Use timestamp comparison - if event was before second half start, it's first half
+                            isFirstHalf = event.timestamp < secondHalfStartTime;
+                            console.log(`Event timestamp: ${event.timestamp}, Second half start: ${secondHalfStartTime}, isFirstHalf: ${isFirstHalf}`);
+                        } else if (event.matchState) {
+                            // Fallback to matchState if no timestamps available
+                            isFirstHalf = event.matchState === 'first-half' || event.matchState === 'not-started';
+                            console.log(`Using matchState fallback: ${event.matchState}, isFirstHalf: ${isFirstHalf}`);
+                        } else {
+                            // Final fallback - use current match state
+                            isFirstHalf = currentMatchState === 'first-half' || currentMatchState === 'not-started';
+                            console.log(`Using current state fallback: ${currentMatchState}, isFirstHalf: ${isFirstHalf}`);
+                        }
+
+                        if (isTeam1) {
+                            if (isFirstHalf) {
+                                team1FoulsFirstHalf++;
+                            } else {
+                                team1FoulsSecondHalf++;
+                            }
+                        } else {
+                            if (isFirstHalf) {
+                                team2FoulsFirstHalf++;
+                            } else {
+                                team2FoulsSecondHalf++;
+                            }
+                        }
+                    }
+                });
+                
+                console.log('Counted fouls from events using timestamps:', {
+                    team1FirstHalf: team1FoulsFirstHalf,
+                    team2FirstHalf: team2FoulsFirstHalf,
+                    team1SecondHalf: team1FoulsSecondHalf,
+                    team2SecondHalf: team2FoulsSecondHalf
+                });
+
+                // Update match fouls data
+                matchFouls.firstHalf.team1 = team1FoulsFirstHalf;
+                matchFouls.firstHalf.team2 = team2FoulsFirstHalf;
+                matchFouls.secondHalf.team1 = team1FoulsSecondHalf;
+                matchFouls.secondHalf.team2 = team2FoulsSecondHalf;
+
+                console.log('Updated matchFouls:', JSON.parse(JSON.stringify(matchFouls)));
+
+                // Update the display
+                updateFoulBreakdownDisplay();
+                
+                // Save to Firebase
+                saveFoulData();
+            }).catch(error => {
+                console.error('Error fetching match state for foul categorization:', error);
+                // Fall back to the old method if there's an error
+                fallbackFoulCategorization();
+            });
+        }
+        
+        // Fallback method using matchState when timestamp method fails
+        function fallbackFoulCategorization() {
+            console.log('Using fallback foul categorization method');
+            
+            let team1FoulsFirstHalf = 0;
+            let team2FoulsFirstHalf = 0;
+            let team1FoulsSecondHalf = 0;
+            let team2FoulsSecondHalf = 0;
+
             Object.values(matchEvents).forEach(event => {
                 if (event.eventType === 'foul') {
-                    console.log('Processing foul event:', event);
                     const isTeam1 = event.teamKey === 'team1';
                     
-                    // Determine which half the event belongs to
-                    let isFirstHalf = true; // Default to first half
-                    
+                    let isFirstHalf = true;
                     if (event.matchState) {
-                        // If event has matchState, use it reliably
-                        isFirstHalf = event.matchState === 'first-half';
-                        console.log(`Event has matchState: ${event.matchState}, isFirstHalf: ${isFirstHalf}`);
+                        isFirstHalf = event.matchState === 'first-half' || event.matchState === 'not-started';
                     } else {
-                        // For events without matchState, use current match state as indicator
                         isFirstHalf = currentMatchState === 'first-half' || currentMatchState === 'not-started';
-                        console.log(`Event missing matchState, using current state: ${currentMatchState}, isFirstHalf: ${isFirstHalf}`);
                     }
 
                     if (isTeam1) {
@@ -3432,72 +3510,57 @@
                 }
             });
             
-            console.log('Counted fouls from events:', {
-                team1FirstHalf: team1FoulsFirstHalf,
-                team2FirstHalf: team2FoulsFirstHalf,
-                team1SecondHalf: team1FoulsSecondHalf,
-                team2SecondHalf: team2FoulsSecondHalf
-            });
+            // Update match fouls data for fallback method
+            matchFouls.firstHalf.team1 = team1FoulsFirstHalf;
+            matchFouls.firstHalf.team2 = team2FoulsFirstHalf;
+            matchFouls.secondHalf.team1 = team1FoulsSecondHalf;
+            matchFouls.secondHalf.team2 = team2FoulsSecondHalf;
 
-            // Update matchFouls structure - but preserve saved first half fouls if they exist
-            matchFouls.firstHalf = matchFouls.firstHalf || { team1: 0, team2: 0 };
-            matchFouls.secondHalf = matchFouls.secondHalf || { team1: 0, team2: 0 };
-            
-            // Handle foul counting based on match state
-            if (currentMatchState === 'first-half' || currentMatchState === 'not-started') {
-                // We're in first half - count first half events and update current
-                console.log('Updating first half fouls from events');
-                matchFouls.firstHalf.team1 = team1FoulsFirstHalf;
-                matchFouls.firstHalf.team2 = team2FoulsFirstHalf;
-                matchFouls.current = {
-                    team1: team1FoulsFirstHalf,
-                    team2: team2FoulsFirstHalf
-                };
-                // Clear second half (shouldn't have any events yet)
-                matchFouls.secondHalf = { team1: 0, team2: 0 };
-            } else {
-                // We're in second half or later - be very careful about what we update
-                console.log('In second half or later - preserving saved first half fouls');
-                
-                // Check if we have saved first half fouls
-                const hasValidFirstHalfFouls = (matchFouls.firstHalf.team1 > 0 || matchFouls.firstHalf.team2 > 0);
-                
-                if (!hasValidFirstHalfFouls && (team1FoulsFirstHalf > 0 || team2FoulsFirstHalf > 0)) {
-                    console.log('No saved first half fouls but found first half events - this might be a data consistency issue');
-                    // This suggests the first half fouls weren't properly saved during transition
-                    // We should probably not auto-fix this without user intervention
-                }
-                
-                // Always update second half fouls from events
-                console.log('Updating second half fouls from events');
-                matchFouls.secondHalf.team1 = team1FoulsSecondHalf;
-                matchFouls.secondHalf.team2 = team2FoulsSecondHalf;
-                
-                // Current fouls should be second half fouls only
-                matchFouls.current = {
-                    team1: team1FoulsSecondHalf,
-                    team2: team2FoulsSecondHalf
-                };
-            }
-            
-            console.log('Final matchFouls after update:', {
-                firstHalf: matchFouls.firstHalf,
-                secondHalf: matchFouls.secondHalf,
-                current: matchFouls.current
-            });
+            console.log('Fallback updated matchFouls:', JSON.parse(JSON.stringify(matchFouls)));
 
-            // Save to Firebase and update displays
-            database.ref(`matchFouls/${currentMatchId}`).set(matchFouls)
-                .then(() => {
-                    console.log('Fouls updated from events:', matchFouls);
-                    updateFoulDisplays();
-                })
-                .catch(error => {
-                    console.error('Error updating fouls from events:', error);
-                });
+            // Update the display
+            updateFoulBreakdownDisplay();
+            
+            // Save to Firebase
+            saveFoulData();
         }
 
+        // Helper function to update foul breakdown display
+        function updateFoulBreakdownDisplay() {
+            console.log('updateFoulBreakdownDisplay called with matchFouls:', matchFouls);
+            
+            // Ensure foul structure exists
+            if (!matchFouls.firstHalf) matchFouls.firstHalf = { team1: 0, team2: 0 };
+            if (!matchFouls.secondHalf) matchFouls.secondHalf = { team1: 0, team2: 0 };
+            
+            // Update first half fouls
+            const team1FirstHalfElement = document.getElementById('first-half-fouls-team1');
+            const team2FirstHalfElement = document.getElementById('first-half-fouls-team2');
+            
+            if (team1FirstHalfElement) team1FirstHalfElement.textContent = matchFouls.firstHalf.team1 || 0;
+            if (team2FirstHalfElement) team2FirstHalfElement.textContent = matchFouls.firstHalf.team2 || 0;
+            
+            // Update second half fouls
+            const team1SecondHalfElement = document.getElementById('second-half-fouls-team1');
+            const team2SecondHalfElement = document.getElementById('second-half-fouls-team2');
+            
+            if (team1SecondHalfElement) team1SecondHalfElement.textContent = matchFouls.secondHalf.team1 || 0;
+            if (team2SecondHalfElement) team2SecondHalfElement.textContent = matchFouls.secondHalf.team2 || 0;
+            
+            console.log('Updated foul breakdown displays - 1st Half: Team1=', team1FirstHalfElement?.textContent, 'Team2=', team2FirstHalfElement?.textContent);
+            console.log('Updated foul breakdown displays - 2nd Half: Team1=', team1SecondHalfElement?.textContent, 'Team2=', team2SecondHalfElement?.textContent);
+        }
 
+        // Helper function to save foul data to Firebase
+        function saveFoulData() {
+            database.ref(`matchFouls/${currentMatchId}`).set(matchFouls)
+                .then(() => {
+                    console.log('Foul data saved successfully:', matchFouls);
+                })
+                .catch(error => {
+                    console.error('Error saving foul data:', error);
+                });
+        }
 
         function updateFoulDisplays() {
             console.log('updateFoulDisplays called with matchFouls:', matchFouls);
