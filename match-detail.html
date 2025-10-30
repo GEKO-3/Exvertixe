@@ -409,6 +409,125 @@
             box-shadow: 0 0 10px rgba(3, 189, 237, 0.3);
         }
 
+        .jersey-colors-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: var(--backdrop-filter);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px var(--shadow-color);
+            margin-bottom: 30px;
+        }
+
+        .jersey-colors-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .jersey-colors-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .jersey-colors-layout {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .team-jersey-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .team-jersey-section.team1 {
+            align-items: flex-end;
+        }
+
+        .team-jersey-section.team2 {
+            align-items: flex-start;
+        }
+
+        .jersey-team-name {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .jersey-color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .jersey-color-picker-container {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .jersey-color-picker-container:hover {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        [data-theme="light"] .jersey-color-picker-container:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .jersey-color-input {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--primary-color);
+            border-radius: 10px;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .jersey-color-input:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(3, 189, 237, 0.4);
+        }
+
+        .jersey-color-display {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            background: #ffffff;
+        }
+
+        .jersey-color-text {
+            font-size: 1rem;
+            color: var(--text-color);
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .jersey-color-label {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
         .fouls-container {
             background: var(--card-bg);
             border-radius: 20px;
@@ -1956,6 +2075,22 @@
             <!-- Teams will be populated here -->
         </div>
 
+        <!-- Jersey Colors Container -->
+        <div class="jersey-colors-container">
+            <div class="jersey-colors-header">
+                <div class="jersey-colors-title">TEAM JERSEY COLORS</div>
+            </div>
+            <div class="jersey-colors-layout">
+                <div class="team-jersey-section team1" id="jersey-section-team1">
+                    <!-- Team 1 jersey color picker will be populated here -->
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="team-jersey-section team2" id="jersey-section-team2">
+                    <!-- Team 2 jersey color picker will be populated here -->
+                </div>
+            </div>
+        </div>
+
         <!-- Half Scores Container -->
         <div class="half-scores-container" id="half-scores-container" style="display: none;">
             <div class="half-scores-header">
@@ -2039,6 +2174,10 @@
         let teamLists = {};
         let playerSlotCounts = {};
         let currentMatchId = '';
+        let jerseyColors = {
+            team1: '#ffffff',
+            team2: '#ffffff'
+        };
 
         // Helper function to ensure valid foul counts
         function validateFouls(foulObj) {
@@ -2661,6 +2800,17 @@
             // Referee data is loaded automatically when dialog opens
         });
 
+        // Listen for jersey colors
+        database.ref(`matchJerseyColors/${currentMatchId}`).on('value', (snapshot) => {
+            const colorData = snapshot.val();
+            if (colorData) {
+                jerseyColors.team1 = colorData.team1 || '#ffffff';
+                jerseyColors.team2 = colorData.team2 || '#ffffff';
+                updateJerseyColorDisplays();
+            }
+            console.log('Jersey colors loaded:', jerseyColors);
+        });
+
         // Listen for match state changes (with delay to ensure DOM is ready)
         setTimeout(() => {
             database.ref(`matchState/${currentMatchId}`).on('value', (snapshot) => {
@@ -2714,14 +2864,73 @@
             // Create foul sections
             createFoulSections(matchData.teams);
             
+            // Create jersey color sections
+            createJerseyColorSections(matchData.teams);
+            
             // Load player slot counts first, then create team sections
             loadPlayerSlotCounts(() => {
                 createTeamSections(matchData.teams);
                 loadExistingEvents();
+                
+                // Initialize jersey color displays after team sections are created
+                setTimeout(() => {
+                    updateJerseyColorDisplays();
+                }, 500);
             });
             
             // Load existing signatures for this match
             loadExistingSignatures();
+        }
+
+        // Jersey Color Management Functions
+        function updateJerseyColor(teamKey, colorValue) {
+            // Update local state
+            jerseyColors[teamKey] = colorValue;
+            
+            // Update display elements
+            updateJerseyColorDisplay(teamKey, colorValue);
+            
+            // Save to Firebase
+            saveJerseyColorToFirebase(teamKey, colorValue);
+        }
+
+        function updateJerseyColorDisplay(teamKey, colorValue) {
+            const displayElement = document.getElementById(`jersey-display-${teamKey}`);
+            const textElement = document.getElementById(`jersey-text-${teamKey}`);
+            
+            if (displayElement) {
+                displayElement.style.backgroundColor = colorValue;
+            }
+            if (textElement) {
+                textElement.textContent = colorValue.toUpperCase();
+            }
+        }
+
+        function updateJerseyColorDisplays() {
+            // Update both teams when loading from Firebase
+            Object.keys(jerseyColors).forEach(teamKey => {
+                const colorValue = jerseyColors[teamKey];
+                const inputElement = document.getElementById(`jersey-color-${teamKey}`);
+                
+                if (inputElement) {
+                    inputElement.value = colorValue;
+                }
+                updateJerseyColorDisplay(teamKey, colorValue);
+            });
+        }
+
+        function saveJerseyColorToFirebase(teamKey, colorValue) {
+            const updates = {};
+            updates[teamKey] = colorValue;
+            
+            database.ref(`matchJerseyColors/${currentMatchId}`).update(updates)
+                .then(() => {
+                    console.log(`Jersey color saved for ${teamKey}: ${colorValue}`);
+                })
+                .catch(error => {
+                    console.error('Error saving jersey color:', error);
+                    alert('Error saving jersey color. Please try again.');
+                });
         }
 
         // Match schedule data - Updated tournament structure after team dropout
@@ -2994,6 +3203,49 @@
                         </div>
                     </div>
                     <div class="foul-team-name">${team2Data.name}</div>
+                `;
+            }
+        }
+
+        function createJerseyColorSections(teamPositions) {
+            const team1Section = document.getElementById('jersey-section-team1');
+            const team2Section = document.getElementById('jersey-section-team2');
+            
+            // Clear existing content
+            team1Section.innerHTML = '';
+            team2Section.innerHTML = '';
+            
+            // Team 1 jersey color
+            const team1Data = getTeamData(teamPositions[0]);
+            if (team1Data) {
+                team1Section.innerHTML = `
+                    <div class="jersey-team-name">${team1Data.name}</div>
+                    <div class="jersey-color-picker-container">
+                        <input type="color" 
+                               id="jersey-color-team1" 
+                               class="jersey-color-input" 
+                               value="#ffffff" 
+                               onchange="updateJerseyColor('team1', this.value)">
+                        <div class="jersey-color-display" id="jersey-display-team1"></div>
+                        <div class="jersey-color-text" id="jersey-text-team1">#FFFFFF</div>
+                    </div>
+                `;
+            }
+            
+            // Team 2 jersey color
+            const team2Data = getTeamData(teamPositions[1]);
+            if (team2Data) {
+                team2Section.innerHTML = `
+                    <div class="jersey-color-picker-container">
+                        <input type="color" 
+                               id="jersey-color-team2" 
+                               class="jersey-color-input" 
+                               value="#ffffff" 
+                               onchange="updateJerseyColor('team2', this.value)">
+                        <div class="jersey-color-display" id="jersey-display-team2"></div>
+                        <div class="jersey-color-text" id="jersey-text-team2">#FFFFFF</div>
+                    </div>
+                    <div class="jersey-team-name">${team2Data.name}</div>
                 `;
             }
         }
