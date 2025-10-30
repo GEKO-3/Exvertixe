@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Match Data - JSON</title>
+</head>
+<body>
+    <h1>Live Match Data</h1>
+    <pre id="json-output">Loading...</pre>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data storage
+        let teams = {};
+        let drawAssignments = {};
+        let teamLists = {};
+        let matchEvents = {};
+        let matchStates = {};
+        let matchFouls = {};
+        let currentLiveMatch = null;
+        let currentScores = { team1: 0, team2: 0 };
+
+        // Team name to logo filename mapping
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'Laamu Galaxy': 'laamu_galaxy',
+                'Red Star': 'red_star'
+            };
+            
+            return logoMap[teamName] || teamName.toLowerCase().replace(/\s+/g, '_');
+        }
+
+        // Parse match ID to get team positions
+        function parseMatchId(matchId) {
+            const regex = /^(.+?)-(.+?)vs(.+?)-(.+)$/;
+            const match = matchId.match(regex);
+            
+            if (!match) {
+                console.error('Invalid match ID format:', matchId);
+                return null;
+            }
+            
+            const [, date, team1Position, team2Position, time] = match;
+            return {
+                date: date,
+                team1Position: team1Position,
+                team2Position: team2Position,
+                time: time
+            };
+        }
+
+        // Get team data by position
+        function getTeamData(position) {
+            if (!drawAssignments[position]) return null;
+            
+            const teamKey = drawAssignments[position];
+            const teamData = teams[teamKey];
+            
+            if (!teamData) return null;
+            
+            const teamListData = teamLists[teamKey] || {};
+            
+            return {
+                name: teamData.teamName || 'Unknown Team',
+                logo: getTeamLogoFilename(teamData.teamName),
+                key: teamKey,
+                players: teamListData
+            };
+        }
+
+        // Calculate scores for a match
+        function calculateScores(matchId) {
+            if (!matchEvents[matchId]) {
+                currentScores = { team1: 0, team2: 0 };
+                return;
+            }
+
+            let team1Score = 0;
+            let team2Score = 0;
+
+            Object.values(matchEvents[matchId]).forEach(event => {
+                if (event.eventType === 'goal') {
+                    if (event.teamKey === 'team1') {
+                        team1Score++;
+                    } else if (event.teamKey === 'team2') {
+                        team2Score++;
+                    }
+                }
+            });
+
+            currentScores = { team1: team1Score, team2: team2Score };
+        }
+
+        // Get current half
+        function getCurrentHalf() {
+            if (!currentLiveMatch || !matchStates[currentLiveMatch]) {
+                return 'firstHalf';
+            }
+            
+            const state = matchStates[currentLiveMatch];
+            const matchStatus = state.matchStatus || state.state || '';
+            const stateValue = state.state || state.matchStatus || '';
+            
+            if (matchStatus === 'Second Half' || 
+                matchStatus === 'Full Time' || 
+                matchStatus === 'Extra Time' ||
+                stateValue === 'second-half' ||
+                stateValue === 'full-time' ||
+                stateValue === 'extra-time') {
+                return 'secondHalf';
+            }
+            
+            return 'firstHalf';
+        }
+
+        // Get current fouls for the current half
+        function getCurrentFouls() {
+            if (!currentLiveMatch || !matchFouls[currentLiveMatch]) {
+                return { team1: 0, team2: 0 };
+            }
+
+            const matchFoulData = matchFouls[currentLiveMatch];
+            const currentHalf = getCurrentHalf();
+            
+            let team1Fouls = 0;
+            let team2Fouls = 0;
+            
+            if (currentHalf === 'firstHalf') {
+                team1Fouls = (matchFoulData.firstHalf?.team1 || 0) + (matchFoulData.current?.team1 || 0);
+                team2Fouls = (matchFoulData.firstHalf?.team2 || 0) + (matchFoulData.current?.team2 || 0);
+            } else {
+                team1Fouls = (matchFoulData.secondHalf?.team1 || 0) + (matchFoulData.current?.team1 || 0);
+                team2Fouls = (matchFoulData.secondHalf?.team2 || 0) + (matchFoulData.current?.team2 || 0);
+            }
+
+            return { team1: team1Fouls, team2: team2Fouls };
+        }
+
+        // Update JSON display
+        function updateJsonDisplay() {
+            const jsonOutput = document.getElementById('json-output');
+            
+            if (!currentLiveMatch) {
+                jsonOutput.textContent = JSON.stringify({
+                    status: "No live match",
+                    timestamp: new Date().toISOString()
+                }, null, 2);
+                return;
+            }
+
+            const matchData = parseMatchId(currentLiveMatch);
+            if (!matchData) {
+                jsonOutput.textContent = JSON.stringify({
+                    status: "Invalid match data",
+                    timestamp: new Date().toISOString()
+                }, null, 2);
+                return;
+            }
+
+            const team1Data = getTeamData(matchData.team1Position);
+            const team2Data = getTeamData(matchData.team2Position);
+            const currentHalf = getCurrentHalf();
+            const fouls = getCurrentFouls();
+
+            const liveData = {
+                status: "Live match active",
+                matchId: currentLiveMatch,
+                timestamp: new Date().toISOString(),
+                currentHalf: currentHalf,
+                team1: {
+                    name: team1Data ? team1Data.name : 'Unknown Team',
+                    score: currentScores.team1,
+                    fouls: fouls.team1
+                },
+                team2: {
+                    name: team2Data ? team2Data.name : 'Unknown Team',
+                    score: currentScores.team2,
+                    fouls: fouls.team2
+                }
+            };
+
+            jsonOutput.textContent = JSON.stringify(liveData, null, 2);
+        }
+
+        // Find and set live match
+        function checkForLiveMatches() {
+            let foundLiveMatch = false;
+            
+            Object.keys(matchStates).forEach(matchId => {
+                const matchState = matchStates[matchId];
+                
+                if (matchState.state === 'first-half' || matchState.state === 'second-half') {
+                    if (!currentLiveMatch || currentLiveMatch !== matchId) {
+                        currentLiveMatch = matchId;
+                        calculateScores(matchId);
+                        foundLiveMatch = true;
+                    }
+                }
+            });
+            
+            if (!foundLiveMatch && currentLiveMatch) {
+                currentLiveMatch = null;
+                currentScores = { team1: 0, team2: 0 };
+            }
+            
+            updateJsonDisplay();
+        }
+
+        // Firebase listeners
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            checkForLiveMatches();
+        });
+
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            checkForLiveMatches();
+        });
+
+        database.ref('teamLists').on('value', (snapshot) => {
+            teamLists = snapshot.val() || {};
+            checkForLiveMatches();
+        });
+
+        database.ref('matchState').on('value', (snapshot) => {
+            matchStates = snapshot.val() || {};
+            checkForLiveMatches();
+        });
+
+        database.ref('matchEvents').on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            
+            if (currentLiveMatch) {
+                calculateScores(currentLiveMatch);
+            }
+            updateJsonDisplay();
+        });
+
+        database.ref('matchFouls').on('value', (snapshot) => {
+            matchFouls = snapshot.val() || {};
+            updateJsonDisplay();
+        });
+
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            if (currentLiveMatch) {
+                calculateScores(currentLiveMatch);
+                updateJsonDisplay();
+            }
+        }, 5000);
+
+        console.log('Live Data JSON Display initialized');
+    </script>
+</body>
+</html>
