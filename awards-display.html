@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Awards Display</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0b0c 0%, #1a1d21 50%, #2a2f35 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #03bded;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .awards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .award-section {
+            margin-bottom: 50px;
+        }
+
+        .section-header {
+            font-size: 1.8rem;
+            color: #03bded;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #03bded;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .chief-guest-tile {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8555 100%);
+            border: 2px solid #ff6b35;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .chief-guest-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+        }
+
+        .chief-guest-tile.active {
+            background: linear-gradient(135deg, #029ac0 0%, #03bded 100%);
+            border-color: #03bded;
+            transform: translateY(-5px);
+        }
+
+        .chief-guest-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .chief-guest-distinction {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .award-tile {
+            background: linear-gradient(135deg, #1a1d21 0%, #2a2f35 100%);
+            border: 2px solid #03bded;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(3, 189, 237, 0.2);
+        }
+
+        .award-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(3, 189, 237, 0.4);
+            border-color: #ff6b35;
+        }
+
+        .award-tile.active {
+            background: linear-gradient(135deg, #03bded 0%, #029ac0 100%);
+            border-color: #ff6b35;
+            transform: translateY(-5px);
+        }
+
+        .award-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #03bded;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .award-tile.active .award-title {
+            color: white;
+        }
+
+        .award-info {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .award-info-row {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .award-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .award-label {
+            color: #888;
+            font-size: 0.85rem;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .award-value {
+            color: white;
+            font-weight: 500;
+        }
+
+        .status-bar {
+            background: #1a1d21;
+            border: 2px solid #03bded;
+            border-radius: 8px;
+            padding: 15px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-text {
+            font-size: 1.1rem;
+            color: #03bded;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            background: #44ff44;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.inactive {
+            background: #ff4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .clear-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #ff8555;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+            font-size: 1.2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #03bded;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Tournament Awards Display Control</h1>
+        
+        <div class="status-bar">
+            <div>
+                <span class="status-text">Score Display Status: </span>
+                <span id="display-status" class="status-text">Checking...</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div class="status-indicator" id="status-light"></div>
+                <button class="clear-btn" onclick="clearDisplay()">Clear Display</button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">Loading awards data...</div>
+        <div id="awards-container" class="awards-grid" style="display: none;"></div>
+        <div id="empty-state" class="empty-state" style="display: none;">
+            No awards data available. Please fill out the Tournament Awards form first.
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let awardsData = {};
+        let matchStates = {};
+        let selectedAward = null;
+
+        // Award categories with display names
+        const awardCategories = {
+            finalMotm: { title: 'Final Match MOTM' },
+            kingOfTournament: { title: 'King of Tournament' },
+            bestCoach: { title: 'Best Coach' },
+            fairPlayTeam: { title: 'Fair Play Team' },
+            mostPromisingPlayer: { title: 'Most Promising Player' },
+            runnerUp: { title: 'Runner-up Team' },
+            champion: { title: 'Champion Team' }
+        };
+
+        // Load awards data
+        database.ref('tournamentAwards').on('value', (snapshot) => {
+            awardsData = snapshot.val() || {};
+            console.log('Awards data loaded:', awardsData);
+            renderAwards();
+        });
+
+        // Monitor match states
+        database.ref('matchState').on('value', (snapshot) => {
+            matchStates = snapshot.val() || {};
+            updateDisplayStatus();
+        });
+
+        // Check if there's an active match
+        function hasActiveMatch() {
+            return Object.values(matchStates).some(state => 
+                state.state === 'first-half' || state.state === 'second-half'
+            );
+        }
+
+        // Update display status
+        function updateDisplayStatus() {
+            const statusText = document.getElementById('display-status');
+            const statusLight = document.getElementById('status-light');
+            
+            if (hasActiveMatch()) {
+                statusText.textContent = 'Match Active (Awards Hidden)';
+                statusLight.classList.add('inactive');
+                statusLight.classList.remove('active');
+            } else {
+                statusText.textContent = 'Ready to Display Awards';
+                statusLight.classList.remove('inactive');
+                statusLight.classList.add('active');
+            }
+        }
+
+        // Render awards tiles
+        function renderAwards() {
+            const container = document.getElementById('awards-container');
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+
+            loading.style.display = 'none';
+
+            if (!awardsData || Object.keys(awardsData).length === 0) {
+                emptyState.style.display = 'block';
+                container.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.style.display = 'block';
+            container.innerHTML = '';
+
+            // Group awards by their sections based on common chief guests
+            const sections = [
+                {
+                    title: 'Final Match Awards',
+                    chiefGuest: awardsData.finalMotm?.chiefGuest,
+                    awards: ['finalMotm']
+                },
+                {
+                    title: 'Referee Appreciation',
+                    chiefGuest: awardsData.refereeAppreciation?.chiefGuest,
+                    awards: ['refereeAppreciation']
+                },
+                {
+                    title: 'Sponsors and Partners',
+                    chiefGuest: awardsData.sponsors?.chiefGuest,
+                    awards: ['sponsors']
+                },
+                {
+                    title: 'Coaching Excellence',
+                    chiefGuest: awardsData.bestCoach?.chiefGuest,
+                    awards: ['bestCoach']
+                },
+                {
+                    title: 'Team Awards',
+                    chiefGuest: awardsData.fairPlayTeam?.chiefGuest,
+                    awards: ['fairPlayTeam']
+                },
+                {
+                    title: 'Individual Player Awards',
+                    chiefGuest: awardsData.mostPromisingPlayer?.chiefGuest,
+                    awards: ['mostPromisingPlayer']
+                },
+                {
+                    title: 'Tournament Excellence',
+                    chiefGuest: awardsData.kingOfTournament?.chiefGuest,
+                    awards: ['kingOfTournament', 'top5Players']
+                },
+                {
+                    title: 'Championship Awards',
+                    chiefGuest: awardsData.runnerUp?.chiefGuest,
+                    awards: ['runnerUp', 'champion']
+                }
+            ];
+
+            sections.forEach(section => {
+                // Check if section has any awards with data
+                const hasAwards = section.awards.some(key => {
+                    if (key === 'refereeAppreciation') {
+                        return awardsData[key]?.referees?.length > 0;
+                    } else if (key === 'sponsors') {
+                        return awardsData[key]?.list?.length > 0;
+                    } else if (key === 'top5Players') {
+                        return awardsData[key]?.players?.length > 0;
+                    } else {
+                        return awardsData[key] && Object.keys(awardsData[key]).some(k => 
+                            k !== 'chiefGuest' && awardsData[key][k]
+                        );
+                    }
+                });
+
+                if (!hasAwards) return;
+
+                // Create section
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'award-section';
+
+                const sectionHeader = document.createElement('div');
+                sectionHeader.className = 'section-header';
+                sectionHeader.textContent = section.title;
+                sectionDiv.appendChild(sectionHeader);
+
+                // Add chief guest tile if exists
+                if (section.chiefGuest && section.chiefGuest.name) {
+                    const chiefGuestTile = createChiefGuestTile(section.chiefGuest, section.title);
+                    sectionDiv.appendChild(chiefGuestTile);
+                }
+
+                // Create awards grid for this section
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'awards-grid';
+
+                section.awards.forEach(key => {
+                    if (key === 'top5Players' && awardsData.top5Players?.players) {
+                        awardsData.top5Players.players.forEach((player, index) => {
+                            if (player.player) {
+                                const tile = createIndividualTile(
+                                    `top5-${index}`,
+                                    `Top 5 Player ${index + 1}`,
+                                    player,
+                                    'player',
+                                    null // Don't pass chiefGuest to individual tiles
+                                );
+                                gridDiv.appendChild(tile);
+                            }
+                        });
+                    } else if (key === 'refereeAppreciation' && awardsData.refereeAppreciation?.referees) {
+                        awardsData.refereeAppreciation.referees.forEach((referee, index) => {
+                            if (referee) {
+                                const tile = createIndividualTile(
+                                    `referee-${index}`,
+                                    `Referee Appreciation`,
+                                    { name: referee },
+                                    'referee',
+                                    null
+                                );
+                                gridDiv.appendChild(tile);
+                            }
+                        });
+                    } else if (key === 'sponsors' && awardsData.sponsors?.list) {
+                        awardsData.sponsors.list.forEach((sponsor, index) => {
+                            if (sponsor.name) {
+                                const tile = createIndividualTile(
+                                    `sponsor-${index}`,
+                                    `Sponsors and Partners Appreciation`,
+                                    sponsor,
+                                    'sponsor',
+                                    null
+                                );
+                                gridDiv.appendChild(tile);
+                            }
+                        });
+                    } else if (awardsData[key] && awardCategories[key]) {
+                        const tile = createAwardTile(key, awardCategories[key], awardsData[key]);
+                        gridDiv.appendChild(tile);
+                    }
+                });
+
+                sectionDiv.appendChild(gridDiv);
+                container.appendChild(sectionDiv);
+            });
+        }
+
+        // Create chief guest tile
+        function createChiefGuestTile(chiefGuest, sectionTitle) {
+            const tile = document.createElement('div');
+            tile.className = 'chief-guest-tile';
+            tile.onclick = () => displayChiefGuest(tile, chiefGuest, sectionTitle);
+
+            tile.innerHTML = `
+                <div class="chief-guest-name">${chiefGuest.name}</div>
+                ${chiefGuest.distinction ? `<div class="chief-guest-distinction">${chiefGuest.distinction}</div>` : ''}
+            `;
+
+            return tile;
+        }
+
+        // Create individual award tile
+        function createAwardTile(key, info, data) {
+            const tile = document.createElement('div');
+            tile.className = 'award-tile';
+            tile.onclick = () => displayAward(key, tile, info.title, data);
+
+            let contentHTML = `
+                <div class="award-title">${info.title}</div>
+                <div class="award-info">
+            `;
+
+            // Build content based on award type
+            if (data.chiefGuest && data.chiefGuest.name) {
+                contentHTML += `
+                    <div class="award-info-row">
+                        <span class="award-label">Chief Guest:</span>
+                        <span class="award-value">${data.chiefGuest.name}</span>
+                    </div>
+                    <div class="award-info-row">
+                        <span class="award-label">Distinction:</span>
+                        <span class="award-value">${data.chiefGuest.distinction || 'N/A'}</span>
+                    </div>
+                `;
+            }
+
+            if (key === 'fairPlayTeam' || key === 'runnerUp' || key === 'champion') {
+                contentHTML += `
+                    <div class="award-info-row">
+                        <span class="award-label">Team:</span>
+                        <span class="award-value">${data.team || 'N/A'}</span>
+                    </div>
+                `;
+            } else if (key === 'bestCoach') {
+                if (data.team) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Team:</span>
+                            <span class="award-value">${data.team}</span>
+                        </div>
+                    `;
+                }
+                if (data.coachName) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Coach:</span>
+                            <span class="award-value">${data.coachName}</span>
+                        </div>
+                    `;
+                }
+            } else {
+                // Player awards (finalMotm, kingOfTournament, mostPromisingPlayer)
+                if (data.team) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Team:</span>
+                            <span class="award-value">${data.team}</span>
+                        </div>
+                    `;
+                }
+                if (data.player) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Player:</span>
+                            <span class="award-value">${data.player}</span>
+                        </div>
+                    `;
+                }
+                if (data.jersey) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Jersey:</span>
+                            <span class="award-value">#${data.jersey}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            contentHTML += `</div>`;
+            tile.innerHTML = contentHTML;
+            return tile;
+        }
+
+        // Create individual tile for sub-entries (top 5, referees, sponsors)
+        function createIndividualTile(id, title, data, type, chiefGuest) {
+            const tile = document.createElement('div');
+            tile.className = 'award-tile';
+            tile.onclick = () => displayIndividualAward(id, tile, title, data, type, chiefGuest);
+
+            let contentHTML = `
+                <div class="award-title">${title}</div>
+                <div class="award-info">
+            `;
+
+            if (chiefGuest && chiefGuest.name) {
+                contentHTML += `
+                    <div class="award-info-row">
+                        <span class="award-label">Chief Guest:</span>
+                        <span class="award-value">${chiefGuest.name}</span>
+                    </div>
+                `;
+            }
+
+            if (type === 'player') {
+                if (data.team) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Team:</span>
+                            <span class="award-value">${data.team}</span>
+                        </div>
+                    `;
+                }
+                if (data.player) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Player:</span>
+                            <span class="award-value">${data.player}</span>
+                        </div>
+                    `;
+                }
+                if (data.jersey) {
+                    contentHTML += `
+                        <div class="award-info-row">
+                            <span class="award-label">Jersey:</span>
+                            <span class="award-value">#${data.jersey}</span>
+                        </div>
+                    `;
+                }
+            } else if (type === 'referee') {
+                contentHTML += `
+                    <div class="award-info-row">
+                        <span class="award-label">Name:</span>
+                        <span class="award-value">${data.name}</span>
+                    </div>
+                `;
+            } else if (type === 'sponsor') {
+                contentHTML += `
+                    <div class="award-info-row">
+                        <span class="award-label">Sponsor:</span>
+                        <span class="award-value">${data.name}</span>
+                    </div>
+                `;
+            }
+
+            contentHTML += `</div>`;
+            tile.innerHTML = contentHTML;
+            return tile;
+        }
+
+        // Display chief guest on score display
+        function displayChiefGuest(tileElement, chiefGuest, sectionTitle) {
+            if (hasActiveMatch()) {
+                alert('Cannot display awards while a match is active!');
+                return;
+            }
+
+            // Remove active class from all tiles
+            document.querySelectorAll('.award-tile, .chief-guest-tile').forEach(t => t.classList.remove('active'));
+            
+            // Add active class to selected tile
+            tileElement.classList.add('active');
+
+            // Send to Firebase for score-display to show
+            database.ref('currentAwardDisplay').set({
+                type: 'chiefGuest',
+                title: sectionTitle,
+                data: {
+                    name: chiefGuest.name,
+                    distinction: chiefGuest.distinction
+                },
+                timestamp: Date.now()
+            });
+
+            console.log('Chief guest displayed:', chiefGuest.name);
+        }
+
+        // Display selected award on score display
+        function displayAward(key, tileElement, title, data) {
+            if (hasActiveMatch()) {
+                alert('Cannot display awards while a match is active!');
+                return;
+            }
+
+            // Remove active class from all tiles
+            document.querySelectorAll('.award-tile, .chief-guest-tile').forEach(t => t.classList.remove('active'));
+            
+            // Add active class to selected tile
+            tileElement.classList.add('active');
+            selectedAward = key;
+
+            // Send to Firebase for score-display to show
+            database.ref('currentAwardDisplay').set({
+                type: key,
+                title: title,
+                data: data,
+                timestamp: Date.now()
+            });
+
+            console.log('Award displayed:', key);
+        }
+
+        // Display individual award entry (for top 5 players, referees, sponsors)
+        function displayIndividualAward(id, tileElement, title, data, type, chiefGuest) {
+            if (hasActiveMatch()) {
+                alert('Cannot display awards while a match is active!');
+                return;
+            }
+
+            // Remove active class from all tiles
+            document.querySelectorAll('.award-tile, .chief-guest-tile').forEach(t => t.classList.remove('active'));
+            
+            // Add active class to selected tile
+            tileElement.classList.add('active');
+            selectedAward = id;
+
+            // Send to Firebase for score-display to show
+            database.ref('currentAwardDisplay').set({
+                type: type,
+                title: title,
+                data: data,
+                chiefGuest: chiefGuest,
+                timestamp: Date.now()
+            });
+
+            console.log('Individual award displayed:', id, type);
+        }
+
+        // Clear display
+        function clearDisplay() {
+            database.ref('currentAwardDisplay').remove();
+            document.querySelectorAll('.award-tile, .chief-guest-tile').forEach(t => t.classList.remove('active'));
+            selectedAward = null;
+            console.log('Display cleared');
+        }
+
+        // Initialize
+        updateDisplayStatus();
+        console.log('Awards Display Control initialized');
+    </script>
+</body>
+</html>

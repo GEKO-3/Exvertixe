@@ -1,0 +1,570 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transparent Score Display</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: transparent;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-container {
+            position: absolute;
+            top: 20px;
+            left: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            z-index: 1000;
+        }
+
+        .tournament-logo-circle {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: -70px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 3px solid #1eb3df;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .tournament-logo-circle img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .teams-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .team-display {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(90deg, #1eb3df 0%, #1eb3df 75%, #356a99 75%, #356a99 100%);
+            border-radius: 30px 0 0 30px;
+            padding: 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            width: 280px;
+            height: 45px;
+            overflow: visible;
+            position: relative;
+        }
+
+        .team-logo {
+            width: 52px;
+            height: 52px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            border: 3px solid #1eb3df;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .team-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .team-logo svg {
+            width: 28px;
+            height: 28px;
+            fill: #1eb3df;
+        }
+
+        .team-name {
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 65px;
+            padding-right: 10px;
+        }
+
+        .team-score {
+            background: transparent;
+            color: white;
+            font-weight: bold;
+            font-size: 22px;
+            padding: 0;
+            margin: 0;
+            width: 50px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .team-fouls {
+            background: #e63946;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            position: absolute;
+            right: -26px;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        /* Goal flash overlay */
+        .goal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            display: none;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .goal-overlay.show {
+            display: block;
+            animation: goalFlash 3s ease-out forwards;
+        }
+
+        @keyframes goalFlash {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .team-display {
+                min-width: 240px;
+                height: 45px;
+            }
+            
+            .team-name {
+                font-size: 14px;
+            }
+            
+            .team-score {
+                font-size: 16px;
+                padding: 5px 12px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .score-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .team-display {
+                min-width: 200px;
+                height: 40px;
+            }
+            
+            .team-name {
+                font-size: 12px;
+            }
+            
+            .team-score {
+                font-size: 14px;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="score-container">
+        <div class="teams-wrapper">
+            <div class="tournament-logo-circle">
+                <img src="Tounament logo.svg" alt="Tournament Logo" onerror="this.src='Tounament logo.png'">
+            </div>
+            
+            <div class="team-display team-a">
+                <div class="team-logo">
+                    <img id="team1-logo" src="" alt="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                </div>
+                <div class="team-name" id="team1-name">TEAM A</div>
+                <div class="team-score" id="team1-score">0</div>
+                <div class="team-fouls" id="team1-foul">0</div>
+            </div>
+            
+            <div class="team-display team-b">
+                <div class="team-logo">
+                    <img id="team2-logo" src="" alt="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                </div>
+                <div class="team-name" id="team2-name">TEAM B</div>
+                <div class="team-score" id="team2-score">0</div>
+                <div class="team-fouls" id="team2-foul">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="goal-overlay" id="goal-overlay"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration (exact copy from score-display.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data storage (exact copy from score-display.html)
+        let teams = {};
+        let drawAssignments = {};
+        let teamLists = {};
+        let matchEvents = {};
+        let matchStates = {};
+        let matchFouls = {};
+        let jerseyColors = {};
+        let previousScores = { team1: 0, team2: 0 };
+        let currentLiveMatch = null;
+        let pageLoadTime = Date.now();
+
+        // Team name to logo filename mapping (exact copy from score-display.html)
+        function getTeamLogoFilename(teamName) {
+            const logoMap = {
+                'Amigos': 'amigos',
+                'Best': 'best',
+                'Brave Generation Sports Club': 'brave_generation_sports_club',
+                'Foemathi': 'foemathi',
+                'Foemathi Jr': 'foemathi_jr',
+                'Goalhians': 'goalhians',
+                'Goalhi Sports Club': 'goalhi_sports_club',
+                'G Star Sports Club': 'g_star_sports_club',
+                'Kanmathi FC': 'kanmathi_fc',
+                'Kanmathi SC': 'kanmathi_sc',
+                'Laamu Blues': 'laamu_blues',
+                'LeCrose Sports Club': 'lecrose_sports_club',
+                'Maahinna United': 'maahinna_united',
+                'Outreef Sports Club': 'outreef_sports_club',
+                'Youth Academy': 'youth_academy'
+            };
+            
+            if (logoMap[teamName]) {
+                return logoMap[teamName];
+            }
+            
+            return teamName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').toLowerCase();
+        }
+
+        // Parse match ID to get match details (exact copy from score-display.html)
+        function parseMatchId(matchId) {
+            const parts = matchId.split('-');
+            if (parts.length >= 3) {
+                const date = parts[0];
+                const teams = parts[1];
+                const time = parts[2];
+                
+                const teamsMatch = teams.match(/^(.+)vs(.+)$/);
+                if (teamsMatch) {
+                    return {
+                        date: date,
+                        team1Position: teamsMatch[1],
+                        team2Position: teamsMatch[2],
+                        time: time,
+                        type: parts[3] || 'Regular'
+                    };
+                }
+            }
+            return null;
+        }
+
+        // Get team data for a specific position (exact copy from score-display.html)
+        function getTeamData(position) {
+            try {
+                if (drawAssignments[position]) {
+                    const teamId = drawAssignments[position];
+                    if (teams[teamId]) {
+                        return {
+                            id: teamId,
+                            name: teams[teamId].teamName,
+                            logo: getTeamLogoFilename(teams[teamId].teamName),
+                            position: position
+                        };
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error('Error getting team data:', error);
+                return null;
+            }
+        }
+
+        // Find and display live matches (exact copy from score-display.html)
+        function checkForLiveMatches() {
+            let foundLiveMatch = false;
+            
+            Object.keys(matchStates).forEach(matchId => {
+                const matchState = matchStates[matchId];
+                
+                // Check if match is live (first-half or second-half)
+                if (matchState.state === 'first-half' || matchState.state === 'second-half') {
+                    if (!currentLiveMatch || currentLiveMatch !== matchId) {
+                        currentLiveMatch = matchId;
+                        displayLiveMatch(matchId);
+                        foundLiveMatch = true;
+                    }
+                }
+            });
+            
+            if (!foundLiveMatch && currentLiveMatch) {
+                // No live matches found, show defaults
+                currentLiveMatch = null;
+                showDefaults();
+            }
+        }
+
+        // Show default team names
+        function showDefaults() {
+            document.getElementById('team1-name').textContent = 'TEAM A';
+            document.getElementById('team2-name').textContent = 'TEAM B';
+            document.getElementById('team1-score').textContent = '0';
+            document.getElementById('team2-score').textContent = '0';
+            document.getElementById('team1-foul').textContent = '0';
+            document.getElementById('team2-foul').textContent = '0';
+        }
+
+        // Display live match (adapted from score-display.html)
+        function displayLiveMatch(matchId) {
+            console.log('Displaying live match:', matchId);
+            const matchData = parseMatchId(matchId);
+            if (!matchData) {
+                console.log('Could not parse match ID');
+                return;
+            }
+
+            const team1Data = getTeamData(matchData.team1Position);
+            const team2Data = getTeamData(matchData.team2Position);
+
+            console.log('Team 1 data:', team1Data);
+            console.log('Team 2 data:', team2Data);
+
+            // Update team information
+            updateTeamDisplay('team1', team1Data);
+            updateTeamDisplay('team2', team2Data);
+
+            // Calculate and display scores
+            calculateScores(matchId);
+            
+            // Update foul display
+            updateFoulDisplay();
+        }
+
+        // Update team display (exact copy from score-display.html)
+        function updateTeamDisplay(teamKey, teamData) {
+            const teamName = teamData ? teamData.name : `Team ${teamKey}`;
+            const logoSrc = teamData ? `logos/${teamData.logo}.jpg` : '';
+
+            console.log(`Updating ${teamKey}:`, teamName, logoSrc);
+
+            document.getElementById(`${teamKey}-name`).textContent = teamName;
+            
+            const logoElement = document.getElementById(`${teamKey}-logo`);
+            if (logoSrc) {
+                logoElement.src = logoSrc;
+                logoElement.style.display = 'block';
+                logoElement.onerror = function() {
+                    this.src = `logos/${teamData.logo}.png`;
+                    this.onerror = function() {
+                        this.style.display = 'none';
+                    };
+                };
+            } else {
+                logoElement.style.display = 'none';
+            }
+        }
+
+        // Calculate scores (adapted from score-display.html)
+        function calculateScores(matchId) {
+            const events = matchEvents[matchId] || {};
+            const scores = { team1: 0, team2: 0 };
+
+            Object.keys(events).forEach(eventKey => {
+                const event = events[eventKey];
+                
+                if (event.eventType === 'goal') {
+                    scores[event.teamKey]++;
+                }
+            });
+
+            // Update score display
+            document.getElementById('team1-score').textContent = scores.team1;
+            document.getElementById('team2-score').textContent = scores.team2;
+
+            previousScores = scores;
+        }
+
+        // Update foul display (exact copy from score-display.html)
+        function updateFoulDisplay() {
+            if (!currentLiveMatch || !matchFouls[currentLiveMatch]) {
+                document.getElementById('team1-foul').textContent = '0';
+                document.getElementById('team2-foul').textContent = '0';
+                return;
+            }
+
+            const matchFoulData = matchFouls[currentLiveMatch];
+            const currentHalf = getCurrentHalf();
+            
+            // Show total fouls for current half (saved + active)
+            let team1Fouls = 0;
+            let team2Fouls = 0;
+            
+            if (currentHalf === 'firstHalf') {
+                // First half: show saved first half + current active fouls
+                team1Fouls = (matchFoulData.firstHalf?.team1 || 0) + (matchFoulData.current?.team1 || 0);
+                team2Fouls = (matchFoulData.firstHalf?.team2 || 0) + (matchFoulData.current?.team2 || 0);
+            } else {
+                // Second half: show saved second half + current active fouls  
+                team1Fouls = (matchFoulData.secondHalf?.team1 || 0) + (matchFoulData.current?.team1 || 0);
+                team2Fouls = (matchFoulData.secondHalf?.team2 || 0) + (matchFoulData.current?.team2 || 0);
+            }
+
+            // Update display
+            document.getElementById('team1-foul').textContent = team1Fouls.toString();
+            document.getElementById('team2-foul').textContent = team2Fouls.toString();
+        }
+
+        // Determine current half based on match state (exact copy from score-display.html)
+        function getCurrentHalf() {
+            if (!currentLiveMatch || !matchStates[currentLiveMatch]) {
+                return 'firstHalf'; // Default to first half
+            }
+            
+            const state = matchStates[currentLiveMatch];
+            
+            // Check both possible property names for match state
+            const matchStatus = state.matchStatus || state.state || '';
+            const stateValue = state.state || state.matchStatus || '';
+            
+            // Check for second half indicators
+            if (matchStatus === 'Second Half' || 
+                matchStatus === 'Full Time' || 
+                matchStatus === 'Extra Time' ||
+                stateValue === 'second-half' ||
+                stateValue === 'full-time' ||
+                stateValue === 'extra-time') {
+                return 'secondHalf';
+            }
+            
+            return 'firstHalf';
+        }
+
+        // Check if all data is loaded (exact copy from score-display.html)
+        function checkAllDataLoaded() {
+            if (Object.keys(teams).length > 0 && 
+                Object.keys(drawAssignments).length > 0 && 
+                Object.keys(teamLists).length > 0) {
+                console.log('All data loaded, checking for live matches...');
+                checkForLiveMatches();
+            }
+        }
+
+        // Firebase listeners (exact copy from score-display.html)
+        database.ref('applications').on('value', (snapshot) => {
+            teams = snapshot.val() || {};
+            console.log('Teams loaded:', Object.keys(teams).length);
+            checkAllDataLoaded();
+        });
+
+        database.ref('drawAssignments').on('value', (snapshot) => {
+            drawAssignments = snapshot.val() || {};
+            console.log('Draw assignments loaded:', Object.keys(drawAssignments).length);
+            checkAllDataLoaded();
+        });
+
+        database.ref('teamLists').on('value', (snapshot) => {
+            teamLists = snapshot.val() || {};
+            console.log('Team lists loaded:', Object.keys(teamLists).length);
+            checkAllDataLoaded();
+        });
+
+        database.ref('matchState').on('value', (snapshot) => {
+            matchStates = snapshot.val() || {};
+            console.log('Match states loaded:', matchStates);
+            checkForLiveMatches();
+        });
+
+        database.ref('matchEvents').on('value', (snapshot) => {
+            matchEvents = snapshot.val() || {};
+            console.log('Match events loaded');
+            
+            // If we have a live match, update the scores
+            if (currentLiveMatch) {
+                calculateScores(currentLiveMatch);
+            }
+        });
+
+        database.ref('matchFouls').on('value', (snapshot) => {
+            matchFouls = snapshot.val() || {};
+            console.log('Match fouls loaded');
+            
+            // If we have a live match, update the foul display
+            if (currentLiveMatch) {
+                updateFoulDisplay();
+            }
+        });
+
+        console.log('Transparent Score Display initialized - monitoring for live matches...');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Awards Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b35 0%, #03bdec 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ff6b35;
+            display: inline-block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-row.chief-guest {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #03bdec;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #03bdec;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        .add-btn, .remove-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .add-btn:hover {
+            background: #218838;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .multi-entry {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #ff6b35 0%, #03bdec 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            transition: transform 0.3s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .auto-fill-btn {
+            background: #6c757d;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        .auto-fill-btn:hover {
+            background: #5a6268;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Tournament Awards Form 🏆</h1>
+            <p>Complete tournament awards and recognition ceremony details</p>
+        </div>
+        
+        <div class="form-content">
+            <div id="status-message" class="status-message"></div>
+
+            <!-- Final Match Man of the Match -->
+            <div class="section">
+                <h2 class="section-title">🥇 Final Match - Man of the Match</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="motm-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="motm-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Team:</label>
+                        <select id="final-motm-team" onchange="loadTeamPlayers('final-motm')">
+                            <option value="">Select Team</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Player:</label>
+                        <select id="final-motm-player" onchange="updatePlayerInfo('final-motm')">
+                            <option value="">Select Player</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Jersey Number:</label>
+                        <input type="text" id="final-motm-jersey" placeholder="Jersey #" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <button type="button" class="auto-fill-btn" onclick="loadFinalMotM()">Auto-fill from Database</button>
+                </div>
+            </div>
+
+            <!-- Referee Appreciation -->
+            <div class="section">
+                <h2 class="section-title">👨‍⚖️ Referee Appreciation</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="ref-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="ref-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div id="referees-container">
+                    <div class="multi-entry">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label>Referee Name:</label>
+                                <input type="text" class="referee-name" placeholder="Referee Full Name">
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeEntry(this)" style="display: none;">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="add-btn" onclick="addReferee()">+ Add Referee</button>
+            </div>
+
+            <!-- Sponsors and Partners -->
+            <div class="section">
+                <h2 class="section-title">🤝 Sponsors and Partners</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="sponsor-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="sponsor-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div id="sponsors-container">
+                    <div class="multi-entry">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label>Sponsor/Partner Name:</label>
+                                <input type="text" class="sponsor-name-input" placeholder="Sponsor/Partner Name">
+                            </div>
+                            <button type="button" class="remove-btn" onclick="removeEntry(this)" style="display: none;">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="add-btn" onclick="addSponsor()">+ Add Sponsor</button>
+            </div>
+
+            <!-- Best Coach -->
+            <div class="section">
+                <h2 class="section-title">👨‍🏫 Best Coach</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="coach-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="coach-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Team:</label>
+                        <select id="best-coach-team" onchange="loadCoachName()">
+                            <option value="">Select Team</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Coach Name:</label>
+                        <input type="text" id="best-coach-name" placeholder="Coach Name" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fair Play Team -->
+            <div class="section">
+                <h2 class="section-title">🤝 Fair Play Team</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="fairplay-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="fairplay-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Fair Play Team:</label>
+                        <select id="fairplay-team">
+                            <option value="">Select Team</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Most Promising Player -->
+            <div class="section">
+                <h2 class="section-title">⭐ Most Promising Player</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="promising-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="promising-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Team:</label>
+                        <select id="promising-team" onchange="loadTeamPlayers('promising')">
+                            <option value="">Select Team</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Player:</label>
+                        <select id="promising-player" onchange="updatePlayerInfo('promising')">
+                            <option value="">Select Player</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Jersey Number:</label>
+                        <input type="text" id="promising-jersey" placeholder="Jersey #" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- King of Tournament -->
+            <div class="section">
+                <h2 class="section-title">👑 King of the Tournament</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="king-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="king-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Team:</label>
+                        <select id="king-team" onchange="loadTeamPlayers('king')">
+                            <option value="">Select Team</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Player:</label>
+                        <select id="king-player" onchange="updatePlayerInfo('king')">
+                            <option value="">Select Player</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Jersey Number:</label>
+                        <input type="text" id="king-jersey" placeholder="Jersey #" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 5 Players -->
+            <div class="section">
+                <h2 class="section-title">🏅 Top 5 Players</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="top5-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="top5-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div id="top5-container">
+                    <!-- Top 5 entries will be generated here -->
+                </div>
+            </div>
+
+            <!-- Runner Up Team -->
+            <div class="section">
+                <h2 class="section-title">🥈 Runner Up Team</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="runnerup-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="runnerup-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Runner Up Team:</label>
+                        <select id="runnerup-team">
+                            <option value="">Select Runner Up Team</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Champion Team -->
+            <div class="section">
+                <h2 class="section-title">🏆 Champion Team</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="champion-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="champion-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Champion Team:</label>
+                        <select id="champion-team">
+                            <option value="">Select Champion Team</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="save-btn" onclick="saveAwardsData()">💾 Save Tournament Awards</button>
+            
+            <!-- Temporary Debug Section -->
+            <div style="margin-top: 20px; padding: 20px; background: #f0f0f0; border-radius: 8px;">
+                <h3>🔧 Debug Tools</h3>
+                <button type="button" onclick="debugTeamPlayerLoading()">Debug Team/Player Data</button>
+                <button type="button" onclick="loadTeamPlayers('promising')">Test Load Promising Players</button>
+                <button type="button" onclick="console.log('Teams:', Object.keys(teams), 'TeamLists:', Object.keys(teamLists))">Log All Data Keys</button>
+                <button type="button" onclick="testKanmathiTeam()">Test KANMATHI SC Specifically</button>
+                <button type="button" onclick="showRawTeamListsData()">Show Raw TeamLists Data</button>
+                <button type="button" onclick="testPromisingPlayerLoad()">Test Promising Player Load</button>
+                <button type="button" onclick="testFinalResults()">Test Final Results Loading</button>
+                <button type="button" onclick="manualLoadChampion()">Manual Load Champion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCapatOZLxm387yKpFUPD-K8Dv24UBcP9k",
+            authDomain: "exvertixe-futsal.firebaseapp.com",
+            databaseURL: "https://exvertixe-futsal-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "exvertixe-futsal",
+            storageBucket: "exvertixe-futsal.firebasestorage.app",
+            messagingSenderId: "992942970225",
+            appId: "1:992942970225:web:25bd160a3ac2139b5612d0",
+            measurementId: "G-130DYDBMF6"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Global data storage
+        let teams = {};
+        let teamLists = {};
+        let drawAssignments = {};
+        let sponsorPhotos = [];
+        let matchStates = {};
+        let knockoutResults = {};
+        let matchScores = {};
+        let matchEvents = {};
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFirebaseData();
+            loadMatchData();
+            generateTop5Entries();
+            loadSponsorPhotos();
+            loadExistingAwardsData();
+            setupAutoSave();
+        });
+
+        // Debug function to test team player loading
+        function debugTeamPlayerLoading() {
+            console.log('=== DEBUG TEAM PLAYER LOADING ===');
+            console.log('Teams data:', teams);
+            console.log('TeamLists data:', teamLists);
+            
+            // Try to find "KANMATHI SC"
+            const searchTeam = "KANMATHI SC";
+            const teamKey = Object.keys(teams).find(key => teams[key].teamName === searchTeam);
+            console.log('Team key for', searchTeam, ':', teamKey);
+            
+            if (teamKey) {
+                console.log('Team data:', teams[teamKey]);
+                if (teamLists[teamKey]) {
+                    console.log('Players for', searchTeam, ':', teamLists[teamKey]);
+                    Object.entries(teamLists[teamKey]).forEach(([playerKey, playerData]) => {
+                        console.log('Player:', playerKey, '=', playerData);
+                    });
+                } else {
+                    console.log('No team list found for key:', teamKey);
+                }
+            }
+        }
+
+        // Test function for KANMATHI SC specifically
+        function testKanmathiTeam() {
+            console.log('=== TESTING KANMATHI SC ===');
+            const teamName = 'KANMATHI SC';
+            
+            // Check if team exists in teams data
+            const teamKey = Object.keys(teams).find(key => teams[key].teamName === teamName);
+            console.log('Found team key:', teamKey);
+            
+            // Check teamLists keys
+            console.log('All teamLists keys:', Object.keys(teamLists));
+            
+            // Try exact match
+            if (teamLists[teamName]) {
+                console.log('Direct match found for', teamName, ':', Object.keys(teamLists[teamName]).length, 'players');
+            } else {
+                console.log('No direct match for', teamName);
+                
+                // Try case-insensitive
+                const lowerTeamName = teamName.toLowerCase();
+                const matchingKey = Object.keys(teamLists).find(key => key.toLowerCase() === lowerTeamName);
+                console.log('Case-insensitive match:', matchingKey);
+                
+                if (matchingKey) {
+                    console.log('Found case-insensitive match:', matchingKey, 'with', Object.keys(teamLists[matchingKey]).length, 'players');
+                }
+            }
+        }
+
+        // Show raw teamLists data for debugging
+        function showRawTeamListsData() {
+            console.log('=== RAW TEAMLISTS DATA ===');
+            console.log('TeamLists object:', teamLists);
+            console.log('Number of teams:', Object.keys(teamLists).length);
+            
+            Object.entries(teamLists).forEach(([key, teamData]) => {
+                console.log(`Team key: ${key}`);
+                console.log(`  - teamName: "${teamData.teamName}"`);
+                console.log(`  - players:`, teamData.players ? 'EXISTS' : 'MISSING');
+                if (teamData.players) {
+                    console.log(`  - player count: ${Object.keys(teamData.players).length}`);
+                    console.log(`  - first 3 players:`, Object.entries(teamData.players).slice(0, 3));
+                }
+                console.log('---');
+            });
+        }
+
+        // Test function for promising player loading
+        function testPromisingPlayerLoad() {
+            console.log('=== TESTING PROMISING PLAYER LOAD ===');
+            
+            const teamSelect = document.getElementById('promising-team');
+            const playerSelect = document.getElementById('promising-player');
+            
+            console.log('Team select element:', teamSelect);
+            console.log('Team select value:', teamSelect ? teamSelect.value : 'NOT FOUND');
+            console.log('Player select element:', playerSelect);
+            console.log('Player select options count:', playerSelect ? playerSelect.options.length : 'NOT FOUND');
+            
+            if (teamSelect && teamSelect.value) {
+                console.log('Manually calling loadTeamPlayers for promising with team:', teamSelect.value);
+                loadTeamPlayers('promising');
+            } else {
+                console.log('Please select a team first, then try again');
+            }
+        }
+
+        // Test function for final results
+        function testFinalResults() {
+            console.log('=== TESTING FINAL RESULTS ===');
+            console.log('Match states:', Object.keys(matchStates).length);
+            console.log('Match events:', Object.keys(matchEvents).length);
+            console.log('Match scores:', Object.keys(matchScores).length);
+            
+            // Show all match states
+            Object.entries(matchStates).forEach(([matchId, state]) => {
+                console.log(`Match ${matchId}:`, state.state, state.teams);
+            });
+            
+            // Manually trigger final results update
+            updateFinalResults();
+        }
+
+        // Manual function to load champion data
+        function manualLoadChampion() {
+            console.log('=== MANUAL CHAMPION LOADING ===');
+            console.log('Match states available:', Object.keys(matchStates));
+            console.log('Match scores available:', Object.keys(matchScores));
+            console.log('Match events available:', Object.keys(matchEvents));
+            
+            // Show all match states with their details
+            Object.entries(matchStates).forEach(([matchId, state]) => {
+                console.log(`Match ID: ${matchId}`);
+                console.log(`  State: ${state.state}`);
+                console.log(`  Teams: ${JSON.stringify(state.teams)}`);
+                console.log(`  Is Final: ${matchId.toLowerCase().includes('final')}`);
+                console.log('---');
+            });
+            
+            // Look for any finished matches
+            const finishedMatches = Object.entries(matchStates).filter(([matchId, state]) => 
+                state.state === 'finished'
+            );
+            
+            console.log('Finished matches:', finishedMatches.length);
+            finishedMatches.forEach(([matchId, state]) => {
+                console.log(`Finished: ${matchId} - Teams: ${JSON.stringify(state.teams)}`);
+                
+                // Check if we have score data for this match
+                if (matchScores[matchId]) {
+                    console.log(`  Score data:`, matchScores[matchId]);
+                } else if (matchEvents[matchId]) {
+                    const calculatedScore = calculateFinalScore(matchId);
+                    console.log(`  Calculated score:`, calculatedScore);
+                }
+            });
+            
+            // Try to update final results manually
+            updateFinalResults();
+        }
+
+        // Load Firebase data
+        function loadFirebaseData() {
+            // Load teams
+            database.ref('applications').on('value', (snapshot) => {
+                teams = snapshot.val() || {};
+                console.log('Teams loaded:', Object.keys(teams).length);
+                console.log('Sample team names:', Object.values(teams).slice(0, 3).map(t => t.teamName));
+                populateTeamDropdowns();
+            });
+
+            // Load team lists
+            database.ref('teamLists').on('value', (snapshot) => {
+                teamLists = snapshot.val() || {};
+                console.log('Team lists loaded:', Object.keys(teamLists).length);
+                console.log('Team lists keys:', Object.keys(teamLists));
+                
+                // Debug: Show sample team list data
+                const firstTeamKey = Object.keys(teamLists)[0];
+                if (firstTeamKey && teamLists[firstTeamKey]) {
+                    console.log('Sample team list data for', firstTeamKey, ':', Object.keys(teamLists[firstTeamKey]).length, 'players');
+                }
+            });
+
+            // Load draw assignments
+            database.ref('drawAssignments').on('value', (snapshot) => {
+                drawAssignments = snapshot.val() || {};
+                console.log('Draw assignments loaded:', Object.keys(drawAssignments).length);
+            });
+        }
+
+        // Load match data for final results
+        function loadMatchData() {
+            // Load match states
+            database.ref('matchStates').on('value', (snapshot) => {
+                matchStates = snapshot.val() || {};
+                console.log('Match states loaded:', Object.keys(matchStates).length);
+                updateFinalResults();
+            });
+
+            // Load knockout results
+            database.ref('knockoutResults').on('value', (snapshot) => {
+                knockoutResults = snapshot.val() || {};
+                console.log('Knockout results loaded:', Object.keys(knockoutResults).length);
+                updateFinalResults();
+            });
+
+            // Load match scores
+            database.ref('matchScores').on('value', (snapshot) => {
+                matchScores = snapshot.val() || {};
+                console.log('Match scores loaded:', Object.keys(matchScores).length);
+                updateFinalResults();
+            });
+
+            // Load match events (for MOTM data)
+            database.ref('matchEvents').on('value', (snapshot) => {
+                matchEvents = snapshot.val() || {};
+                console.log('Match events loaded:', Object.keys(matchEvents).length);
+                updateFinalResults();
+            });
+        }
+
+        // Update final results (champion, runner-up, final match MOTM)
+        function updateFinalResults() {
+            // Wait for all data to load
+            if (Object.keys(matchStates).length === 0) {
+                console.log('Match states not loaded yet');
+                return;
+            }
+
+            console.log('🏆 Searching for final match...');
+
+            // Find final match - try different patterns
+            let finalMatch = Object.entries(matchStates).find(([matchId, state]) => 
+                matchId.toLowerCase().includes('final') && state.state === 'finished'
+            );
+
+            // If no "final" match found, look for the most recent finished match
+            if (!finalMatch) {
+                console.log('No match with "final" in ID found, looking for latest finished match...');
+                const finishedMatches = Object.entries(matchStates).filter(([matchId, state]) => 
+                    state.state === 'finished'
+                );
+                
+                if (finishedMatches.length > 0) {
+                    // Take the last finished match (assuming it's the final)
+                    finalMatch = finishedMatches[finishedMatches.length - 1];
+                    console.log('Using latest finished match as final:', finalMatch[0]);
+                }
+            }
+
+            if (!finalMatch) {
+                console.log('❌ No finished match found for final results');
+                return;
+            }
+
+            const [finalMatchId, finalState] = finalMatch;
+            console.log('✅ Found final match:', finalMatchId, finalState);
+
+            // Get final match score
+            let finalScore;
+            if (matchScores[finalMatchId] && matchScores[finalMatchId].current) {
+                finalScore = matchScores[finalMatchId].current;
+                console.log('📊 Score from matchScores:', finalScore);
+            } else if (matchEvents[finalMatchId]) {
+                finalScore = calculateFinalScore(finalMatchId);
+                console.log('📊 Score calculated from events:', finalScore);
+            } else {
+                console.log('❌ No score data found for final match');
+                return;
+            }
+
+            console.log('Final match score:', finalScore);
+            console.log('Final match teams:', finalState.teams);
+
+            if (finalScore && finalState.teams && finalState.teams.length >= 2) {
+                // Determine winner and runner-up
+                let championTeam, runnerUpTeam;
+                
+                if (finalScore.team1 > finalScore.team2) {
+                    championTeam = finalState.teams[0];
+                    runnerUpTeam = finalState.teams[1];
+                } else if (finalScore.team2 > finalScore.team1) {
+                    championTeam = finalState.teams[1];
+                    runnerUpTeam = finalState.teams[0];
+                } else {
+                    console.log('⚽ Final match ended in a draw:', finalScore);
+                    // For now, still set the teams but mark as draw
+                    championTeam = `${finalState.teams[0]} (Draw - Check Penalties)`;
+                    runnerUpTeam = `${finalState.teams[1]} (Draw - Check Penalties)`;
+                }
+
+                // Update champion and runner-up dropdowns
+                const championSelect = document.getElementById('champion-team');
+                const runnerupSelect = document.getElementById('runnerup-team');
+                
+                if (championSelect) championSelect.value = championTeam;
+                if (runnerupSelect) runnerupSelect.value = runnerUpTeam;
+
+                console.log('🏆 Updated final results:', { champion: championTeam, runnerUp: runnerUpTeam });
+
+                // Load final match MOTM if available
+                loadFinalMatchMOTM(finalMatchId);
+            } else {
+                console.log('❌ Missing score or team data for final match');
+            }
+        }
+
+        // Calculate final score from match events (copied from match-management.html)
+        function calculateFinalScore(matchId) {
+            const events = matchEvents[matchId] || {};
+            let team1Score = 0;
+            let team2Score = 0;
+
+            Object.values(events).forEach(event => {
+                if (event.type === 'goal') {
+                    if (event.team === 'team1') team1Score++;
+                    else if (event.team === 'team2') team2Score++;
+                }
+            });
+
+            return { team1: team1Score, team2: team2Score };
+        }
+
+        // Load final match MOTM data
+        function loadFinalMatchMOTM(finalMatchId) {
+            // Check if final match has MOTM data in matchEvents
+            const events = matchEvents[finalMatchId] || {};
+            const motmEvent = Object.values(events).find(event => event.type === 'motm');
+
+            if (motmEvent) {
+                // Set team dropdown first
+                const teamSelect = document.getElementById('final-motm-team');
+                if (teamSelect && motmEvent.teamName) {
+                    teamSelect.value = motmEvent.teamName;
+                    
+                    // Load players for that team
+                    loadTeamPlayers('final-motm');
+                    
+                    // After a short delay, set the player
+                    setTimeout(() => {
+                        const playerSelect = document.getElementById('final-motm-player');
+                        if (playerSelect && motmEvent.playerName) {
+                            // Try to find the player by name in the dropdown options
+                            for (let i = 0; i < playerSelect.options.length; i++) {
+                                const option = playerSelect.options[i];
+                                if (option.dataset.playerName === motmEvent.playerName) {
+                                    playerSelect.selectedIndex = i;
+                                    updatePlayerInfo('final-motm');
+                                    break;
+                                }
+                            }
+                        }
+                    }, 500);
+                }
+                
+                console.log('Final match MOTM loaded:', motmEvent);
+            } else {
+                console.log('No MOTM data found for final match');
+            }
+        }
+
+        // Populate team dropdowns
+        function populateTeamDropdowns() {
+            const teamSelects = [
+                'best-coach-team', 'fairplay-team', 'promising-team', 'king-team', 'final-motm-team',
+                'champion-team', 'runnerup-team'
+            ];
+
+            teamSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">Select Team</option>';
+                
+                Object.values(teams).forEach(team => {
+                    const option = document.createElement('option');
+                    option.value = team.teamName;
+                    option.textContent = team.teamName;
+                    select.appendChild(option);
+                });
+            });
+
+            // Also populate Top 5 team dropdowns
+            for (let i = 1; i <= 5; i++) {
+                const select = document.getElementById(`top5-team-${i}`);
+                if (select) {
+                    select.innerHTML = '<option value="">Select Team</option>';
+                    Object.values(teams).forEach(team => {
+                        const option = document.createElement('option');
+                        option.value = team.teamName;
+                        option.textContent = team.teamName;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        // Load sponsor photos from sponsors folder
+        function loadSponsorPhotos() {
+            // This would typically load from a directory listing
+            // For now, we'll use a predefined list
+            sponsorPhotos = [
+                'sponsor1.jpg', 'sponsor2.jpg', 'sponsor3.jpg', 'sponsor4.jpg',
+                'partner1.png', 'partner2.png', 'main_sponsor.jpg', 'title_sponsor.png'
+            ];
+            
+            // No need to update sponsor dropdowns anymore
+        }
+
+        // Update sponsor photo dropdowns (deprecated - no longer using photo field)
+        function updateSponsorDropdowns() {
+            // This function is no longer needed but kept for compatibility
+        }
+
+        // Load coach name when team is selected
+        function loadCoachName() {
+            const teamName = document.getElementById('best-coach-team').value;
+            const coachNameField = document.getElementById('best-coach-name');
+            
+            if (!teamName) {
+                coachNameField.value = '';
+                return;
+            }
+
+            console.log('🔍 Loading coach for team:', teamName);
+
+            // Wait for data to load if needed
+            if (Object.keys(teamLists).length === 0) {
+                console.warn('⏳ TeamLists data not loaded yet, retrying...');
+                setTimeout(() => loadCoachName(), 500);
+                return;
+            }
+
+            // Use the same pattern as match-detail.html - search by teamName in teamLists
+            const normalizeTeamName = (name) => name.replace(/\s+/g, ' ').trim().toLowerCase();
+            
+            console.log('🔍 Searching for team:', teamName, 'normalized:', normalizeTeamName(teamName));
+            
+            const teamListEntries = Object.entries(teamLists);
+            const matchingEntry = teamListEntries.find(([key, teamList]) => 
+                normalizeTeamName(teamList.teamName) === normalizeTeamName(teamName)
+            );
+            
+            if (!matchingEntry) {
+                console.log(`❌ No team list found for team: "${teamName}"`);
+                coachNameField.value = 'Coach name not available';
+                return;
+            }
+            
+            const [submissionId, teamList] = matchingEntry;
+            console.log(`✅ Found team list for ${teamName} with submission ID: ${submissionId}`);
+            
+            // Coach is the second official (index 1) in the officials array
+            let coachName = null;
+            
+            if (teamList.officials && Array.isArray(teamList.officials) && teamList.officials.length > 1) {
+                coachName = teamList.officials[1]; // Second official is the coach
+                console.log('📋 Officials array:', teamList.officials);
+                console.log('👤 Manager (official 0):', teamList.officials[0]);
+                console.log('🎓 Coach (official 1):', teamList.officials[1]);
+            }
+            
+            if (coachName) {
+                // Handle if coach is an object with name property
+                const finalCoachName = typeof coachName === 'object' ? (coachName.name || coachName.coachName) : coachName;
+                coachNameField.value = finalCoachName;
+                console.log('✅ Found coach:', finalCoachName);
+            } else {
+                coachNameField.value = 'Coach name not available';
+                console.log('❌ No coach found in officials array (need at least 2 officials)');
+                console.log('Available officials:', teamList.officials?.length || 0);
+            }
+        }
+
+        // Load team players
+        function loadTeamPlayers(type) {
+            console.log('=== loadTeamPlayers called for type:', type, '===');
+            
+            // Check if data is loaded
+            if (Object.keys(teams).length === 0 || Object.keys(teamLists).length === 0) {
+                console.log('Data not loaded yet, retrying in 500ms...');
+                setTimeout(() => loadTeamPlayers(type), 500);
+                return;
+            }
+            
+            // Handle both regular types (promising, king) and top5 types (top5-1, top5-2, etc.)
+            let teamSelectId, playerSelectId, jerseyFieldId;
+            
+            if (type.startsWith('top5-')) {
+                // For top5-1, top5-2, etc. -> top5-team-1, top5-player-1, etc.
+                teamSelectId = `top5-team-${type.split('-')[1]}`;
+                playerSelectId = `top5-player-${type.split('-')[1]}`;
+                jerseyFieldId = `top5-jersey-${type.split('-')[1]}`;
+            } else {
+                // For promising, king, etc. -> promising-team, king-team, etc.
+                teamSelectId = `${type}-team`;
+                playerSelectId = `${type}-player`;
+                jerseyFieldId = `${type}-jersey`;
+            }
+            
+            console.log('Looking for elements:', { teamSelectId, playerSelectId, jerseyFieldId });
+            
+            const teamSelect = document.getElementById(teamSelectId);
+            const playerSelect = document.getElementById(playerSelectId);
+            const jerseyField = document.getElementById(jerseyFieldId);
+            
+            if (!teamSelect || !playerSelect || !jerseyField) {
+                console.error('Could not find elements for type:', type);
+                console.log('teamSelect:', teamSelect);
+                console.log('playerSelect:', playerSelect);
+                console.log('jerseyField:', jerseyField);
+                return;
+            }
+            
+            const teamName = teamSelect.value;
+            console.log('Selected team name:', teamName);
+            
+            playerSelect.innerHTML = '<option value="">Select Player</option>';
+            jerseyField.value = '';
+
+            if (!teamName) {
+                console.log('No team selected');
+                return;
+            }
+
+            // Use the same pattern as match-detail.html - search by teamName in teamLists
+            const normalizeTeamName = (name) => name.replace(/\s+/g, ' ').trim().toLowerCase();
+            
+            console.log('🔍 Searching for team:', teamName, 'normalized:', normalizeTeamName(teamName));
+            
+            const teamListEntries = Object.entries(teamLists);
+            const matchingEntry = teamListEntries.find(([key, teamList]) => 
+                normalizeTeamName(teamList.teamName) === normalizeTeamName(teamName)
+            );
+            
+            if (!matchingEntry) {
+                console.log(`❌ No team list found for team: "${teamName}"`);
+                console.log('📋 Available team names in teamLists:');
+                teamListEntries.forEach(([key, teamList]) => {
+                    console.log(`  - "${teamList.teamName}" (normalized: "${normalizeTeamName(teamList.teamName)}")`);
+                });
+                console.log(`🔍 Looking for normalized: "${normalizeTeamName(teamName)}"`);
+                return;
+            }
+            
+            const [submissionId, teamList] = matchingEntry;
+            console.log(`✅ Found team list for ${teamName} with submission ID: ${submissionId}`);
+            
+            // Use the same pattern as match-detail.html
+            const players = teamList.players || [];
+            console.log('Raw players data:', players);
+            console.log('Players found for', teamName, ':', Array.isArray(players) ? players.length : 'Not an array');
+            
+            let playersAdded = 0;
+            
+            if (Array.isArray(players)) {
+                // Handle as array (match-detail pattern)
+                players.forEach((player, index) => {
+                    console.log('Processing player:', player);
+                    
+                    const playerName = typeof player === 'object' ? (player.name || player.playerName) : player;
+                    const jersey = typeof player === 'object' ? (player.jerseyNumber || player.jersey) : (index + 1);
+                    
+                    if (playerName) {
+                        const option = document.createElement('option');
+                        option.value = playerName; // Store player name as value
+                        option.textContent = `${playerName} (#${jersey || 'N/A'})`;
+                        option.dataset.jersey = jersey || '';
+                        option.dataset.playerName = playerName;
+                        playerSelect.appendChild(option);
+                        playersAdded++;
+                        console.log('✓ Added player:', playerName, 'Jersey:', jersey);
+                    }
+                });
+            } else if (players && typeof players === 'object') {
+                // Handle as object (fallback)
+                Object.entries(players).forEach(([playerKey, playerData]) => {
+                    console.log('Processing player object:', playerKey, '=', playerData);
+                    
+                    const playerName = playerData.playerName || playerData.name;
+                    const jersey = playerData.jerseyNumber || playerData.jersey;
+                    
+                    if (playerName) {
+                        const option = document.createElement('option');
+                        option.value = playerName; // Store player name as value
+                        option.textContent = `${playerName} (#${jersey || 'N/A'})`;
+                        option.dataset.jersey = jersey || '';
+                        option.dataset.playerName = playerName;
+                        playerSelect.appendChild(option);
+                        playersAdded++;
+                        console.log('✓ Added player:', playerName, 'Jersey:', jersey);
+                    }
+                });
+            } else {
+                console.log('❌ No valid players data found');
+            }
+            
+            console.log(`Finished loading ${playersAdded} players for ${teamName}`);
+            
+            if (playersAdded === 0) {
+                console.warn('No valid players found! Check player data structure.');
+            }
+        }
+
+        // Update player info when player is selected
+        function updatePlayerInfo(type) {
+            let playerSelectId, jerseyFieldId;
+            
+            if (type.startsWith('top5-')) {
+                // For top5-1, top5-2, etc. -> top5-player-1, top5-jersey-1, etc.
+                playerSelectId = `top5-player-${type.split('-')[1]}`;
+                jerseyFieldId = `top5-jersey-${type.split('-')[1]}`;
+            } else {
+                // For promising, king, etc. -> promising-player, king-jersey, etc.
+                playerSelectId = `${type}-player`;
+                jerseyFieldId = `${type}-jersey`;
+            }
+            
+            const playerSelect = document.getElementById(playerSelectId);
+            const jerseyField = document.getElementById(jerseyFieldId);
+            
+            if (!playerSelect || !jerseyField) {
+                console.error('Could not find elements:', { playerSelectId, jerseyFieldId });
+                return;
+            }
+            
+            const selectedOption = playerSelect.options[playerSelect.selectedIndex];
+            if (selectedOption && selectedOption.dataset.jersey) {
+                jerseyField.value = selectedOption.dataset.jersey;
+                console.log('Updated jersey for', selectedOption.dataset.playerName, ':', selectedOption.dataset.jersey);
+            } else {
+                jerseyField.value = '';
+            }
+        }
+
+        // Add referee entry
+        function addReferee() {
+            const container = document.getElementById('referees-container');
+            const entries = container.querySelectorAll('.multi-entry');
+            
+            const newEntry = document.createElement('div');
+            newEntry.className = 'multi-entry';
+            newEntry.innerHTML = `
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Referee Name:</label>
+                        <input type="text" class="referee-name" placeholder="Referee Full Name">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeEntry(this)">Remove</button>
+                </div>
+            `;
+            
+            container.appendChild(newEntry);
+            
+            // Show remove buttons if more than one entry
+            if (entries.length >= 1) {
+                container.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.style.display = 'inline-block';
+                });
+            }
+            
+            // Add auto-save to new elements
+            const newInputs = newEntry.querySelectorAll('input, select, textarea');
+            newInputs.forEach(input => {
+                input.addEventListener('input', debounce(autoSaveAwardsData, 1000));
+                input.addEventListener('change', debounce(autoSaveAwardsData, 1000));
+            });
+        }
+
+        // Add sponsor entry
+        function addSponsor() {
+            const container = document.getElementById('sponsors-container');
+            const entries = container.querySelectorAll('.multi-entry');
+            
+            const newEntry = document.createElement('div');
+            newEntry.className = 'multi-entry';
+            newEntry.innerHTML = `
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Sponsor/Partner Name:</label>
+                        <input type="text" class="sponsor-name-input" placeholder="Sponsor/Partner Name">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeEntry(this)">Remove</button>
+                </div>
+            `;
+            
+            container.appendChild(newEntry);
+            
+            // Show remove buttons if more than one entry
+            if (entries.length >= 1) {
+                container.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.style.display = 'inline-block';
+                });
+            }
+            
+            // Add auto-save to new sponsor elements
+            const newInputs = newEntry.querySelectorAll('input, select, textarea');
+            newInputs.forEach(input => {
+                input.addEventListener('input', debounce(autoSaveAwardsData, 1000));
+                input.addEventListener('change', debounce(autoSaveAwardsData, 1000));
+            });
+        }
+
+        // Remove entry
+        function removeEntry(button) {
+            const entry = button.closest('.multi-entry');
+            const container = entry.parentNode;
+            entry.remove();
+            
+            // Hide remove buttons if only one entry left
+            const remainingEntries = container.querySelectorAll('.multi-entry');
+            if (remainingEntries.length === 1) {
+                container.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
+        }
+
+        // Generate Top 5 entries
+        function generateTop5Entries() {
+            const container = document.getElementById('top5-container');
+            
+            for (let i = 1; i <= 5; i++) {
+                const entry = document.createElement('div');
+                entry.className = 'multi-entry';
+                entry.innerHTML = `
+                    <h4>Top 5 Player</h4>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Team:</label>
+                            <select id="top5-team-${i}" onchange="loadTeamPlayers('top5-${i}')">
+                                <option value="">Select Team</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Player:</label>
+                            <select id="top5-player-${i}" onchange="updatePlayerInfo('top5-${i}')">
+                                <option value="">Select Player</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Jersey Number:</label>
+                            <input type="text" id="top5-jersey-${i}" placeholder="Jersey #" readonly>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(entry);
+            }
+        }
+
+        // Load final match Man of the Match
+        function loadFinalMotM() {
+            // Find final match from matchStates
+            const finalMatch = Object.entries(matchStates).find(([matchId, state]) => 
+                matchId.toLowerCase().includes('final') && state.state === 'finished'
+            );
+
+            if (finalMatch) {
+                const [finalMatchId, finalState] = finalMatch;
+                console.log('Loading MOTM for final match:', finalMatchId);
+                loadFinalMatchMOTM(finalMatchId);
+                showStatus('Final match MOTM loaded successfully!', 'success');
+            } else {
+                console.log('No finished final match found');
+                showStatus('No finished final match found', 'error');
+            }
+        }
+
+        // Load final results (champion and runner-up)
+        function loadFinalResults() {
+            console.log('🔄 Manually loading final results...');
+            updateFinalResults();
+            showStatus('Attempting to load final match results from database', 'success');
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Setup auto-save functionality
+        function setupAutoSave() {
+            // Add event listeners to all form fields for auto-save
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', debounce(autoSaveAwardsData, 1000));
+                input.addEventListener('change', debounce(autoSaveAwardsData, 1000));
+            });
+            
+            console.log('Auto-save enabled for', inputs.length, 'form fields');
+        }
+
+        // Debounce function to limit save frequency
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Load existing awards data from Firebase
+        function loadExistingAwardsData() {
+            // Use 'on' instead of 'once' for real-time updates
+            database.ref('tournamentAwards').on('value', snapshot => {
+                const data = snapshot.val();
+                if (data) {
+                    populateFormWithData(data);
+                    console.log('Awards data loaded/updated from Firebase');
+                } else {
+                    console.log('No existing awards data found');
+                }
+            }, error => {
+                console.error('Error loading awards data:', error);
+            });
+        }
+
+        // Populate form with existing data
+        function populateFormWithData(data) {
+            // Final MotM
+            if (data.finalMotm) {
+                if (data.finalMotm.chiefGuest) {
+                    document.getElementById('motm-chief-guest').value = data.finalMotm.chiefGuest.name || '';
+                    document.getElementById('motm-distinction').value = data.finalMotm.chiefGuest.distinction || '';
+                }
+                
+                // Set team first
+                const teamSelect = document.getElementById('final-motm-team');
+                if (teamSelect && data.finalMotm.team) {
+                    teamSelect.value = data.finalMotm.team;
+                    
+                    // Load players for that team
+                    loadTeamPlayers('final-motm');
+                    
+                    // After players load, try to set the player
+                    setTimeout(() => {
+                        const playerSelect = document.getElementById('final-motm-player');
+                        if (playerSelect && data.finalMotm.player) {
+                            // Try to find the player by name in the dropdown options
+                            for (let i = 0; i < playerSelect.options.length; i++) {
+                                const option = playerSelect.options[i];
+                                if (option.dataset.playerName === data.finalMotm.player) {
+                                    playerSelect.selectedIndex = i;
+                                    updatePlayerInfo('final-motm');
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Set jersey if not auto-filled
+                        if (data.finalMotm.jersey) {
+                            document.getElementById('final-motm-jersey').value = data.finalMotm.jersey;
+                        }
+                    }, 500);
+                }
+            }
+
+            // Referee Appreciation
+            if (data.refereeAppreciation) {
+                if (data.refereeAppreciation.chiefGuest) {
+                    document.getElementById('ref-chief-guest').value = data.refereeAppreciation.chiefGuest.name || '';
+                    document.getElementById('ref-distinction').value = data.refereeAppreciation.chiefGuest.distinction || '';
+                }
+                
+                // Populate referees
+                if (data.refereeAppreciation.referees && data.refereeAppreciation.referees.length > 0) {
+                    const container = document.getElementById('referees-container');
+                    container.innerHTML = ''; // Clear existing
+                    
+                    data.refereeAppreciation.referees.forEach((refName, index) => {
+                        if (index === 0) {
+                            // Use first entry structure
+                            container.innerHTML = `
+                                <div class="multi-entry">
+                                    <div class="form-row">
+                                        <div class="input-group">
+                                            <label>Referee Name:</label>
+                                            <input type="text" class="referee-name" placeholder="Referee Full Name" value="${refName}">
+                                        </div>
+                                        <button type="button" class="remove-btn" onclick="removeEntry(this)" style="display: none;">Remove</button>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            addReferee();
+                            const inputs = container.querySelectorAll('.referee-name');
+                            inputs[inputs.length - 1].value = refName;
+                        }
+                    });
+                }
+            }
+
+            // Sponsors
+            if (data.sponsors) {
+                if (data.sponsors.chiefGuest) {
+                    document.getElementById('sponsor-chief-guest').value = data.sponsors.chiefGuest.name || '';
+                    document.getElementById('sponsor-distinction').value = data.sponsors.chiefGuest.distinction || '';
+                }
+                
+                // Populate sponsors
+                if (data.sponsors.list && data.sponsors.list.length > 0) {
+                    const container = document.getElementById('sponsors-container');
+                    container.innerHTML = ''; // Clear existing
+                    
+                    data.sponsors.list.forEach((sponsor, index) => {
+                        if (index === 0) {
+                            container.innerHTML = `
+                                <div class="multi-entry">
+                                    <div class="form-row">
+                                        <div class="input-group">
+                                            <label>Sponsor/Partner Name:</label>
+                                            <input type="text" class="sponsor-name-input" placeholder="Sponsor/Partner Name" value="${sponsor.name}">
+                                        </div>
+                                        <button type="button" class="remove-btn" onclick="removeEntry(this)" style="display: none;">Remove</button>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            addSponsor();
+                            const nameInputs = container.querySelectorAll('.sponsor-name-input');
+                            nameInputs[nameInputs.length - 1].value = sponsor.name;
+                        }
+                    });
+                }
+            }
+
+            // Best Coach
+            if (data.bestCoach) {
+                if (data.bestCoach.chiefGuest) {
+                    document.getElementById('coach-chief-guest').value = data.bestCoach.chiefGuest.name || '';
+                    document.getElementById('coach-distinction').value = data.bestCoach.chiefGuest.distinction || '';
+                }
+                document.getElementById('best-coach-team').value = data.bestCoach.team || '';
+                document.getElementById('best-coach-name').value = data.bestCoach.coachName || '';
+            }
+
+            // Fair Play Team
+            if (data.fairPlayTeam) {
+                if (data.fairPlayTeam.chiefGuest) {
+                    document.getElementById('fairplay-chief-guest').value = data.fairPlayTeam.chiefGuest.name || '';
+                    document.getElementById('fairplay-distinction').value = data.fairPlayTeam.chiefGuest.distinction || '';
+                }
+                document.getElementById('fairplay-team').value = data.fairPlayTeam.team || '';
+            }
+
+            // Most Promising Player
+            if (data.mostPromisingPlayer) {
+                if (data.mostPromisingPlayer.chiefGuest) {
+                    document.getElementById('promising-chief-guest').value = data.mostPromisingPlayer.chiefGuest.name || '';
+                    document.getElementById('promising-distinction').value = data.mostPromisingPlayer.chiefGuest.distinction || '';
+                }
+                document.getElementById('promising-team').value = data.mostPromisingPlayer.team || '';
+                document.getElementById('promising-player').value = data.mostPromisingPlayer.player || '';
+                document.getElementById('promising-jersey').value = data.mostPromisingPlayer.jersey || '';
+            }
+
+            // King of Tournament
+            if (data.kingOfTournament) {
+                if (data.kingOfTournament.chiefGuest) {
+                    document.getElementById('king-chief-guest').value = data.kingOfTournament.chiefGuest.name || '';
+                    document.getElementById('king-distinction').value = data.kingOfTournament.chiefGuest.distinction || '';
+                }
+                document.getElementById('king-team').value = data.kingOfTournament.team || '';
+                document.getElementById('king-player').value = data.kingOfTournament.player || '';
+                document.getElementById('king-jersey').value = data.kingOfTournament.jersey || '';
+            }
+
+            // Top 5 Players
+            if (data.top5Players) {
+                if (data.top5Players.chiefGuest) {
+                    document.getElementById('top5-chief-guest').value = data.top5Players.chiefGuest.name || '';
+                    document.getElementById('top5-distinction').value = data.top5Players.chiefGuest.distinction || '';
+                }
+                
+                if (data.top5Players.players) {
+                    data.top5Players.players.forEach((player, index) => {
+                        const i = index + 1;
+                        document.getElementById(`top5-team-${i}`).value = player.team || '';
+                        document.getElementById(`top5-player-${i}`).value = player.player || '';
+                        document.getElementById(`top5-jersey-${i}`).value = player.jersey || '';
+                    });
+                }
+            }
+
+            // Runner Up
+            if (data.runnerUp) {
+                if (data.runnerUp.chiefGuest) {
+                    document.getElementById('runnerup-chief-guest').value = data.runnerUp.chiefGuest.name || '';
+                    document.getElementById('runnerup-distinction').value = data.runnerUp.chiefGuest.distinction || '';
+                }
+                document.getElementById('runnerup-team').value = data.runnerUp.team || '';
+            }
+
+            // Champion
+            if (data.champion) {
+                if (data.champion.chiefGuest) {
+                    document.getElementById('champion-chief-guest').value = data.champion.chiefGuest.name || '';
+                    document.getElementById('champion-distinction').value = data.champion.chiefGuest.distinction || '';
+                }
+                document.getElementById('champion-team').value = data.champion.team || '';
+            }
+        }
+
+        // Helper function to update single sponsor dropdown
+        function updateSponsorDropdown(select) {
+            select.innerHTML = '<option value="">Select Sponsor Photo</option>';
+            sponsorPhotos.forEach(photo => {
+                const option = document.createElement('option');
+                option.value = photo;
+                option.textContent = photo;
+                select.appendChild(option);
+            });
+        }
+
+        // Auto-save function (called on field changes)
+        function autoSaveAwardsData() {
+            const awardsData = collectAwardsData();
+            
+            // Save to Firebase
+            database.ref('tournamentAwards').set(awardsData)
+                .then(() => {
+                    console.log('Auto-saved awards data');
+                    // Show subtle success indicator
+                    const statusDiv = document.getElementById('status-message');
+                    if (statusDiv.style.display === 'none' || !statusDiv.style.display) {
+                        showStatus('Auto-saved ✓', 'success');
+                        setTimeout(() => {
+                            statusDiv.style.display = 'none';
+                        }, 2000);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Auto-save error:', error);
+                    showStatus('Auto-save failed: ' + error.message, 'error');
+                });
+        }
+
+        // Collect awards data (extracted from saveAwardsData)
+        function collectAwardsData() {
+            return {
+                timestamp: Date.now(),
+                lastUpdated: new Date().toISOString(),
+                finalMotm: {
+                    chiefGuest: {
+                        name: document.getElementById('motm-chief-guest').value,
+                        distinction: document.getElementById('motm-distinction').value
+                    },
+                    player: (() => {
+                        const select = document.getElementById('final-motm-player');
+                        const option = select.options[select.selectedIndex];
+                        return option ? option.dataset.playerName || option.text.split(' (#')[0] : '';
+                    })(),
+                    team: document.getElementById('final-motm-team').value,
+                    jersey: document.getElementById('final-motm-jersey').value
+                },
+                refereeAppreciation: {
+                    chiefGuest: {
+                        name: document.getElementById('ref-chief-guest').value,
+                        distinction: document.getElementById('ref-distinction').value
+                    },
+                    referees: Array.from(document.querySelectorAll('.referee-name')).map(input => input.value).filter(name => name)
+                },
+                sponsors: {
+                    chiefGuest: {
+                        name: document.getElementById('sponsor-chief-guest').value,
+                        distinction: document.getElementById('sponsor-distinction').value
+                    },
+                    list: Array.from(document.querySelectorAll('#sponsors-container .multi-entry')).map(entry => ({
+                        name: entry.querySelector('.sponsor-name-input').value
+                    })).filter(sponsor => sponsor.name)
+                },
+                bestCoach: {
+                    chiefGuest: {
+                        name: document.getElementById('coach-chief-guest').value,
+                        distinction: document.getElementById('coach-distinction').value
+                    },
+                    team: document.getElementById('best-coach-team').value,
+                    coachName: document.getElementById('best-coach-name').value
+                },
+                fairPlayTeam: {
+                    chiefGuest: {
+                        name: document.getElementById('fairplay-chief-guest').value,
+                        distinction: document.getElementById('fairplay-distinction').value
+                    },
+                    team: document.getElementById('fairplay-team').value
+                },
+                mostPromisingPlayer: {
+                    chiefGuest: {
+                        name: document.getElementById('promising-chief-guest').value,
+                        distinction: document.getElementById('promising-distinction').value
+                    },
+                    team: document.getElementById('promising-team').value,
+                    player: (() => {
+                        const select = document.getElementById('promising-player');
+                        const option = select.options[select.selectedIndex];
+                        return option ? option.dataset.playerName || option.text.split(' (#')[0] : '';
+                    })(),
+                    jersey: document.getElementById('promising-jersey').value
+                },
+                kingOfTournament: {
+                    chiefGuest: {
+                        name: document.getElementById('king-chief-guest').value,
+                        distinction: document.getElementById('king-distinction').value
+                    },
+                    team: document.getElementById('king-team').value,
+                    player: (() => {
+                        const select = document.getElementById('king-player');
+                        const option = select.options[select.selectedIndex];
+                        return option ? option.dataset.playerName || option.text.split(' (#')[0] : '';
+                    })(),
+                    jersey: document.getElementById('king-jersey').value
+                },
+                top5Players: {
+                    chiefGuest: {
+                        name: document.getElementById('top5-chief-guest').value,
+                        distinction: document.getElementById('top5-distinction').value
+                    },
+                    players: Array.from({length: 5}, (_, i) => {
+                        const select = document.getElementById(`top5-player-${i + 1}`);
+                        const option = select ? select.options[select.selectedIndex] : null;
+                        const playerName = option ? (option.dataset.playerName || option.text.split(' (#')[0]) : '';
+                        
+                        return {
+                            position: i + 1,
+                            team: document.getElementById(`top5-team-${i + 1}`).value,
+                            player: playerName,
+                            jersey: document.getElementById(`top5-jersey-${i + 1}`).value
+                        };
+                    }).filter(player => player.team && player.player)
+                },
+                runnerUp: {
+                    chiefGuest: {
+                        name: document.getElementById('runnerup-chief-guest').value,
+                        distinction: document.getElementById('runnerup-distinction').value
+                    },
+                    team: document.getElementById('runnerup-team').value
+                },
+                champion: {
+                    chiefGuest: {
+                        name: document.getElementById('champion-chief-guest').value,
+                        distinction: document.getElementById('champion-distinction').value
+                    },
+                    team: document.getElementById('champion-team').value
+                }
+            };
+        }
+
+        // Save awards data (manual save button)
+        function saveAwardsData() {
+            const awardsData = collectAwardsData();
+
+            // Save to Firebase
+            database.ref('tournamentAwards').set(awardsData)
+                .then(() => {
+                    showStatus('Tournament awards saved successfully!', 'success');
+                    console.log('Awards data saved:', awardsData);
+                })
+                .catch((error) => {
+                    showStatus('Error saving awards data: ' + error.message, 'error');
+                    console.error('Error saving awards:', error);
+                });
+        }
+    </script>
+</body>
+</html>
