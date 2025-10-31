@@ -407,6 +407,39 @@
                 </div>
             </div>
 
+            <!-- Top Scorer -->
+            <div class="section">
+                <h2 class="section-title">⚽ Top Scorer</h2>
+                <div class="form-row chief-guest">
+                    <div class="input-group">
+                        <label>Chief Guest:</label>
+                        <input type="text" id="topScorer-chief-guest" placeholder="Chief Guest Full Name">
+                    </div>
+                    <div class="input-group">
+                        <label>Distinction:</label>
+                        <input type="text" id="topScorer-distinction" placeholder="Title/Position">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Team:</label>
+                        <select id="topScorer-team" onchange="loadTeamPlayers('topScorer')">
+                            <option value="">Select Team</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Player:</label>
+                        <select id="topScorer-player" onchange="updatePlayerInfo('topScorer')">
+                            <option value="">Select Player</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Jersey Number:</label>
+                        <input type="text" id="topScorer-jersey" placeholder="Jersey #" readonly>
+                    </div>
+                </div>
+            </div>
+
             <!-- King of Tournament -->
             <div class="section">
                 <h2 class="section-title">👑 King of the Tournament</h2>
@@ -911,7 +944,7 @@
         // Populate team dropdowns
         function populateTeamDropdowns() {
             const teamSelects = [
-                'best-coach-team', 'fairplay-team', 'promising-team', 'bestKeeper-team', 'king-team', 'final-motm-team',
+                'best-coach-team', 'fairplay-team', 'promising-team', 'bestKeeper-team', 'topScorer-team', 'king-team', 'final-motm-team',
                 'champion-team', 'runnerup-team'
             ];
 
@@ -1523,6 +1556,17 @@
                 document.getElementById('bestKeeper-jersey').value = data.bestKeeper.jersey || '';
             }
 
+            // Top Scorer
+            if (data.topScorer) {
+                if (data.topScorer.chiefGuest) {
+                    document.getElementById('topScorer-chief-guest').value = data.topScorer.chiefGuest.name || '';
+                    document.getElementById('topScorer-distinction').value = data.topScorer.chiefGuest.distinction || '';
+                }
+                document.getElementById('topScorer-team').value = data.topScorer.team || '';
+                document.getElementById('topScorer-player').value = data.topScorer.player || '';
+                document.getElementById('topScorer-jersey').value = data.topScorer.jersey || '';
+            }
+
             // King of Tournament
             if (data.kingOfTournament) {
                 if (data.kingOfTournament.chiefGuest) {
@@ -1678,6 +1722,19 @@
                         return option ? option.dataset.playerName || option.text.split(' (#')[0] : '';
                     })(),
                     jersey: document.getElementById('bestKeeper-jersey').value
+                },
+                topScorer: {
+                    chiefGuest: {
+                        name: document.getElementById('topScorer-chief-guest').value,
+                        distinction: document.getElementById('topScorer-distinction').value
+                    },
+                    team: document.getElementById('topScorer-team').value,
+                    player: (() => {
+                        const select = document.getElementById('topScorer-player');
+                        const option = select.options[select.selectedIndex];
+                        return option ? option.dataset.playerName || option.text.split(' (#')[0] : '';
+                    })(),
+                    jersey: document.getElementById('topScorer-jersey').value
                 },
                 kingOfTournament: {
                     chiefGuest: {
