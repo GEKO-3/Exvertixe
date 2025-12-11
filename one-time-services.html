@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Time Services - Exvertixe</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <style>
+        .services-hero {
+            background: linear-gradient(135deg, rgba(175, 115, 239, 0.1), rgba(63, 143, 239, 0.1));
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .services-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .services-hero p {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .service-category {
+            padding: 80px 0;
+        }
+
+        .service-category:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        .category-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .category-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-header p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        .service-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-item {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .service-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-item-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .service-item h3 {
+            font-size: 1.5rem;
+            color: var(--header-color);
+            margin-bottom: 1rem;
+        }
+
+        .service-item p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .pricing-info {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-info .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-info .price-note {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .features-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .specialty-service {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 80px 0;
+            margin: 80px 0;
+        }
+
+        .specialty-service .category-header h2,
+        .specialty-service .category-header p {
+            color: var(--white);
+        }
+
+        .specialty-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .specialty-content h3 {
+            font-size: 2rem;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+        }
+
+        .specialty-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .specialty-feature {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .specialty-feature h4 {
+            font-size: 1.2rem;
+            color: var(--white);
+            margin-bottom: 0.8rem;
+        }
+
+        .specialty-feature p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+
+        .sports-list {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .sport-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .cta-box {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .cta-box h4 {
+            font-size: 1.5rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--primary-color);
+        }
+
+        .btn-white:hover {
+            background: var(--bg-light);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .services-hero h1 {
+                font-size: 2rem;
+            }
+
+            .category-header h2 {
+                font-size: 2rem;
+            }
+
+            .specialty-content {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html"><img src="src/Exvertixe Logo Horizontal.webp" alt="Exvertixe" class="logo-img"></a>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html#home">Home</a>
+                    <a href="index.html#services">Services</a>
+                    <a href="index.html#packages">Packages</a>
+                    <a href="one-time-services.html">One-Time Services</a>
+                    <a href="index.html#contact">Contact</a>
+                    <div class="nav-auth">
+                        <a href="login.html" class="btn-login">Login</a>
+                        <a href="signup.html" class="btn-signup">Get Started</a>
+                    </div>
+                </nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="services-hero">
+        <div class="container">
+            <h1>One-Time Services</h1>
+            <p>Professional services tailored to your specific needs - pay only for what you need, when you need it</p>
+        </div>
+    </section>
+
+    <!-- Content Creation Services -->
+    <section class="service-category">
+        <div class="container">
+            <div class="category-header">
+                <h2>Content Creation Services</h2>
+                <p>High-quality visual content for your brand</p>
+            </div>
+
+            <div class="service-items">
+                <!-- Social Media Posts -->
+                <div class="service-item">
+                    <span class="service-item-icon">📱</span>
+                    <h3>Social Media Post Creation</h3>
+                    <p>Professional graphics designed for maximum engagement on your social media platforms</p>
+                    <div class="pricing-info">
+                        <div class="price">Starting at 150 MVR</div>
+                        <div class="price-note">per post design</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Custom graphics & typography</li>
+                        <li>Platform-optimized dimensions</li>
+                        <li>Brand-consistent design</li>
+                        <li>Multiple format options</li>
+                        <li>Quick turnaround (24-48 hours)</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+
+                <!-- Video Editing -->
+                <div class="service-item">
+                    <span class="service-item-icon">✂️</span>
+                    <h3>Video Editing</h3>
+                    <p>Professional editing on your provided footage to create polished, engaging videos</p>
+                    <div class="pricing-info">
+                        <div class="price">500 MVR - 2,000 MVR</div>
+                        <div class="price-note">based on complexity & length</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Color correction & grading</li>
+                        <li>Audio enhancement</li>
+                        <li>Transitions & effects</li>
+                        <li>Text overlays & graphics</li>
+                        <li>Multiple format exports</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Animation Services -->
+    <section class="service-category">
+        <div class="container">
+            <div class="category-header">
+                <h2>Animation Services</h2>
+                <p>Bring your ideas to life with professional animation</p>
+            </div>
+
+            <div class="service-items">
+                <!-- Infomercial Style Animation -->
+                <div class="service-item">
+                    <span class="service-item-icon">🎬</span>
+                    <h3>Infomercial Style Animation</h3>
+                    <p>Simple, effective animations perfect for explainer videos and product presentations</p>
+                    <div class="pricing-info">
+                        <div class="price">20 MVR/second</div>
+                        <div class="price-note">minimum 10 seconds</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Icon & text animations</li>
+                        <li>Clean, professional style</li>
+                        <li>Voiceover integration</li>
+                        <li>Background music</li>
+                        <li>Fast turnaround</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+
+                <!-- Hand-Drawn / Complex 2D Animation -->
+                <div class="service-item">
+                    <span class="service-item-icon">✍️</span>
+                    <h3>Hand-Drawn / Complex 2D Animation</h3>
+                    <p>Custom illustrated animations with unique character and style</p>
+                    <div class="pricing-info">
+                        <div class="price">150 MVR/second</div>
+                        <div class="price-note">minimum 5 seconds</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Custom character design</li>
+                        <li>Frame-by-frame animation</li>
+                        <li>Unique artistic style</li>
+                        <li>Story development</li>
+                        <li>Multiple revisions included</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+
+                <!-- 3D Animation -->
+                <div class="service-item">
+                    <span class="service-item-icon">🎮</span>
+                    <h3>3D Animation</h3>
+                    <p>Cutting-edge 3D animations for product visualization, architectural renders, and more</p>
+                    <div class="pricing-info">
+                        <div class="price">250 MVR/second</div>
+                        <div class="price-note">minimum 5 seconds</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Photorealistic rendering</li>
+                        <li>Product visualization</li>
+                        <li>Architectural walkthroughs</li>
+                        <li>Character animation</li>
+                        <li>Physics simulation</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Web Design & Development -->
+    <section class="service-category">
+        <div class="container">
+            <div class="category-header">
+                <h2>Web Design & Development</h2>
+                <p>Custom websites tailored to your business needs and complexity</p>
+            </div>
+
+            <div class="service-items">
+                <!-- Basic Website -->
+                <div class="service-item">
+                    <span class="service-item-icon">🌐</span>
+                    <h3>Basic Website</h3>
+                    <p>Simple, professional single-page or small multi-page website perfect for landing pages and portfolios</p>
+                    <div class="pricing-info">
+                        <div class="price">Starting at 3,000 MVR</div>
+                        <div class="price-note">up to 3 pages</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Responsive mobile design</li>
+                        <li>Contact form integration</li>
+                        <li>Basic SEO setup</li>
+                        <li>Social media links</li>
+                        <li>1 month free hosting</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+
+                <!-- Business Website -->
+                <div class="service-item">
+                    <span class="service-item-icon">💼</span>
+                    <h3>Business Website</h3>
+                    <p>Professional multi-page website with advanced features for growing businesses</p>
+                    <div class="pricing-info">
+                        <div class="price">Starting at 8,000 MVR</div>
+                        <div class="price-note">up to 10 pages</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Custom design & branding</li>
+                        <li>Content management system</li>
+                        <li>Blog/news section</li>
+                        <li>Image galleries</li>
+                        <li>Advanced SEO optimization</li>
+                        <li>Email newsletter integration</li>
+                        <li>3 months free hosting</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+
+                <!-- E-Commerce Website -->
+                <div class="service-item">
+                    <span class="service-item-icon">🛒</span>
+                    <h3>E-Commerce Website</h3>
+                    <p>Full-featured online store with payment processing and inventory management</p>
+                    <div class="pricing-info">
+                        <div class="price">Starting at 15,000 MVR</div>
+                        <div class="price-note">custom quote based on products</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Product catalog management</li>
+                        <li>Shopping cart & checkout</li>
+                        <li>Payment gateway integration</li>
+                        <li>Order management system</li>
+                        <li>Customer accounts</li>
+                        <li>Inventory tracking</li>
+                        <li>Sales analytics dashboard</li>
+                        <li>6 months free hosting</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+
+                <!-- Custom Web Application -->
+                <div class="service-item">
+                    <span class="service-item-icon">⚙️</span>
+                    <h3>Custom Web Application</h3>
+                    <p>Bespoke web applications with complex functionality and integrations</p>
+                    <div class="pricing-info">
+                        <div class="price">Custom Pricing</div>
+                        <div class="price-note">based on requirements</div>
+                    </div>
+                    <ul class="features-list">
+                        <li>Custom feature development</li>
+                        <li>Database design & setup</li>
+                        <li>User authentication & roles</li>
+                        <li>API integrations</li>
+                        <li>Real-time functionality</li>
+                        <li>Advanced security measures</li>
+                        <li>Scalable architecture</li>
+                        <li>Ongoing support options</li>
+                    </ul>
+                    <a href="order-service.html" class="btn btn-primary">Order Now</a>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--bg-light); border-radius: var(--border-radius);">
+                <p style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 1rem;">
+                    <strong>All websites include:</strong> Mobile responsiveness, basic SEO, contact forms, and initial content upload
+                </p>
+                <p style="color: var(--text-light); font-size: 0.95rem;">
+                    Hosting, domain registration, and ongoing maintenance available as separate services
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tournament Management System - Specialty Service -->
+    <section class="specialty-service">
+        <div class="container">
+            <div class="category-header">
+                <h2>⚽ Tournament Management System</h2>
+                <p>Complete A-to-Z solution for professional tournament organization</p>
+            </div>
+
+            <div class="specialty-content">
+                <h3>All-in-One Tournament Solution</h3>
+                <p style="color: rgba(255, 255, 255, 0.95); font-size: 1.1rem; margin-bottom: 2rem;">
+                    Our specialized tournament management system handles everything from participant registration to live scoring, 
+                    giving you a professional, streamlined experience for any sporting event.
+                </p>
+
+                <div class="specialty-features">
+                    <div class="specialty-feature">
+                        <h4>📋 Participant Management</h4>
+                        <p>Custom registration forms, team management, player databases, and automated communications</p>
+                    </div>
+
+                    <div class="specialty-feature">
+                        <h4>🏆 Fixture Generation</h4>
+                        <p>Automatic or manual fixture creation, bracket systems, group stages, and knockout rounds</p>
+                    </div>
+
+                    <div class="specialty-feature">
+                        <h4>📊 Live Scorekeeping</h4>
+                        <p>Real-time score updates, match statistics, live standings, and instant notifications</p>
+                    </div>
+
+                    <div class="specialty-feature">
+                        <h4>📺 Broadcasting Integration</h4>
+                        <p>Seamless integration with vMix, OBS, and other broadcasting software for live overlays</p>
+                    </div>
+
+                    <div class="specialty-feature">
+                        <h4>📈 Statistics & Analytics</h4>
+                        <p>Comprehensive match stats, player performance tracking, and historical data analysis</p>
+                    </div>
+
+                    <div class="specialty-feature">
+                        <h4>🌐 Public Portal</h4>
+                        <p>Branded tournament website with live scores, fixtures, standings, and news updates</p>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--white); font-size: 1.3rem; margin-top: 3rem; margin-bottom: 1rem;">Supported Sports</h4>
+                <div class="sports-list">
+                    <span class="sport-tag">⚽ Football</span>
+                    <span class="sport-tag">🥅 Futsal</span>
+                    <span class="sport-tag">🏐 Volleyball</span>
+                    <span class="sport-tag">🤾 Handball</span>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 8px; margin: 2rem 0;">
+                    <p style="color: rgba(255, 255, 255, 0.9); margin: 0; font-size: 0.95rem;">
+                        <strong>Note:</strong> We currently do not offer live video broadcasting services for events. 
+                        However, our software integrates seamlessly with vMix, OBS, and other broadcasting platforms to provide 
+                        live graphics, scores, and statistics overlays for your broadcast.
+                    </p>
+                </div>
+
+                <div class="cta-box">
+                    <h4>Ready to Manage Your Tournament?</h4>
+                    <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 1.5rem;">
+                        Contact us for a personalized demo and custom pricing based on your tournament size and requirements
+                    </p>
+                    <a href="index.html#contact" class="btn btn-white btn-lg">Request Demo & Pricing</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="service-category" style="text-align: center; padding: 100px 0;">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Need a Custom Service?</h2>
+            <p style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Don't see what you're looking for? We offer custom solutions tailored to your unique needs.
+            </p>
+            <a href="index.html#contact" class="btn btn-primary btn-lg">Get in Touch</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Exvertixe</h3>
+                    <p>Premium marketing services for modern businesses</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="index.html#packages">Packages</a></li>
+                        <li><a href="one-time-services.html">One-Time Services</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="refund-policy.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">FB</a>
+                        <a href="#" aria-label="Twitter">TW</a>
+                        <a href="#" aria-label="LinkedIn">LI</a>
+                        <a href="#" aria-label="Instagram">IG</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Exvertixe. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

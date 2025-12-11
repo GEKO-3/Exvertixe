@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exvertixe - Premium Marketing Services</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <img src="src/Exvertixe Logo Horizontal.webp" alt="Exvertixe" class="logo-img">
+                </div>
+                <nav class="nav-links">
+                    <a href="#home">Home</a>
+                    <a href="#services">Services</a>
+                    <a href="#packages">Packages</a>
+                    <a href="one-time-services.html">One-Time Services</a>
+                    <a href="#contact">Contact</a>
+                    <div class="nav-auth">
+                        <a href="login.html" class="btn-login">Login</a>
+                        <a href="signup.html" class="btn-signup">Get Started</a>
+                    </div>
+                </nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Elevate Your Brand with <span class="gradient-text">Exvertixe</span></h1>
+                <p class="hero-subtitle">Premium marketing services tailored to your business needs. Monthly subscriptions starting with a 6-month commitment to ensure sustainable growth.</p>
+                <div class="hero-cta">
+                    <a href="#packages" class="btn btn-primary">View Packages</a>
+                    <a href="#contact" class="btn btn-secondary">Contact Us</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card card-1"></div>
+                <div class="floating-card card-2"></div>
+                <div class="floating-card card-3"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section id="services" class="services-overview">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-subtitle">Comprehensive marketing solutions to grow your business</p>
+            <div class="services-grid">
+                <a href="service-details.html?service=social-media" class="service-card">
+                    <div class="service-image" style="background: linear-gradient(135deg, rgba(175, 115, 239, 0.9), rgba(63, 143, 239, 0.9)), url('src/services/social-media.jpg');">
+                        <div class="service-icon">📱</div>
+                    </div>
+                    <div class="service-content">
+                        <h3>Social Media Marketing</h3>
+                        <p>Strategic content creation and management across all major platforms</p>
+                        <span class="learn-more">Learn More →</span>
+                    </div>
+                </a>
+                <a href="service-details.html?service=advertising" class="service-card">
+                    <div class="service-image" style="background: linear-gradient(135deg, rgba(63, 143, 239, 0.9), rgba(175, 115, 239, 0.9)), url('src/services/advertising.jpg');">
+                        <div class="service-icon">🎯</div>
+                    </div>
+                    <div class="service-content">
+                        <h3>Targeted Advertising</h3>
+                        <p>Data-driven ad campaigns that reach your ideal customers</p>
+                        <span class="learn-more">Learn More →</span>
+                    </div>
+                </a>
+                <a href="service-details.html?service=analytics" class="service-card">
+                    <div class="service-image" style="background: linear-gradient(135deg, rgba(175, 115, 239, 0.9), rgba(63, 143, 239, 0.9)), url('src/services/analytics.jpg');">
+                        <div class="service-icon">📊</div>
+                    </div>
+                    <div class="service-content">
+                        <h3>Analytics & Reporting</h3>
+                        <p>Detailed insights and performance metrics for informed decisions</p>
+                        <span class="learn-more">Learn More →</span>
+                    </div>
+                </a>
+                <a href="service-details.html?service=content" class="service-card">
+                    <div class="service-image" style="background: linear-gradient(135deg, rgba(63, 143, 239, 0.9), rgba(175, 115, 239, 0.9)), url('src/services/content.jpg');">
+                        <div class="service-icon">✍️</div>
+                    </div>
+                    <div class="service-content">
+                        <h3>Content Creation</h3>
+                        <p>Engaging content that resonates with your target audience</p>
+                        <span class="learn-more">Learn More →</span>
+                    </div>
+                </a>
+                <a href="service-details.html?service=seo" class="service-card">
+                    <div class="service-image" style="background: linear-gradient(135deg, rgba(175, 115, 239, 0.9), rgba(63, 143, 239, 0.9)), url('src/services/seo.jpg');">
+                        <div class="service-icon">🔍</div>
+                    </div>
+                    <div class="service-content">
+                        <h3>SEO Optimization</h3>
+                        <p>Improve your search rankings and organic visibility</p>
+                        <span class="learn-more">Learn More →</span>
+                    </div>
+                </a>
+                <a href="service-details.html?service=branding" class="service-card">
+                    <div class="service-image" style="background: linear-gradient(135deg, rgba(63, 143, 239, 0.9), rgba(175, 115, 239, 0.9)), url('src/services/branding.jpg');">
+                        <div class="service-icon">💼</div>
+                    </div>
+                    <div class="service-content">
+                        <h3>Brand Strategy</h3>
+                        <p>Comprehensive brand development and positioning</p>
+                        <span class="learn-more">Learn More →</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Packages Section -->
+    <section id="packages" class="packages">
+        <div class="container">
+            <h2 class="section-title">Monthly Packages</h2>
+            <p class="section-subtitle">Choose the perfect plan for your business - Minimum 6-month commitment</p>
+            <div id="packages-container" class="packages-grid">
+                <!-- Packages will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotions Section -->
+    <section id="promotions" class="promotions">
+        <div class="container">
+            <h2 class="section-title">Special Promotions</h2>
+            <p class="section-subtitle">Limited time offers to maximize your marketing impact</p>
+            <div id="promotions-container" class="promotions-grid">
+                <!-- Promotions will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <p class="section-subtitle">Ready to elevate your brand? Let's talk!</p>
+            <form class="contact-form" id="contactForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="company">Company</label>
+                    <input type="text" id="company" name="company">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Exvertixe</h3>
+                    <p>Premium marketing services for modern businesses</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#packages">Packages</a></li>
+                        <li><a href="#promotions">Promotions</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="refund-policy.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">FB</a>
+                        <a href="#" aria-label="Twitter">TW</a>
+                        <a href="#" aria-label="LinkedIn">LI</a>
+                        <a href="#" aria-label="Instagram">IG</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Exvertixe. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/packages.js"></script>
+    <script src="js/promotions.js"></script>
+</body>
+</html>

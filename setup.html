@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Guide - Exvertixe</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <style>
+        .setup-container {
+            min-height: 100vh;
+            padding: 100px 20px 50px;
+            background: var(--bg-light);
+        }
+        .setup-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+        }
+        .setup-step {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .setup-step:last-child {
+            border-bottom: none;
+        }
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        .step-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .warning-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 0.5rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+        .checklist li:before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-card">
+            <h1 class="gradient-text" style="text-align: center; margin-bottom: 2rem;">Exvertixe Setup Guide</h1>
+            
+            <div class="success-box">
+                <strong>✓ Website structure created successfully!</strong><br>
+                Follow the steps below to complete the setup.
+            </div>
+
+            <!-- Step 1 -->
+            <div class="setup-step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    <h2>Firebase Setup</h2>
+                </div>
+                <ol>
+                    <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                    <li>Create a new project</li>
+                    <li>Enable Authentication (Email/Password)</li>
+                    <li>Create Firestore Database</li>
+                    <li>Get your Firebase config from Project Settings</li>
+                    <li>Update <code>js/firebase-config.js</code> with your credentials</li>
+                </ol>
+                
+                <div class="code-block">
+const firebaseConfig = {<br>
+&nbsp;&nbsp;apiKey: "YOUR_API_KEY",<br>
+&nbsp;&nbsp;authDomain: "YOUR_PROJECT_ID.firebaseapp.com",<br>
+&nbsp;&nbsp;projectId: "YOUR_PROJECT_ID",<br>
+&nbsp;&nbsp;storageBucket: "YOUR_PROJECT_ID.appspot.com",<br>
+&nbsp;&nbsp;messagingSenderId: "YOUR_SENDER_ID",<br>
+&nbsp;&nbsp;appId: "YOUR_APP_ID"<br>
+};
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="setup-step">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    <h2>Cloudinary Setup</h2>
+                </div>
+                <ol>
+                    <li>Go to <a href="https://cloudinary.com/" target="_blank">Cloudinary</a></li>
+                    <li>Create a free account</li>
+                    <li>Get your Cloud Name from dashboard</li>
+                    <li>Create an unsigned upload preset in Settings > Upload</li>
+                    <li>Update <code>js/cloudinary.js</code> with your config</li>
+                </ol>
+                
+                <div class="code-block">
+const CLOUDINARY_CONFIG = {<br>
+&nbsp;&nbsp;cloudName: 'YOUR_CLOUD_NAME',<br>
+&nbsp;&nbsp;uploadPreset: 'YOUR_UPLOAD_PRESET'<br>
+};
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="setup-step">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    <h2>Create Admin Account</h2>
+                </div>
+                <ol>
+                    <li>Sign up through the website normally</li>
+                    <li>Go to Firebase Console > Firestore Database</li>
+                    <li>Find your user document in the <code>users</code> collection</li>
+                    <li>Add field: <code>role</code> with value: <code>admin</code></li>
+                    <li>Access admin panel at <code>/admin.html</code></li>
+                </ol>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="setup-step">
+                <div class="step-title">
+                    <span class="step-number">4</span>
+                    <h2>Run the Website</h2>
+                </div>
+                <p>Choose one of these methods:</p>
+                
+                <h4>Using Python:</h4>
+                <div class="code-block">
+python3 -m http.server 8000<br>
+# Visit http://localhost:8000
+                </div>
+                
+                <h4>Using Node.js:</h4>
+                <div class="code-block">
+npm install -g http-server<br>
+http-server<br>
+# Visit http://localhost:8080
+                </div>
+                
+                <h4>Using VS Code:</h4>
+                <p>Install "Live Server" extension and right-click on index.html > "Open with Live Server"</p>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="setup-step">
+                <div class="step-title">
+                    <span class="step-number">5</span>
+                    <h2>Setup Checklist</h2>
+                </div>
+                <ul class="checklist">
+                    <li>Firebase project created</li>
+                    <li>Firebase Authentication enabled</li>
+                    <li>Firestore Database created</li>
+                    <li>Firebase config updated in code</li>
+                    <li>Cloudinary account created</li>
+                    <li>Cloudinary config updated in code</li>
+                    <li>Admin user created</li>
+                    <li>Local server running</li>
+                    <li>Website accessible in browser</li>
+                    <li>Test signup/login working</li>
+                    <li>Test admin panel access</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Important Security Notes:</strong><br>
+                • Never commit real Firebase credentials to public repositories<br>
+                • Set up Firestore security rules (see README.md)<br>
+                • Use HTTPS in production<br>
+                • Implement proper validation
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="index.html" class="btn btn-primary">Go to Home Page</a>
+                <a href="README.md" class="btn btn-secondary" style="margin-left: 1rem;">Read Full Documentation</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Exvertixe</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html"><img src="src/Exvertixe Logo Horizontal.webp" alt="Exvertixe" class="logo-img"></a>
+                </div>
+                <nav class="nav-links">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="index.html#packages">Browse Packages</a>
+                    <a href="one-time-services.html">One-Time Services</a>
+                    <a href="index.html#contact">Contact</a>
+                    <div class="nav-auth">
+                        <button class="btn-signup" id="logoutBtn">Logout</button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="container">
+                <h1>Welcome, <span id="userName">User</span>!</h1>
+                <p>Manage your subscriptions and account settings</p>
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="index.html#packages" class="btn btn-primary">Subscribe to Package</a>
+                    <a href="order-service.html" class="btn btn-secondary">Order One-Time Service</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <div class="container">
+                <!-- Tabs Navigation -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" data-tab="subscriptions">My Subscriptions</button>
+                    <button class="tab-btn" data-tab="browse">Browse Packages</button>
+                    <button class="tab-btn" data-tab="orders">Order History</button>
+                    <button class="tab-btn" data-tab="settings">Account Settings</button>
+                </div>
+
+                <!-- Subscriptions Tab -->
+                <div id="subscriptions" class="tab-content active">
+                    <div id="subscriptionsContainer">
+                        <!-- Subscriptions will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Browse Packages Tab -->
+                <div id="browse" class="tab-content">
+                    <h2 class="section-title">Available Packages</h2>
+                    <div id="browsePackagesContainer" class="packages-grid">
+                        <!-- Packages will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Orders Tab -->
+                <div id="orders" class="tab-content">
+                    <h2 class="section-title">Order History</h2>
+                    <div id="ordersContainer">
+                        <!-- Orders will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings" class="tab-content">
+                    <div class="auth-card" style="max-width: 600px; margin: 0 auto;">
+                        <h2>Account Settings</h2>
+                        <form id="settingsForm" class="auth-form">
+                            <div class="form-group">
+                                <label for="displayName">Full Name</label>
+                                <input type="text" id="displayName" name="displayName">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emailDisplay">Email Address</label>
+                                <input type="email" id="emailDisplay" name="emailDisplay" disabled>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newPassword">New Password (leave blank to keep current)</label>
+                                <input type="password" id="newPassword" name="newPassword" minlength="6">
+                            </div>
+                            
+                            <div id="settingsMessage" class="success-message"></div>
+                            <div id="settingsError" class="error-message"></div>
+                            
+                            <button type="submit" class="btn btn-primary">Update Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/packages.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

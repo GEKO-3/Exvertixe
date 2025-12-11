@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Details - Exvertixe</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <style>
+        .service-detail-hero {
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 115, 239, 0.1), rgba(63, 143, 239, 0.1));
+            padding-top: 80px;
+            position: relative;
+        }
+        
+        .service-detail-content {
+            padding: 60px 0;
+        }
+        
+        .service-hero-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .service-hero-title {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-hero-description {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .features-section {
+            background: var(--white);
+            padding: 60px 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-item {
+            padding: 2rem;
+            background: var(--bg-light);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .feature-item h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            color: var(--header-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .benefits-section {
+            background: var(--bg-light);
+            padding: 60px 0;
+        }
+        
+        .benefits-list {
+            list-style: none;
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+        
+        .benefits-list li {
+            padding: 1.5rem;
+            background: var(--white);
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .benefits-list li:before {
+            content: '✓';
+            display: block;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .process-section {
+            padding: 60px 0;
+        }
+        
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .process-steps {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .process-step {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .process-step h4 {
+            margin-bottom: 1rem;
+            color: var(--header-color);
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            color: var(--white);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-white {
+            background: var(--white);
+            color: var(--primary-color);
+        }
+        
+        .btn-white:hover {
+            background: var(--bg-light);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html"><img src="src/Exvertixe Logo Horizontal.webp" alt="Exvertixe" class="logo-img"></a>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html#home">Home</a>
+                    <a href="index.html#services">Services</a>
+                    <a href="index.html#packages">Packages</a>
+                    <a href="one-time-services.html">One-Time Services</a>
+                    <a href="index.html#contact">Contact</a>
+                    <div class="nav-auth">
+                        <a href="login.html" class="btn-login">Login</a>
+                        <a href="signup.html" class="btn-signup">Get Started</a>
+                    </div>
+                </nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Service Hero -->
+    <section class="service-detail-hero">
+        <div class="container" style="text-align: center;">
+            <div class="service-hero-icon" id="serviceIcon"></div>
+            <h1 class="service-hero-title" id="serviceTitle"></h1>
+            <p class="service-hero-description" id="serviceDescription"></p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">What We Deliver</h2>
+            <div class="features-grid" id="featuresGrid"></div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose This Service</h2>
+            <ul class="benefits-list" id="benefitsList"></ul>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <h2 class="section-title">Our Process</h2>
+            <div class="process-steps" id="processSteps"></div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Get Started?</h2>
+            <p>Let's elevate your brand together</p>
+            <div class="cta-buttons">
+                <a href="index.html#packages" class="btn btn-white">View Packages</a>
+                <a href="index.html#contact" class="btn btn-secondary">Contact Us</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Exvertixe</h3>
+                    <p>Premium marketing services for modern businesses</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="index.html#packages">Packages</a></li>
+                        <li><a href="index.html#promotions">Promotions</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="refund-policy.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">FB</a>
+                        <a href="#" aria-label="Twitter">TW</a>
+                        <a href="#" aria-label="LinkedIn">LI</a>
+                        <a href="#" aria-label="Instagram">IG</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Exvertixe. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/service-details.js"></script>
+</body>
+</html>

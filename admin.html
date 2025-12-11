@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Exvertixe</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html"><img src="src/Exvertixe Logo Horizontal.webp" alt="Exvertixe" class="logo-img"></a>
+                </div>
+                <nav class="nav-links">
+                    <a href="admin.html">Admin Panel</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="one-time-services.html">One-Time Services</a>
+                    <a href="index.html#contact">Contact</a>
+                    <div class="nav-auth">
+                        <button class="btn-signup" id="logoutBtn">Logout</button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        <!-- Admin Header -->
+        <div class="dashboard-header">
+            <div class="container">
+                <h1>Admin Panel</h1>
+                <p>Manage packages, promotions, and orders</p>
+            </div>
+        </div>
+
+        <!-- Admin Content -->
+        <div class="dashboard-content">
+            <div class="container">
+                <!-- Tabs Navigation -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" data-tab="packages">Packages</button>
+                    <button class="tab-btn" data-tab="promotions">Promotions</button>
+                    <button class="tab-btn" data-tab="subscriptions">Subscriptions</button>
+                    <button class="tab-btn" data-tab="contacts">Contact Messages</button>
+                </div>
+
+                <!-- Packages Tab -->
+                <div id="packages" class="tab-content active">
+                    <div class="admin-section-header">
+                        <h2>Manage Packages</h2>
+                        <button class="btn btn-primary" id="addPackageBtn">+ Add New Package</button>
+                    </div>
+                    <div id="packagesListContainer" class="admin-list">
+                        <!-- Packages will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Promotions Tab -->
+                <div id="promotions" class="tab-content">
+                    <div class="admin-section-header">
+                        <h2>Manage Promotions</h2>
+                        <button class="btn btn-primary" id="addPromotionBtn">+ Add New Promotion</button>
+                    </div>
+                    <div id="promotionsListContainer" class="admin-list">
+                        <!-- Promotions will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Subscriptions Tab -->
+                <div id="subscriptions" class="tab-content">
+                    <h2>All Subscriptions</h2>
+                    <div id="subscriptionsListContainer" class="admin-list">
+                        <!-- Subscriptions will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Contacts Tab -->
+                <div id="contacts" class="tab-content">
+                    <h2>Contact Messages</h2>
+                    <div id="contactsListContainer" class="admin-list">
+                        <!-- Contact messages will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Package Modal -->
+    <div id="packageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="packageModalTitle">Add New Package</h2>
+                <button class="modal-close" id="closePackageModal">&times;</button>
+            </div>
+            <form id="packageForm" class="admin-form">
+                <input type="hidden" id="packageId" name="packageId">
+                
+                <div class="form-group">
+                    <label for="packageName">Package Name</label>
+                    <input type="text" id="packageName" name="packageName" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="packagePrice">Monthly Price ($)</label>
+                        <input type="number" id="packagePrice" name="packagePrice" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="packageFeatured">
+                            <input type="checkbox" id="packageFeatured" name="packageFeatured">
+                            Featured Package
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="packageDescription">Description</label>
+                    <textarea id="packageDescription" name="packageDescription" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Package Image</label>
+                    <div id="packageImageUpload"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Features (one per line)</label>
+                    <textarea id="packageFeatures" name="packageFeatures" rows="6" placeholder="Feature 1&#10;Feature 2&#10;Feature 3" required></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelPackageBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Package</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Promotion Modal -->
+    <div id="promotionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="promotionModalTitle">Add New Promotion</h2>
+                <button class="modal-close" id="closePromotionModal">&times;</button>
+            </div>
+            <form id="promotionForm" class="admin-form">
+                <input type="hidden" id="promotionId" name="promotionId">
+                
+                <div class="form-group">
+                    <label for="promotionTitle">Promotion Title</label>
+                    <input type="text" id="promotionTitle" name="promotionTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="promotionDescription">Description</label>
+                    <textarea id="promotionDescription" name="promotionDescription" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="promotionDiscount">Discount Label</label>
+                        <input type="text" id="promotionDiscount" name="promotionDiscount" placeholder="e.g., 20% OFF" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="promotionValidUntil">Valid Until</label>
+                        <input type="date" id="promotionValidUntil" name="promotionValidUntil" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="promotionOriginalPrice">Original Price ($)</label>
+                        <input type="number" id="promotionOriginalPrice" name="promotionOriginalPrice" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="promotionDiscountedPrice">Discounted Price ($)</label>
+                        <input type="number" id="promotionDiscountedPrice" name="promotionDiscountedPrice" min="0" step="0.01">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Promotion Image</label>
+                    <div id="promotionImageUpload"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="promotionActive" name="promotionActive" checked>
+                        Active Promotion
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelPromotionBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Promotion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/cloudinary.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

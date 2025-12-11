@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order One-Time Service - Exvertixe</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <style>
+        .order-hero {
+            background: linear-gradient(135deg, rgba(175, 115, 239, 0.1), rgba(63, 143, 239, 0.1));
+            padding: 120px 0 60px;
+            text-align: center;
+        }
+
+        .order-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-hero p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+        }
+
+        .order-container {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .order-form-card {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .form-section h3 {
+            font-size: 1.5rem;
+            color: var(--header-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--header-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .service-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .service-type-option {
+            position: relative;
+        }
+
+        .service-type-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .service-type-label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .service-type-option input[type="radio"]:checked + .service-type-label {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(175, 115, 239, 0.1), rgba(63, 143, 239, 0.1));
+        }
+
+        .service-type-label .icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-type-label .name {
+            font-weight: 600;
+            color: var(--header-color);
+        }
+
+        .price-estimate {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .price-estimate h4 {
+            margin-bottom: 1rem;
+            color: var(--header-color);
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .price-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            padding-top: 1rem;
+            border-top: 2px solid #ddd;
+            margin-top: 1rem;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-light);
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-item button {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .payment-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-notice strong {
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .order-hero h1 {
+                font-size: 2rem;
+            }
+
+            .order-form-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .service-type-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html"><img src="src/Exvertixe Logo Horizontal.webp" alt="Exvertixe" class="logo-img"></a>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html#home">Home</a>
+                    <a href="index.html#services">Services</a>
+                    <a href="index.html#packages">Packages</a>
+                    <a href="one-time-services.html">One-Time Services</a>
+                    <a href="index.html#contact">Contact</a>
+                    <div class="nav-auth">
+                        <a href="login.html" class="btn-login">Login</a>
+                        <a href="signup.html" class="btn-signup">Get Started</a>
+                    </div>
+                </nav>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="order-hero">
+        <div class="container">
+            <h1>Order One-Time Service</h1>
+            <p>Fill out the form below and we'll get back to you with a quote within 24 hours</p>
+        </div>
+    </section>
+
+    <!-- Order Form -->
+    <div class="order-container">
+        <div class="order-form-card">
+            <form id="orderForm">
+                <!-- Service Type Selection -->
+                <div class="form-section">
+                    <h3>Select Service Type</h3>
+                    <div class="service-type-grid">
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="socialPost" value="social-post" required>
+                            <label for="socialPost" class="service-type-label">
+                                <span class="icon">📱</span>
+                                <span class="name">Social Media Post</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="videoEdit" value="video-editing">
+                            <label for="videoEdit" class="service-type-label">
+                                <span class="icon">✂️</span>
+                                <span class="name">Video Editing</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="infoAnimation" value="infomercial-animation">
+                            <label for="infoAnimation" class="service-type-label">
+                                <span class="icon">🎬</span>
+                                <span class="name">Infomercial Animation</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="handDrawn" value="hand-drawn-animation">
+                            <label for="handDrawn" class="service-type-label">
+                                <span class="icon">✍️</span>
+                                <span class="name">Hand-Drawn 2D</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="3dAnimation" value="3d-animation">
+                            <label for="3dAnimation" class="service-type-label">
+                                <span class="icon">🎮</span>
+                                <span class="name">3D Animation</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="tournament" value="tournament-system">
+                            <label for="tournament" class="service-type-label">
+                                <span class="icon">⚽</span>
+                                <span class="name">Tournament System</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="basicWeb" value="basic-website">
+                            <label for="basicWeb" class="service-type-label">
+                                <span class="icon">🌐</span>
+                                <span class="name">Basic Website</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="businessWeb" value="business-website">
+                            <label for="businessWeb" class="service-type-label">
+                                <span class="icon">💼</span>
+                                <span class="name">Business Website</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="ecommerce" value="ecommerce-website">
+                            <label for="ecommerce" class="service-type-label">
+                                <span class="icon">🛒</span>
+                                <span class="name">E-Commerce</span>
+                            </label>
+                        </div>
+                        <div class="service-type-option">
+                            <input type="radio" name="serviceType" id="customApp" value="custom-web-app">
+                            <label for="customApp" class="service-type-label">
+                                <span class="icon">⚙️</span>
+                                <span class="name">Custom Web App</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animation Duration (for animation services) -->
+                <div class="form-section" id="animationDurationSection" style="display: none;">
+                    <h3>Animation Details</h3>
+                    <div class="form-group">
+                        <label for="duration">Estimated Duration (seconds)</label>
+                        <input type="number" id="duration" name="duration" min="1" placeholder="e.g., 30">
+                        <small id="durationNote">Minimum duration applies based on service type</small>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName">Full Name *</label>
+                            <input type="text" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Company/Organization</label>
+                            <input type="text" id="company" name="company">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Details -->
+                <div class="form-section">
+                    <h3>Project Details</h3>
+                    <div class="form-group">
+                        <label for="projectTitle">Project Title *</label>
+                        <input type="text" id="projectTitle" name="projectTitle" required placeholder="Brief title for your project">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Project Description *</label>
+                        <textarea id="description" name="description" required placeholder="Describe your project in detail. Include objectives, target audience, style preferences, and any specific requirements..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="deadline">Preferred Deadline</label>
+                        <input type="date" id="deadline" name="deadline">
+                        <small>Let us know your ideal completion date (not guaranteed)</small>
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="form-section">
+                    <h3>Supporting Materials (Optional)</h3>
+                    <div class="form-group">
+                        <label class="file-upload-area" for="fileUpload">
+                            <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;">📎</span>
+                            <span style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Click to upload files</span>
+                            <small>Reference images, videos, brand guidelines, scripts, etc.</small>
+                            <input type="file" id="fileUpload" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt">
+                        </label>
+                        <div class="file-list" id="fileList"></div>
+                    </div>
+                </div>
+
+                <!-- Budget & Timeline -->
+                <div class="form-section">
+                    <h3>Budget & Timeline</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="budget">Budget Range (MVR)</label>
+                            <select id="budget" name="budget">
+                                <option value="">Select budget range</option>
+                                <option value="under-500">Under 500 MVR</option>
+                                <option value="500-1000">500 - 1,000 MVR</option>
+                                <option value="1000-2500">1,000 - 2,500 MVR</option>
+                                <option value="2500-5000">2,500 - 5,000 MVR</option>
+                                <option value="5000-10000">5,000 - 10,000 MVR</option>
+                                <option value="10000+">10,000+ MVR</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="urgency">Project Urgency</label>
+                            <select id="urgency" name="urgency">
+                                <option value="flexible">Flexible - No rush</option>
+                                <option value="normal">Normal - 1-2 weeks</option>
+                                <option value="urgent">Urgent - Within 1 week</option>
+                                <option value="rush">Rush - ASAP (may incur extra fees)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price Estimate -->
+                <div class="price-estimate" id="priceEstimate" style="display: none;">
+                    <h4>Estimated Pricing</h4>
+                    <div class="price-row">
+                        <span>Base Price:</span>
+                        <span id="basePrice">-</span>
+                    </div>
+                    <div class="price-row" id="durationPriceRow" style="display: none;">
+                        <span id="durationPriceLabel">Duration:</span>
+                        <span id="durationPrice">-</span>
+                    </div>
+                    <div class="price-total">
+                        <span>Estimated Total:</span>
+                        <span id="totalPrice">Get Custom Quote</span>
+                    </div>
+                    <small style="display: block; margin-top: 1rem; color: var(--text-light);">
+                        This is an estimate. Final pricing will be confirmed after reviewing your requirements.
+                    </small>
+                </div>
+
+                <!-- Payment Notice -->
+                <div class="payment-notice">
+                    <strong>Payment Terms:</strong> Services under 500 MVR require full payment upfront. 
+                    Services 500 MVR and above require 50% deposit before work begins, with the remaining 50% due upon completion.
+                </div>
+
+                <!-- Additional Notes -->
+                <div class="form-section">
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Notes</label>
+                        <textarea id="additionalNotes" name="additionalNotes" placeholder="Any other information you'd like to share..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message" style="display: none;"></div>
+                <button type="submit" class="btn btn-primary btn-full">Submit Order Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Exvertixe</h3>
+                    <p>Premium marketing services for modern businesses</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="index.html#packages">Packages</a></li>
+                        <li><a href="one-time-services.html">One-Time Services</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="refund-policy.html">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">FB</a>
+                        <a href="#" aria-label="Twitter">TW</a>
+                        <a href="#" aria-label="LinkedIn">LI</a>
+                        <a href="#" aria-label="Instagram">IG</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Exvertixe. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/order-service.js"></script>
+</body>
+</html>
